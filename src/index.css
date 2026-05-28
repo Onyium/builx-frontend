@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+
+@layer utilities {
+  /* Ocultar barra de desplazamiento para Chrome, Safari y Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Ocultar barra de desplazamiento para IE, Edge y Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+/* Animaciones personalizadas para BuilX */
+@keyframes textReveal {
+  0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes float3D {
+  0% { transform: translateY(0px) scale(0.95); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translateY(-15px) scale(1.02); }
+  80% { opacity: 1; }
+  100% { transform: translateY(0px) scale(1); opacity: 1; }
+}
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); transform: scale(1.03); }
+  100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); transform: scale(1); }
+}
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* Clases de utilidad para usar en React */
+.animate-blob {
+  animation: blob 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+.animate-text {
+  animation: textReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-3d-model {
+  animation: float3D 3s ease-in-out infinite;
+}
+.enter-animation {
+  animation: textReveal 0.5s ease-out forwards;
+}
+.btn-primary-glow {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}

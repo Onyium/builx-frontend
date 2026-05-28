@@ -1,0 +1,309 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+import ItemCard from '../components/Dashboard/ItemCard'; 
+import CreateItemModal from '../components/Dashboard/CreateItemModal';
+import EmpresaConfig from '../components/Dashboard/EmpresaConfig';
+import TestimoniosManager from '../components/Dashboard/TestimoniosManager';
+import FAQManager from '../components/Dashboard/FAQManager'; 
+import CategoriasManager from '../components/Dashboard/CategoriasManager';
+import GaleriaManager from '../components/Dashboard/GaleriaManager';
+import BandejaContacto from '../components/Dashboard/BandejaContacto';
+import ReviewsModal from '../components/Dashboard/ReviewsModal';
+import ImportadorIA from '../components/Dashboard/ImportadorIA';
+import BotonSuscripcion from '../components/pays/BotonSuscripcion';
+
+export default function Dashboard() {
+  const [items, setItems] = useState([]);
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, data: null });
+  const empresaId = localStorage.getItem('empresa_id');
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [itemToReview, setItemToReview] = useState(null);
+
+  const [datosEmpresa, setDatosEmpresa] = useState(null);
+  const [currentLogo, setCurrentLogo] = useState(null);
+
+  // 📥 Controla qué sección está viendo el usuario en pantalla
+  const [seccionActiva, setSeccionActiva] = useState('catalogo');
+  const navigate = useNavigate();
+
+  // --- GUARDIA DE SEGURIDAD (SESIÓN) ---
+  useEffect(() => { 
+    const checkSession = () => {
+      const storedId = localStorage.getItem('empresa_id');
+      const loginTime = localStorage.getItem('login_time');
+
+      if (!storedId || !loginTime) {
+        window.location.href = '/login'; 
+        return false;
+      }
+
+      const horasPasadas = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+      
+      if (horasPasadas > 3) {
+        alert("⏱️ Tu sesión de 3 horas ha expirado por seguridad. Vuelve a ingresar.");
+        handleLogout();
+        return false;
+      }
+
+      return true;
+    };
+
+    if (checkSession()) {
+      fetchItems(); 
+      fetchEmpresa(); 
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('empresa_id');
+    localStorage.removeItem('login_time');
+    window.location.href = '/login';
+  };
+
+  const handleOpenReviews = (item) => {
+    setItemToReview(item);
+    setIsReviewModalOpen(true);
+  };
+
+  const fetchEmpresa = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/empresa/${empresaId}`);
+      if (res.data) {
+        setDatosEmpresa({
+          direccion: res.data.direccion || '',
+          telefono: res.data.telefono || '',
+          link_google_maps: res.data.link_google_maps || '',
+          link_facebook: res.data.link_facebook || '',
+          link_instagram: res.data.link_instagram || '',
+          link_whatsapp: res.data.link_whatsapp || '',
+          link_tiktok: res.data.link_tiktok || '',
+          
+          suscripcion_estado: res.data.suscripcion_estado || 'trial', 
+          
+          // 🔥 AQUÍ ESTÁ EL CAMBIO: Leemos email_administrador de la base de datos
+          email: res.data.email_administrador || '' 
+        });
+        setCurrentLogo(res.data.logo_url || null);
+      }
+    } catch (err) {
+      console.error("Error al obtener datos de la empresa:", err);
+    }
+  };
+
+  const fetchItems = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/items/${empresaId}`);
+      setItems(res.data);
+    } catch (err) {
+      console.error("Error al obtener items:", err);
+    }
+  };
+
+  const handleUpdateEmpresa = async (nuevosDatos, file) => {
+    try {
+      const formData = new FormData();
+      formData.append('direccion', nuevosDatos.direccion || '');
+      formData.append('telefono', nuevosDatos.telefono || '');
+      
+      // 🚨 AQUÍ SUBIMOS EL NUEVO DATO AL CAMIÓN:
+      formData.append('whatsapp_pedidos', nuevosDatos.whatsapp_pedidos || '');
+      
+      formData.append('link_google_maps', nuevosDatos.link_google_maps || '');
+      formData.append('link_facebook', nuevosDatos.link_facebook || '');
+      formData.append('link_instagram', nuevosDatos.link_instagram || '');
+      formData.append('link_whatsapp', nuevosDatos.link_whatsapp || '');
+      formData.append('link_tiktok', nuevosDatos.link_tiktok || '');
+      
+      if (file) {
+        formData.append('logo', file);
+      }
+
+      await axios.put(`http://localhost:5000/api/empresa/actualizar/${empresaId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      alert("¡Configuración de la sucursal guardada con éxito! 📍");
+      fetchEmpresa(); 
+    } catch (err) {
+      console.error(err);
+      alert("Error al guardar la configuración de la empresa");
+    }
+  };
+
+  const handleSave = async (formData) => {
+    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+    const id = formData.get('id');
+
+    try {
+      if (id) { 
+          await axios.put(`http://localhost:5000/api/items/${id}`, formData, config);
+      } else { 
+          formData.append('empresa_id', empresaId);
+          await axios.post('http://localhost:5000/api/items', formData, config);
+      }
+      setModalConfig({ isOpen: false, data: null });
+      fetchItems();
+    } catch (err) {
+      alert("Error al guardar el ítem");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("¿Estás seguro de eliminar este ítem?")) {
+        await axios.delete(`http://localhost:5000/api/items/${id}`);
+        fetchItems();
+    }
+  };
+
+  const handleToggleStatus = async (id, status) => {
+    try {
+      await axios.put(`http://localhost:5000/api/items/${id}/status`, { disponible: status });
+      fetchItems();
+    } catch (err) {
+      console.error("Error al cambiar estado");
+    }
+  };
+
+  if (!datosEmpresa) return <div className="p-10 font-bold text-gray-500 text-center">Cargando panel...</div>;
+
+  return (
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-gray-900">
+      
+      {/* ─── BARRA LATERAL (SIDEBAR) PREMIUM ─── */}
+      <aside className="w-64 bg-[#0F172A] text-slate-300 flex flex-col fixed h-full z-20 shadow-2xl border-r border-slate-800">
+        
+        {/* Marca/SaaS Identificador */}
+        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-md shadow-blue-500/20">
+            B
+          </div>
+          <div>
+            <h1 className="font-black text-white tracking-tight text-lg leading-none">BuilX</h1>
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Admin Panel</span>
+          </div>
+        </div>
+
+        {/* Links de Navegación del Panel */}
+        <nav className="flex-1 p-4 flex flex-col gap-1 mt-3">
+          <button onClick={() => setSeccionActiva('catalogo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'catalogo' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            📦 <span>Catálogo / Ítems</span>
+          </button>
+          <button onClick={() => setSeccionActiva('leads')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'leads' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            📥 <span>Bandeja de Leads</span>
+          </button>
+          <button onClick={() => setSeccionActiva('galeria')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'galeria' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            🖼️ <span>Galería de Fotos</span>
+          </button>
+          <button onClick={() => setSeccionActiva('categorias')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'categorias' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            🗂️ <span>Categorías</span>
+          </button>
+          <button onClick={() => setSeccionActiva('testimonios')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'testimonios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            ⭐ <span>Testimonios</span>
+          </button>
+          <button onClick={() => setSeccionActiva('faqs')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'faqs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            ❓ <span>Preguntas Frecuentes</span>
+          </button>
+          <button onClick={() => setSeccionActiva('importador')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'importador' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            🤖 <span>IMPORTADOR IA</span>
+          </button>
+          <button onClick={() => setSeccionActiva('config')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'config' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+            ⚙️ <span>Configuración</span>
+          </button>
+          {datosEmpresa.suscripcion_estado === 'active' && (
+            <button 
+              onClick={() => navigate('/admin/builder')} 
+              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 mt-4"
+            >
+              🎨 Editar Página Web
+            </button>
+          )}
+        </nav>
+
+        {/* Sección de Meta Info Inferior */}
+        <div className="p-4 border-t border-slate-800 bg-slate-950/40 text-center">
+          <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Empresa ID: {empresaId}</p>
+        </div>
+      </aside>
+
+      {/* ─── ÁREA DE TRABAJO PRINCIPAL (DERECHA) ─── */}
+      <div className="flex-1 pl-64 min-h-screen flex flex-col">
+        
+        {/* Barra Superior Inteligente */}
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 md:px-12 sticky top-0 z-10 shadow-sm">
+          <div>
+            <h2 className="text-xl font-black text-gray-900 tracking-tight capitalize">
+              {seccionActiva === 'catalogo' ? 'Gestión de Catálogo' : seccionActiva}
+            </h2>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {seccionActiva === 'catalogo' && datosEmpresa.suscripcion_estado === 'active' && (
+              <button onClick={() => setModalConfig({ isOpen: true, data: null })} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-blue-500/10 active:scale-95 transition-all hover:bg-blue-700 text-sm">
+                + Nuevo Ítem
+              </button>
+            )}
+            
+            <button onClick={handleLogout} className="bg-red-50 text-red-600 border border-red-100 px-4 py-2.5 rounded-xl font-bold hover:bg-red-100 transition-all text-sm">
+              Cerrar Sesión
+            </button>
+          </div>
+        </header>
+
+        {/* ─── CONTENEDOR DE COMPONENTES DINÁMICOS ─── */}
+        <main className="p-8 md:p-12 max-w-6xl w-full mx-auto flex-1">
+          
+          {/* 🚨 AQUÍ ESTÁ LA MAGIA: EL MURO DE PAGO 🚨 */}
+          {datosEmpresa.suscripcion_estado !== 'active' ? (
+            
+            <div className="bg-white rounded-2xl shadow-xl p-10 text-center max-w-2xl mx-auto mt-10 border border-gray-100">
+              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fa-solid fa-rocket text-4xl text-blue-600"></i>
+              </div>
+              <h2 className="text-3xl font-black text-gray-900 mb-4">¡Desbloquea todo el poder de BuilX!</h2>
+              <p className="text-gray-500 mb-8 text-lg">Para gestionar tu catálogo, recibir leads y usar nuestro Importador IA, necesitas activar tu suscripción premium.</p>
+              
+              <BotonSuscripcion 
+                empresaId={empresaId} 
+                emailEmpresa={datosEmpresa.email} 
+              />
+            </div>
+
+          ) : (
+            // 🔓 SI YA PAGÓ, LE MOSTRAMOS SU PANEL NORMAL 🔓
+            <>
+              {seccionActiva === 'catalogo' && (
+                <div className="animate-fade-in">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-800">Catálogo de Productos</h3>
+                    <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-xs">Total: {items.length}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {items.map(item => (
+                      <ItemCard key={item.id} item={item} onToggle={handleToggleStatus} onEdit={(data) => setModalConfig({ isOpen: true, data })} onDelete={handleDelete} onOpenReviews={handleOpenReviews} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {seccionActiva === 'leads' && <div className="animate-fade-in"><BandejaContacto empresaId={empresaId} /></div>}
+              {seccionActiva === 'galeria' && <div className="animate-fade-in"><GaleriaManager empresaId={empresaId} /></div>}
+              {seccionActiva === 'categorias' && <div className="animate-fade-in"><CategoriasManager empresaId={empresaId} /></div>}
+              {seccionActiva === 'testimonios' && <div className="animate-fade-in"><TestimoniosManager empresaId={empresaId} /></div>}
+              {seccionActiva === 'faqs' && <div className="animate-fade-in"><FAQManager empresaId={empresaId} /></div>}
+              {seccionActiva === 'importador' && <div className="animate-fade-in"><ImportadorIA empresaId={empresaId} /></div>}
+              {seccionActiva === 'config' && <div className="animate-fade-in"><EmpresaConfig datos={datosEmpresa} onUpdate={handleUpdateEmpresa} currentLogo={currentLogo} /></div>}
+            </>
+          )}
+
+        </main>
+      </div>
+
+      {/* MODAL CENTRALIZADO */}
+      <CreateItemModal isOpen={modalConfig.isOpen} initialData={modalConfig.data} onClose={() => setModalConfig({ isOpen: false, data: null })} onSave={handleSave} />
+      <ReviewsModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} item={itemToReview} />
+
+    </div>
+  );
+}
