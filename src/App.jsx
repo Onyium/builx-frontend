@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
 import CheckoutPage from './pages/CheckoutPage'; // 👈 Importamos la nueva página
 import ProtectedRoute from './components/pays/ProtectedRoute.jsx'; 
-import Register from './pages/Register';
+import Register from './pages/register';
 
 function App() {
   return (
