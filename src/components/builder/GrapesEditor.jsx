@@ -25,7 +25,7 @@ const GrapesEditor = ({ empresaId }) => {
     editorRef.current = editor;
 
     // --- CARGA DE DISEÑO DESDE LA BASE DE DATOS ---
-    fetch(`http://localhost:5000/api/diseno/${empresaId}`)
+    fetch(`https://builx-api.onrender.com/api/diseno/${empresaId}`)
       .then(res => {
         if (!res.ok) throw new Error("No hay diseño previo");
         return res.json();
@@ -85,7 +85,7 @@ const GrapesEditor = ({ empresaId }) => {
     
     const components = editorRef.current.getComponents();
 
-    fetch('http://localhost:5000/api/diseno/guardar', {
+    fetch('https://builx-api.onrender.com/api/diseno/guardar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

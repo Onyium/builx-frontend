@@ -29,7 +29,7 @@ export default function GaleriaManager({ empresaId }) {
 
   const fetchFotos = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/galeria/${empresaId}`);
+      const res = await axios.get(`https://builx-api.onrender.com/api/galeria/${empresaId}`);
       setFotos(res.data);
     } catch (err) {
       console.error("Error al obtener galería:", err);
@@ -74,7 +74,7 @@ export default function GaleriaManager({ empresaId }) {
         formData.append('empresa_id', empresaId);
         formData.append('foto', blob, 'trabajo-recortado.jpg');
 
-        await axios.post('http://localhost:5000/api/galeria/subir', formData, {
+        await axios.post('https://builx-api.onrender.com/api/galeria/subir', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         
@@ -92,7 +92,7 @@ export default function GaleriaManager({ empresaId }) {
   const handleDelete = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar esta foto?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/galeria/${id}`);
+        await axios.delete(`https://builx-api.onrender.com/api/galeria/${id}`);
         fetchFotos();
       } catch (err) {
         alert("Error al eliminar la imagen");
@@ -126,7 +126,7 @@ export default function GaleriaManager({ empresaId }) {
               
               {/* La Imagen Limpia */}
               <img 
-                src={`http://localhost:5000${foto.imagen_url}`} 
+                src={`https://builx-api.onrender.com${foto.imagen_url}`} 
                 alt="Trabajo" 
                 className="w-full h-full object-cover"
               />

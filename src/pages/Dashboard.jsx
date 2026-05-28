@@ -69,7 +69,7 @@ export default function Dashboard() {
 
   const fetchEmpresa = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/empresa/${empresaId}`);
+      const res = await axios.get(`https://builx-api.onrender.com/api/empresa/${empresaId}`);
       if (res.data) {
         setDatosEmpresa({
           direccion: res.data.direccion || '',
@@ -94,7 +94,7 @@ export default function Dashboard() {
 
   const fetchItems = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/items/${empresaId}`);
+      const res = await axios.get(`https://builx-api.onrender.com/api/items/${empresaId}`);
       setItems(res.data);
     } catch (err) {
       console.error("Error al obtener items:", err);
@@ -120,7 +120,7 @@ export default function Dashboard() {
         formData.append('logo', file);
       }
 
-      await axios.put(`http://localhost:5000/api/empresa/actualizar/${empresaId}`, formData, {
+      await axios.put(`https://builx-api.onrender.com/api/empresa/actualizar/${empresaId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
@@ -138,10 +138,10 @@ export default function Dashboard() {
 
     try {
       if (id) { 
-          await axios.put(`http://localhost:5000/api/items/${id}`, formData, config);
+          await axios.put(`https://builx-api.onrender.com/api/items/${id}`, formData, config);
       } else { 
           formData.append('empresa_id', empresaId);
-          await axios.post('http://localhost:5000/api/items', formData, config);
+          await axios.post('https://builx-api.onrender.com/api/items', formData, config);
       }
       setModalConfig({ isOpen: false, data: null });
       fetchItems();
@@ -152,14 +152,14 @@ export default function Dashboard() {
 
   const handleDelete = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar este ítem?")) {
-        await axios.delete(`http://localhost:5000/api/items/${id}`);
+        await axios.delete(`https://builx-api.onrender.com/api/items/${id}`);
         fetchItems();
     }
   };
 
   const handleToggleStatus = async (id, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/items/${id}/status`, { disponible: status });
+      await axios.put(`https://builx-api.onrender.com/api/items/${id}/status`, { disponible: status });
       fetchItems();
     } catch (err) {
       console.error("Error al cambiar estado");

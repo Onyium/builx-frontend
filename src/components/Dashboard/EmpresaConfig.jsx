@@ -21,7 +21,7 @@ export default function EmpresaConfig({ datos, onUpdate, currentLogo }) {
           <input type="file" accept="image/*" className="w-full text-sm" 
                  onChange={e => setLogoFile(e.target.files[0])} />
           {currentLogo && !logoFile && (
-            <img src={`http://localhost:5000${currentLogo}`} className="h-10 mt-2 object-contain" />
+            <img src={`https://builx-api.onrender.com${currentLogo}`} className="h-10 mt-2 object-contain" />
           )}
         </div>
         <div>

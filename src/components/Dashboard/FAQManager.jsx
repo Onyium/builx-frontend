@@ -8,19 +8,19 @@ export default function FAQManager({ empresaId }) {
   useEffect(() => { fetchFaqs(); }, []);
 
   const fetchFaqs = async () => {
-    const res = await axios.get(`http://localhost:5000/api/faqs/${empresaId}`);
+    const res = await axios.get(`https://builx-api.onrender.com/api/faqs/${empresaId}`);
     setFaqs(res.data);
   };
 
   const agregarFaq = async () => {
     if (!nuevo.pregunta || !nuevo.respuesta) return alert("Llena ambos campos");
-    await axios.post('http://localhost:5000/api/faqs', { ...nuevo, empresa_id: empresaId });
+    await axios.post('https://builx-api.onrender.com/api/faqs', { ...nuevo, empresa_id: empresaId });
     setNuevo({ pregunta: '', respuesta: '' });
     fetchFaqs();
   };
 
   const eliminarFaq = async (id) => {
-    await axios.delete(`http://localhost:5000/api/faqs/${id}`);
+    await axios.delete(`https://builx-api.onrender.com/api/faqs/${id}`);
     fetchFaqs();
   };
 

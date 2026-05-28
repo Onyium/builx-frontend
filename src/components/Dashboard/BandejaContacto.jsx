@@ -13,7 +13,7 @@ export default function BandejaContacto({ empresaId }) {
 
   const fetchMensajes = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/contacto/${empresaId}`);
+      const res = await axios.get(`https://builx-api.onrender.com/api/contacto/${empresaId}`);
       setMensajes(res.data);
     } catch (err) {
       console.error("Error cargando mensajes:", err);
@@ -24,7 +24,7 @@ export default function BandejaContacto({ empresaId }) {
 
   const handleMarcarLeido = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/contacto/leido/${id}`);
+      await axios.put(`https://builx-api.onrender.com/api/contacto/leido/${id}`);
       // Actualizamos el estado local de forma limpia
       setMensajes(mensajes.map(m => m.id === id ? { ...m, leido: 1 } : m));
     } catch (err) {
@@ -35,7 +35,7 @@ export default function BandejaContacto({ empresaId }) {
   const handleEliminar = async (id) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este lead?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/contacto/${id}`);
+        await axios.delete(`https://builx-api.onrender.com/api/contacto/${id}`);
         setMensajes(mensajes.filter(m => m.id !== id));
       } catch (err) {
         alert("Error al eliminar el registro");

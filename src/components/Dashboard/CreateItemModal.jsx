@@ -43,7 +43,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
       setTabInterna('general'); // Resetear a la primera pestaña siempre que abra
       
       // 1. Cargar categorías
-      axios.get(`http://localhost:5000/api/categorias/${empresaId}`)
+      axios.get(`https://builx-api.onrender.com/api/categorias/${empresaId}`)
         .then(res => {
           setCategorias(res.data);
           if (!initialData && res.data.length > 0) {

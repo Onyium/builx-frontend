@@ -22,7 +22,7 @@ export default function ReviewsModal({ isOpen, onClose, item }) {
 
     const cargarReviews = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/reviews/${item.id}`);
+            const res = await axios.get(`https://builx-api.onrender.com/api/reviews/${item.id}`);
             setReviews(res.data);
         } catch (error) {
             console.error("Error al cargar reseñas", error);
@@ -41,7 +41,7 @@ export default function ReviewsModal({ isOpen, onClose, item }) {
         if (foto) data.append('foto', foto);
 
         try {
-            await axios.post('http://localhost:5000/api/reviews', data);
+            await axios.post('https://builx-api.onrender.com/api/reviews', data);
             setFormData({ nombre_cliente: '', comentario: '', estrellas: 5 });
             setFoto(null);
             cargarReviews(); // Recargar la lista
@@ -55,7 +55,7 @@ export default function ReviewsModal({ isOpen, onClose, item }) {
     const eliminarReview = async (id) => {
         if(!window.confirm("¿Seguro que quieres borrar esta reseña?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/reviews/${id}`);
+            await axios.delete(`https://builx-api.onrender.com/api/reviews/${id}`);
             cargarReviews(); // Actualizar lista
         } catch (error) {
             alert("Error al borrar");
@@ -132,7 +132,7 @@ export default function ReviewsModal({ isOpen, onClose, item }) {
                                     <div className="flex justify-between items-end">
                                         <span className="text-[11px] font-bold text-gray-900">- {rev.nombre_cliente}</span>
                                         {rev.foto_url && (
-                                            <img src={`http://localhost:5000${rev.foto_url}`} alt="foto cliente" className="w-8 h-8 object-cover rounded-lg border border-gray-200" />
+                                            <img src={`https://builx-api.onrender.com${rev.foto_url}`} alt="foto cliente" className="w-8 h-8 object-cover rounded-lg border border-gray-200" />
                                         )}
                                     </div>
                                 </div>

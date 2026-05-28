@@ -13,7 +13,7 @@ export default function CategoriasManager({ empresaId }) {
 
   const fetchCategorias = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/categorias/${empresaId}`);
+      const res = await axios.get(`https://builx-api.onrender.com/api/categorias/${empresaId}`);
       setCategorias(res.data);
     } catch (err) {
       console.error("Error al obtener categorías:", err);
@@ -25,7 +25,7 @@ export default function CategoriasManager({ empresaId }) {
     if (!nuevaCategoria.trim()) return;
 
     try {
-      await axios.post('http://localhost:5000/api/categorias', {
+      await axios.post('https://builx-api.onrender.com/api/categorias', {
         empresa_id: empresaId,
         nombre: nuevaCategoria
       });
@@ -39,7 +39,7 @@ export default function CategoriasManager({ empresaId }) {
   const handleDelete = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar esta categoría? Ojo: si hay productos con esta categoría, podrían quedarse sin una.")) {
       try {
-        await axios.delete(`http://localhost:5000/api/categorias/${id}`);
+        await axios.delete(`https://builx-api.onrender.com/api/categorias/${id}`);
         fetchCategorias();
       } catch (err) {
         alert("Error al eliminar la categoría");

@@ -26,7 +26,7 @@ export default function ImportadorIA({ empresaId, onImportSuccess }) {
         setIsLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5000/api/items/importar-masivo', {
+            const res = await fetch('https://builx-api.onrender.com/api/items/importar-masivo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

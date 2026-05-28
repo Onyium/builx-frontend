@@ -7,7 +7,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
 
   // Verificamos qué imágenes tenemos disponibles
 // Asegúrate de que este sea el puerto real donde corre tu servidor Node.js
-  const BACKEND_URL = "http://localhost:5000"; 
+  const BACKEND_URL = "https://builx-api.onrender.com"; 
 
   const imagenes = item.todasLasFotos && item.todasLasFotos.length > 0 
     ? item.todasLasFotos 

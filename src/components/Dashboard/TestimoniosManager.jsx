@@ -9,7 +9,7 @@ export default function TestimoniosManager({ empresaId }) {
   useEffect(() => { fetchTestimonios(); }, []);
 
   const fetchTestimonios = async () => {
-    const res = await axios.get(`http://localhost:5000/api/testimonios/${empresaId}`);
+    const res = await axios.get(`https://builx-api.onrender.com/api/testimonios/${empresaId}`);
     setTestimonios(res.data);
   };
 
@@ -30,7 +30,7 @@ export default function TestimoniosManager({ empresaId }) {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/testimonios', formData, {
+      await axios.post('https://builx-api.onrender.com/api/testimonios', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
@@ -45,7 +45,7 @@ export default function TestimoniosManager({ empresaId }) {
   };
 
   const eliminarTestimonio = async (id) => {
-    await axios.delete(`http://localhost:5000/api/testimonios/${id}`);
+    await axios.delete(`https://builx-api.onrender.com/api/testimonios/${id}`);
     fetchTestimonios();
   };
 
@@ -91,7 +91,7 @@ export default function TestimoniosManager({ empresaId }) {
             <div className="flex items-center gap-4">
               {/* Mostramos la foto si existe, si no un cuadrito gris con la inicial */}
               {t.foto_url ? (
-                <img src={`http://localhost:5000${t.foto_url}`} alt={t.nombre_cliente} className="w-12 h-12 rounded-full object-cover shadow-sm" />
+                <img src={`https://builx-api.onrender.com${t.foto_url}`} alt={t.nombre_cliente} className="w-12 h-12 rounded-full object-cover shadow-sm" />
               ) : (
                 <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
                   {t.nombre_cliente ? t.nombre_cliente[0].toUpperCase() : 'U'}

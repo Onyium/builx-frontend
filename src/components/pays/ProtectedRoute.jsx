@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }) {
       }
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/empresa/${empresaId}`);
+        const res = await axios.get(`https://builx-api.onrender.com/api/empresa/${empresaId}`);
         const datosBD = Array.isArray(res.data) ? res.data[0] : res.data;
         
         console.log("🕵️ Guardián de Acceso:", datosBD?.suscripcion_estado); 

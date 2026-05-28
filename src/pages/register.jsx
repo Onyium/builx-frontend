@@ -14,7 +14,7 @@ export default function Register() {
 
     try {
       // Tu endpoint donde creas el usuario/empresa en MySQL
-      const res = await axios.post('http://localhost:5000/api/auth/register', { email, password });
+      const res = await axios.post('https://builx-api.onrender.com/api/auth/register', { email, password });
       
       if (res.data && res.data.empresa_id) {
         // 🚨 PASO CRUCIAL: Guardamos ambas llaves en el navegador
