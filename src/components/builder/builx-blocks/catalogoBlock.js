@@ -59,8 +59,10 @@ export const catalogoBlock = {
                 background: #f1f5f9; border-color: #94a3b8; color: #0f172a;
             }
             .paginacion-numerica button.activo {
-                background: #4b4a4a; /* Color oscuro que combina con la barra de arriba */
-                color: white; border-color: #4b4a4a; pointer-events: none;
+                background: #4b4a4a; /* <-- Color oscuro igual al de la barra de categorías */
+                color: white; 
+                border-color: #4b4a4a; 
+                pointer-events: none;
             }
             .paginacion-numerica button:disabled {
                 opacity: 0.4; cursor: not-allowed;
