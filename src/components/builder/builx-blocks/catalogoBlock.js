@@ -9,38 +9,53 @@ export const catalogoBlock = {
         <section class="seccion-productos" style="background-color: #ffffff; font-family: sans-serif; padding-bottom: 60px;">
           
           <style>
-            /* Elimina el temblor / scroll horizontal en celular */
+            /* 1. Adiós scroll horizontal */
             html, body { overflow-x: hidden !important; width: 100%; margin: 0; padding: 0; }
             * { box-sizing: border-box; }
 
-            /* Cuadrícula para móviles (Forzamos 2 columnas apuntando al ID y Clase correcta) */
+            /* 2. Cuadrícula estricta de 2 columnas en celular */
             #grid-productos-magico, .builx-grid-container {
                 display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 12px !important;
+                align-items: stretch !important;
             }
 
-            /* Ajustes proporcionales para tarjetas en celular */
-            .producto-item img { height: 150px !important; border-radius: 12px 12px 0 0 !important; }
-            .card-item-info { padding: 10px !important; }
-            .card-item-info h3 { font-size: 0.9rem !important; margin-bottom: 5px !important; }
-            .card-item-info p { font-size: 0.75rem !important; }
-            .card-item-price { font-size: 1.1rem !important; }
+            /* 3. CRÍTICO: Quita el ancho mínimo para obligarlas a entrar de 2 en 2 */
+            .producto-item { 
+                min-width: 0 !important; 
+                width: 100% !important; 
+            }
+
+            /* 4. MAGIA DE IMÁGENES: Siempre un cuadrado perfecto (1/1) */
+            .producto-item img { 
+                width: 100% !important;
+                height: auto !important; 
+                aspect-ratio: 1 / 1 !important; /* Hace que nunca se deforme ni haga zoom raro */
+                object-fit: cover !important; 
+                border-radius: 12px 12px 0 0 !important; 
+            }
+            
+            /* Textos y botones más compactos para que se vean hermosos en 2 columnas */
+            .card-item-info { padding: 12px !important; }
+            .card-item-info h3 { font-size: 0.85rem !important; margin-bottom: 5px !important; line-height: 1.2 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .card-item-info p { font-size: 0.75rem !important; margin-bottom: 8px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: auto; }
+            .card-item-price { font-size: 1.1rem !important; margin-bottom: 10px !important; }
             
             .producto-item button, .producto-item a.btn-whatsapp { 
                 padding: 8px !important; 
-                font-size: 0.8rem !important; 
+                font-size: 0.75rem !important; 
+                width: 100% !important;
             }
 
-            /* Cuadrícula para PC y Tablets (Vuelve a tarjetas grandes) */
+            /* 5. Diseño para Tablets y PC (Vuelve a tarjetas normales) */
             @media (min-width: 768px) {
                 #grid-productos-magico, .builx-grid-container {
-                    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+                    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
                     gap: 20px !important;
                 }
-                .producto-item img { height: 200px !important; }
                 .card-item-info { padding: 15px !important; }
-                .card-item-info h3 { font-size: 1.1rem !important; }
+                .card-item-info h3 { font-size: 1.1rem !important; white-space: normal; }
                 .card-item-price { font-size: 1.3rem !important; }
                 .producto-item button, .producto-item a.btn-whatsapp { 
                     padding: 10px !important; 
@@ -51,7 +66,7 @@ export const catalogoBlock = {
 
           <div style="background-color: #4b4a4a; width: 100%; overflow-x: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
               <div class="menu-categorias-custom" style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 5px 20px; scrollbar-width: none; -ms-overflow-style: none;">
-                  </div>
+              </div>
           </div>
 
           <div style="max-width: 1200px; margin: 40px auto 0;">
@@ -87,7 +102,6 @@ export const catalogoBlock = {
             const contenedor = section.querySelector('#grid-productos-magico') || section.querySelector('.builx-grid-container');
             if(!contenedor) return;
 
-            // 1. DIBUJAR MENÚ DE CATEGORÍAS
             if (selectCat && menuCustom && menuCustom.children.length === 0) {
                 const opciones = Array.from(selectCat.options);
                 if (opciones.length === 0) {
@@ -123,7 +137,6 @@ export const catalogoBlock = {
                 }
             }
 
-            // 2. ACTIVAR BUSCADOR Y ORDENADOR
             if (buscador) {
                 const filtrarYOrdenar = () => {
                     const textoBusqueda = buscador.value.toLowerCase();
@@ -163,7 +176,6 @@ export const catalogoBlock = {
             }
         };
 
-        // Ejecutar inmediatamente y con un ligero retraso de seguridad
         inicializarTodo();
         setTimeout(inicializarTodo, 500);
       }
