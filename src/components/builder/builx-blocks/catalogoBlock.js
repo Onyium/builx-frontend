@@ -4,12 +4,58 @@ export const catalogoBlock = {
     label: '🛍️ Catálogo y Buscador',
     category: 'Catálogo',
     
-    // 🚀 EL SECRETO: Pasamos de usar un String (``) a usar un Objeto ({})
+    // 🚀 EL SECRETO: Usamos un Objeto ({}) para que GrapesJS no bloquee el código
     content: {
       type: 'default',
       components: `
         <section class="seccion-productos" style="background-color: #ffffff; font-family: sans-serif; padding-bottom: 60px;">
           
+          <style>
+            /* Elimina el temblor / scroll horizontal en celular */
+            html, body { 
+                overflow-x: hidden !important; 
+                width: 100%; 
+                margin: 0; 
+                padding: 0; 
+            }
+            * { box-sizing: border-box; }
+
+            /* Cuadrícula para móviles (Forzamos 2 columnas) */
+            .grid-productos-magico {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            /* Ajustes proporcionales para tarjetas en celular */
+            .producto-item img { height: 150px !important; border-radius: 12px 12px 0 0 !important; }
+            .card-item-info { padding: 10px !important; }
+            .card-item-info h3 { font-size: 0.9rem !important; margin-bottom: 5px !important; }
+            .card-item-info p { font-size: 0.75rem !important; }
+            .card-item-price { font-size: 1.1rem !important; }
+            
+            .producto-item button, .producto-item a.btn-whatsapp { 
+                padding: 8px !important; 
+                font-size: 0.8rem !important; 
+            }
+
+            /* Cuadrícula para PC y Tablets (Vuelve a tarjetas grandes) */
+            @media (min-width: 768px) {
+                .grid-productos-magico {
+                    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                    gap: 20px;
+                }
+                .producto-item img { height: 200px !important; }
+                .card-item-info { padding: 15px !important; }
+                .card-item-info h3 { font-size: 1.1rem !important; }
+                .card-item-price { font-size: 1.3rem !important; }
+                .producto-item button, .producto-item a.btn-whatsapp { 
+                    padding: 10px !important; 
+                    font-size: 0.9rem !important; 
+                }
+            }
+          </style>
+
           <div style="background-color: #4b4a4a; width: 100%; overflow-x: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
               <div class="menu-categorias-custom" style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 5px 20px; scrollbar-width: none; -ms-overflow-style: none;">
                   </div>
@@ -39,7 +85,6 @@ export const catalogoBlock = {
       
       // 🚀 EL SCRIPT NATIVO DE GRAPESJS
       script: function() {
-        // En GrapesJS, 'this' es este bloque exacto. ¡Esto evita que choque con otros bloques si arrastran dos catálogos!
         const section = this;
         
         const selectCat = section.querySelector('.filtro-categoria');
@@ -48,11 +93,11 @@ export const catalogoBlock = {
         const filtroPrecio = section.querySelector('.filtro-precio');
         const contenedor = section.querySelector('.grid-productos-magico');
 
-        // --- 1. DIBUJAR MENÚ SUPERIOR ---
+        // --- 1. DIBUJAR MENÚ SUPERIOR DE CATEGORÍAS ---
         if (selectCat && menuCustom && menuCustom.children.length === 0) {
             const opciones = Array.from(selectCat.options);
             
-            // Protección para el Editor (cuando el backend aún no ha puesto las opciones reales)
+            // Si carga vacío en el editor, muestra este texto temporal
             if (opciones.length === 0) {
                 menuCustom.innerHTML = '<span style="color:white; padding:15px 0; font-weight:800; font-size:13px;">CATEGORÍAS (MODO EDICIÓN)</span>';
             } else {
@@ -64,7 +109,7 @@ export const catalogoBlock = {
                     btn.addEventListener('mouseenter', () => { if(selectCat.value !== op.value) btn.style.color = '#e2e8f0'; });
                     btn.addEventListener('mouseleave', () => { if(selectCat.value !== op.value) btn.style.color = 'white'; });
 
-                    // Seleccionar el primero por defecto
+                    // La primera categoría arranca seleccionada (letra rosada)
                     if (index === 0) {
                         btn.style.borderBottom = '3px solid #e07a88'; 
                         btn.style.color = '#e07a88';
@@ -88,7 +133,7 @@ export const catalogoBlock = {
             }
         }
 
-        // --- 2. ACTIVAR BUSCADOR Y FILTROS ---
+        // --- 2. ACTIVAR BUSCADOR Y ORDENADOR ---
         if (contenedor && buscador) {
             const filtrarYOrdenar = () => {
                 const textoBusqueda = buscador.value.toLowerCase();
