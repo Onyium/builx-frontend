@@ -8,7 +8,7 @@ export const catalogoBlock = {
         
         <div style="background-color: #4b4a4a; width: 100%; overflow-x: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div id="menu-categorias-custom" style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 5px 20px; scrollbar-width: none; -ms-overflow-style: none;">
-                </div>
+            </div>
         </div>
 
         <div style="max-width: 1200px; margin: 40px auto 0;">
@@ -32,57 +32,56 @@ export const catalogoBlock = {
         </div>
 
         <script>
-          document.addEventListener('DOMContentLoaded', () => {
+          (function initMenu() {
              const selectCat = document.querySelector('.filtro-categoria');
              const menuCustom = document.getElementById('menu-categorias-custom');
              
-             if(selectCat && menuCustom) {
-                 const opciones = Array.from(selectCat.options);
-                 
-                 opciones.forEach((op, index) => {
-                     const btn = document.createElement('button');
-                     btn.textContent = op.text.toUpperCase(); // Letras mayúsculas
-                     
-                     // Estilos calcados de tu imagen 2 (texto blanco, sin fondo, borde inferior)
-                     btn.style.cssText = "background: none; border: none; color: white; font-weight: 800; font-size: 13px; letter-spacing: 0.5px; cursor: pointer; padding: 15px 0; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s ease-in-out; font-family: inherit;";
-                     
-                     // Efecto Hover (iluminar levemente si no está seleccionado)
-                     btn.addEventListener('mouseenter', () => {
-                         if(selectCat.value !== op.value) btn.style.color = '#e2e8f0';
-                     });
-                     btn.addEventListener('mouseleave', () => {
-                         if(selectCat.value !== op.value) btn.style.color = 'white';
-                     });
-
-                     // Estado activo (El primero arranca activo, con la raya rosada)
-                     if(index === 0) {
-                         btn.style.borderBottom = '3px solid #e07a88'; 
-                         btn.style.color = '#e07a88';
-                     }
-
-                     // Evento de Clic
-                     btn.addEventListener('click', () => {
-                         // 1. Actualizar select oculto
-                         selectCat.value = op.value;
-                         
-                         // 2. Disparar evento para que tu script original de filtro lo detecte
-                         selectCat.dispatchEvent(new Event('change'));
-                         
-                         // 3. Resetear colores de todos los botones
-                         Array.from(menuCustom.children).forEach(b => {
-                             b.style.borderBottom = '3px solid transparent';
-                             b.style.color = 'white';
-                         });
-                         
-                         // 4. Pintar rosado el botón seleccionado
-                         btn.style.borderBottom = '3px solid #e07a88';
-                         btn.style.color = '#e07a88';
-                     });
-                     
-                     menuCustom.appendChild(btn);
-                 });
+             // Si el HTML aún no termina de inyectarse, reintentamos en 200ms
+             if(!selectCat || !menuCustom || selectCat.options.length === 0) {
+                 setTimeout(initMenu, 200);
+                 return;
              }
-          });
+
+             // Evitar que se dibujen dobles si se ejecuta de nuevo
+             if(menuCustom.children.length > 0) return;
+
+             const opciones = Array.from(selectCat.options);
+             
+             opciones.forEach((op, index) => {
+                 const btn = document.createElement('button');
+                 btn.textContent = op.text.toUpperCase(); 
+                 btn.style.cssText = "background: none; border: none; color: white; font-weight: 800; font-size: 13px; letter-spacing: 0.5px; cursor: pointer; padding: 15px 0; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s ease-in-out; font-family: inherit;";
+                 
+                 btn.addEventListener('mouseenter', () => {
+                     if(selectCat.value !== op.value) btn.style.color = '#e2e8f0';
+                 });
+                 btn.addEventListener('mouseleave', () => {
+                     if(selectCat.value !== op.value) btn.style.color = 'white';
+                 });
+
+                 if(index === 0) {
+                     btn.style.borderBottom = '3px solid #e07a88'; 
+                     btn.style.color = '#e07a88';
+                     selectCat.value = op.value;
+                 }
+
+                 btn.addEventListener('click', () => {
+                     selectCat.value = op.value;
+                     // IMPORTANTE: Simulamos un cambio real para que el buscador lo detecte
+                     selectCat.dispatchEvent(new Event('change', { bubbles: true }));
+                     
+                     Array.from(menuCustom.children).forEach(b => {
+                         b.style.borderBottom = '3px solid transparent';
+                         b.style.color = 'white';
+                     });
+                     
+                     btn.style.borderBottom = '3px solid #e07a88';
+                     btn.style.color = '#e07a88';
+                 });
+                 
+                 menuCustom.appendChild(btn);
+             });
+          })();
         </script>
       </section>
     `
