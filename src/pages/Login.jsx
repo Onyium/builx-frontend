@@ -28,11 +28,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-[#050B14] text-white font-sans selection:bg-blue-500 selection:text-white flex flex-col relative overflow-hidden">
       
-      {/* DECORACIÓN DE FONDO (Sutil estilo SaaS) */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+      {/* FONDO AURORA MESH (Igual al de tu Landing Page) */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] md:blur-[150px] animate-blob"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-cyan-500/20 rounded-full blur-[120px] md:blur-[180px] animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[-20%] left-[10%] w-[50vw] h-[50vw] bg-blue-700/30 rounded-full blur-[120px] md:blur-[150px] animate-blob animation-delay-4000"></div>
+      </div>
 
       {/* NAVBAR MINIMALISTA */}
       <nav className="w-full p-6 flex justify-between items-center z-10 max-w-7xl mx-auto">
@@ -40,13 +43,13 @@ export default function Login() {
           onClick={() => navigate('/')} 
           className="cursor-pointer group"
         >
-          <span className="text-3xl font-black tracking-tighter text-gray-900">
-            Buil<span className="text-blue-600 transition-colors group-hover:text-blue-500">X</span>
+          <span className="text-3xl font-black tracking-tighter text-white">
+            Buil<span className="text-blue-400 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)] group-hover:text-blue-300 transition-colors">X</span>
           </span>
         </div>
         <button 
           onClick={() => navigate('/register')}
-          className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors"
+          className="text-sm font-bold text-slate-300 hover:text-white transition-colors"
         >
           Crear una cuenta
         </button>
@@ -54,26 +57,26 @@ export default function Login() {
 
       {/* CONTENEDOR DEL FORMULARIO */}
       <div className="flex-1 flex items-center justify-center p-6 z-10">
-        <div className="max-w-md w-full bg-white p-10 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+        <div className="max-w-md w-full bg-white/[0.03] backdrop-blur-xl p-10 rounded-[2rem] shadow-2xl border border-white/10">
           
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Bienvenido de vuelta</h1>
-            <p className="text-gray-500 text-sm mt-3">Ingresa las credenciales de tu negocio para continuar.</p>
+            <h1 className="text-3xl font-black text-white tracking-tight">Bienvenido de vuelta</h1>
+            <p className="text-slate-400 text-sm mt-3">Ingresa las credenciales de tu negocio para continuar.</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 border border-red-100 flex items-center gap-2 animate-fade-in-down">
+            <div className="bg-red-500/10 text-red-400 p-4 rounded-xl text-sm font-bold mb-6 border border-red-500/20 flex items-center gap-2 animate-fade-in-down">
               <span>⚠️</span> {error}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Correo de Administrador</label>
+              <label className="block text-sm font-bold text-slate-300 mb-2">Correo de Administrador</label>
               <input 
                 type="email" 
                 required 
-                className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-gray-800" 
+                className="w-full bg-black/20 border border-white/10 p-4 rounded-xl outline-none focus:bg-black/40 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-white placeholder-slate-500" 
                 placeholder="ejemplo@negocio.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -81,11 +84,11 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Contraseña del Mes</label>
+              <label className="block text-sm font-bold text-slate-300 mb-2">Contraseña del Mes</label>
               <input 
                 type="password" 
                 required 
-                className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-gray-800" 
+                className="w-full bg-black/20 border border-white/10 p-4 rounded-xl outline-none focus:bg-black/40 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-white placeholder-slate-500" 
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -94,7 +97,7 @@ export default function Login() {
 
             <button 
               type="submit" 
-              className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-[0_8px_20px_rgba(37,99,235,0.25)] hover:bg-blue-700 hover:shadow-[0_8px_25px_rgba(37,99,235,0.35)] active:scale-[0.98] transition-all mt-2"
+              className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] active:scale-[0.98] transition-all mt-2"
             >
               Ingresar al Panel
             </button>
@@ -102,11 +105,11 @@ export default function Login() {
 
           {/* CALL TO ACTION PARA REGISTRO */}
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500 font-medium">
+            <p className="text-sm text-slate-400 font-medium">
               ¿Aún no tienes tu catálogo?{' '}
               <button 
                 onClick={() => navigate('/register')}
-                className="text-blue-600 font-bold hover:text-blue-700 hover:underline transition-all"
+                className="text-cyan-400 font-bold hover:text-cyan-300 hover:underline transition-all"
               >
                 Regístrate aquí
               </button>
