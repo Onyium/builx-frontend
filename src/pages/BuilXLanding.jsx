@@ -341,9 +341,9 @@ export default function LandingMarketing() {
                 </span>
               </div>
               <div className="flex gap-8 text-slate-400 text-sm font-medium">
-                <a href="#" className="hover:text-white transition-colors">Términos de Servicio</a>
-                <a href="#" className="hover:text-white transition-colors">Privacidad</a>
-                <a href="#" className="hover:text-white transition-colors">Soporte</a>
+                <a href="/terminos" className="hover:text-white transition-colors">Términos de Servicio</a>
+                <a href="/privacidad" className="hover:text-white transition-colors">Privacidad</a>
+                <a href="/reembolsos" className="hover:text-white transition-colors">reembolsos</a>
               </div>
             </div>
             <div className="text-center text-slate-500 text-sm">
