@@ -30,9 +30,9 @@ const reembolsosTexto = `
   <h3>1. Política de Suscripción</h3>
   <p>BuilX opera bajo un modelo de suscripción mensual de pago anticipado ($15.00 USD/mes). Usted puede cancelar su suscripción en cualquier momento desde su panel de control para evitar futuros cobros.</p>
   <h3>2. Política de Reembolsos</h3>
-  <p>Debido a la naturaleza digital de nuestro software (SaaS), <strong>no ofrecemos reembolsos por meses parciales no utilizados</strong>. Si usted decide cancelar su cuenta a mitad de mes, mantendrá el acceso a las herramientas de BuilX hasta que finalice su ciclo de facturación actual.</p>
-  <h3>3. Excepciones</h3>
-  <p>Solo se emitirán reembolsos en casos excepcionales donde se demuestre que un cobro duplicado fue realizado por un error técnico de nuestra plataforma o de nuestro procesador de pagos. Para disputar un cobro, contacte a nuestro soporte.</p>
+  <p>En cumplimiento con las políticas de nuestro procesador de pagos, ofrecemos un periodo de reembolso de <strong>14 días</strong> a partir de la fecha de la transacción inicial. Si no está satisfecho con el servicio dentro de este plazo, puede solicitar un reembolso total contactándonos a través de nuestro soporte técnico.</p>
+  <h3>3. Procedimiento</h3>
+  <p>Para solicitar un reembolso dentro de los 14 días posteriores a su compra, envíe un correo electrónico a soporte@builxapp.com con el asunto "Solicitud de Reembolso" e incluya el correo electrónico asociado a su cuenta. Una vez procesada su solicitud, los fondos serán devueltos a su método de pago original en un plazo de 5 a 10 días hábiles.</p>
 `;
 
 function App() {
