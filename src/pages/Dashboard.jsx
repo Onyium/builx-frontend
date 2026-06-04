@@ -26,6 +26,8 @@ export default function Dashboard() {
 
   // 📥 Controla qué sección está viendo el usuario en pantalla
   const [seccionActiva, setSeccionActiva] = useState('catalogo');
+  // 📱 Controla si el menú móvil está abierto
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
   const navigate = useNavigate();
 
   // --- GUARDIA DE SEGURIDAD (SESIÓN) ---
@@ -79,10 +81,7 @@ export default function Dashboard() {
           link_instagram: res.data.link_instagram || '',
           link_whatsapp: res.data.link_whatsapp || '',
           link_tiktok: res.data.link_tiktok || '',
-          
           suscripcion_estado: res.data.suscripcion_estado || 'trial', 
-          
-          // 🔥 AQUÍ ESTÁ EL CAMBIO: Leemos email_administrador de la base de datos
           email: res.data.email_administrador || '' 
         });
         setCurrentLogo(res.data.logo_url || null);
@@ -106,10 +105,7 @@ export default function Dashboard() {
       const formData = new FormData();
       formData.append('direccion', nuevosDatos.direccion || '');
       formData.append('telefono', nuevosDatos.telefono || '');
-      
-      // 🚨 AQUÍ SUBIMOS EL NUEVO DATO AL CAMIÓN:
       formData.append('whatsapp_pedidos', nuevosDatos.whatsapp_pedidos || '');
-      
       formData.append('link_google_maps', nuevosDatos.link_google_maps || '');
       formData.append('link_facebook', nuevosDatos.link_facebook || '');
       formData.append('link_instagram', nuevosDatos.link_instagram || '');
@@ -166,49 +162,73 @@ export default function Dashboard() {
     }
   };
 
+  // Función auxiliar para cambiar de sección y cerrar el menú en móviles
+  const handleNavClick = (seccion) => {
+    setSeccionActiva(seccion);
+    setIsSidebarOpen(false);
+  };
+
   if (!datosEmpresa) return <div className="p-10 font-bold text-gray-500 text-center">Cargando panel...</div>;
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-gray-900">
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-gray-900 overflow-x-hidden">
       
+      {/* ─── FONDO OSCURO PARA MÓVILES (OVERLAY) ─── */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* ─── BARRA LATERAL (SIDEBAR) PREMIUM ─── */}
-      <aside className="w-64 bg-[#0F172A] text-slate-300 flex flex-col fixed h-full z-20 shadow-2xl border-r border-slate-800">
+      {/* 📱 Responsivo: En móviles se oculta usando transformaciones, en escritorio (lg:) se queda fija */}
+      <aside className={`w-64 bg-[#0F172A] text-slate-300 flex flex-col fixed h-full z-30 shadow-2xl border-r border-slate-800 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         
         {/* Marca/SaaS Identificador */}
-        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-md shadow-blue-500/20">
-            B
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-md shadow-blue-500/20">
+              B
+            </div>
+            <div>
+              <h1 className="font-black text-white tracking-tight text-lg leading-none">BuilX</h1>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Admin Panel</span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-black text-white tracking-tight text-lg leading-none">BuilX</h1>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Admin Panel</span>
-          </div>
+          {/* Botón para cerrar en móviles */}
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden text-slate-400 hover:text-white"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Links de Navegación del Panel */}
-        <nav className="flex-1 p-4 flex flex-col gap-1 mt-3">
-          <button onClick={() => setSeccionActiva('catalogo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'catalogo' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+        <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-1 mt-3 custom-scrollbar">
+          <button onClick={() => handleNavClick('catalogo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'catalogo' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             📦 <span>Catálogo / Ítems</span>
           </button>
-          <button onClick={() => setSeccionActiva('leads')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'leads' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('leads')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'leads' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             📥 <span>Bandeja de Leads</span>
           </button>
-          <button onClick={() => setSeccionActiva('galeria')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'galeria' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('galeria')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'galeria' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             🖼️ <span>Galería de Fotos</span>
           </button>
-          <button onClick={() => setSeccionActiva('categorias')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'categorias' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('categorias')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'categorias' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             🗂️ <span>Categorías</span>
           </button>
-          <button onClick={() => setSeccionActiva('testimonios')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'testimonios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('testimonios')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'testimonios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             ⭐ <span>Testimonios</span>
           </button>
-          <button onClick={() => setSeccionActiva('faqs')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'faqs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('faqs')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'faqs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             ❓ <span>Preguntas Frecuentes</span>
           </button>
-          <button onClick={() => setSeccionActiva('importador')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'importador' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('importador')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'importador' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             🤖 <span>IMPORTADOR IA</span>
           </button>
-          <button onClick={() => setSeccionActiva('config')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'config' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
+          <button onClick={() => handleNavClick('config')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'config' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             ⚙️ <span>Configuración</span>
           </button>
           {datosEmpresa.suscripcion_estado === 'active' && (
@@ -228,41 +248,58 @@ export default function Dashboard() {
       </aside>
 
       {/* ─── ÁREA DE TRABAJO PRINCIPAL (DERECHA) ─── */}
-      <div className="flex-1 pl-64 min-h-screen flex flex-col">
+      {/* 📱 Responsivo: Quitamos el margen izquierdo en móviles (w-full) y lo devolvemos en escritorio (lg:pl-64) */}
+      <div className="flex-1 lg:pl-64 min-h-screen flex flex-col w-full">
         
         {/* Barra Superior Inteligente */}
-        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 md:px-12 sticky top-0 z-10 shadow-sm">
-          <div>
-            <h2 className="text-xl font-black text-gray-900 tracking-tight capitalize">
+        <header className="h-16 lg:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 lg:px-12 sticky top-0 z-10 shadow-sm">
+          
+          <div className="flex items-center gap-3">
+            {/* 📱 Botón Hamburguesa (Solo visible en móviles) */}
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            
+            <h2 className="text-lg lg:text-xl font-black text-gray-900 tracking-tight capitalize truncate max-w-[150px] sm:max-w-xs">
               {seccionActiva === 'catalogo' ? 'Gestión de Catálogo' : seccionActiva}
             </h2>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             {seccionActiva === 'catalogo' && datosEmpresa.suscripcion_estado === 'active' && (
-              <button onClick={() => setModalConfig({ isOpen: true, data: null })} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-blue-500/10 active:scale-95 transition-all hover:bg-blue-700 text-sm">
+              <button onClick={() => setModalConfig({ isOpen: true, data: null })} className="bg-blue-600 text-white px-3 py-2 lg:px-5 lg:py-2.5 rounded-xl font-bold shadow-md shadow-blue-500/10 active:scale-95 transition-all hover:bg-blue-700 text-xs lg:text-sm whitespace-nowrap">
                 + Nuevo Ítem
               </button>
             )}
             
-            <button onClick={handleLogout} className="bg-red-50 text-red-600 border border-red-100 px-4 py-2.5 rounded-xl font-bold hover:bg-red-100 transition-all text-sm">
+            <button onClick={handleLogout} className="bg-red-50 text-red-600 border border-red-100 px-3 py-2 lg:px-4 lg:py-2.5 rounded-xl font-bold hover:bg-red-100 transition-all text-xs lg:text-sm whitespace-nowrap hidden sm:block">
               Cerrar Sesión
+            </button>
+            
+            {/* Botón de logout icono para móviles muy pequeños */}
+            <button onClick={handleLogout} className="sm:hidden bg-red-50 text-red-600 border border-red-100 p-2 rounded-xl font-bold hover:bg-red-100 transition-all">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
           </div>
         </header>
 
         {/* ─── CONTENEDOR DE COMPONENTES DINÁMICOS ─── */}
-        <main className="p-8 md:p-12 max-w-6xl w-full mx-auto flex-1">
+        <main className="p-4 md:p-8 lg:p-12 max-w-6xl w-full mx-auto flex-1 overflow-x-hidden">
           
           {/* 🚨 AQUÍ ESTÁ LA MAGIA: EL MURO DE PAGO 🚨 */}
           {datosEmpresa.suscripcion_estado !== 'active' ? (
             
-            <div className="bg-white rounded-2xl shadow-xl p-10 text-center max-w-2xl mx-auto mt-10 border border-gray-100">
-              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fa-solid fa-rocket text-4xl text-blue-600"></i>
+            <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-10 text-center max-w-2xl mx-auto mt-6 lg:mt-10 border border-gray-100 mx-4 lg:mx-auto">
+              <div className="w-16 h-16 lg:w-20 lg:h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fa-solid fa-rocket text-3xl lg:text-4xl text-blue-600"></i>
               </div>
-              <h2 className="text-3xl font-black text-gray-900 mb-4">¡Desbloquea todo el poder de BuilX!</h2>
-              <p className="text-gray-500 mb-8 text-lg">Para gestionar tu catálogo, recibir leads y usar nuestro Importador IA, necesitas activar tu suscripción premium.</p>
+              <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-4">¡Desbloquea todo el poder de BuilX!</h2>
+              <p className="text-gray-500 mb-8 text-base lg:text-lg">Para gestionar tu catálogo, recibir leads y usar nuestro Importador IA, necesitas activar tu suscripción premium.</p>
               
               <BotonSuscripcion 
                 empresaId={empresaId} 
@@ -276,10 +313,10 @@ export default function Dashboard() {
               {seccionActiva === 'catalogo' && (
                 <div className="animate-fade-in">
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">Catálogo de Productos</h3>
+                    <h3 className="text-xl lg:text-2xl font-bold text-gray-800">Catálogo de Productos</h3>
                     <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-xs">Total: {items.length}</span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
                     {items.map(item => (
                       <ItemCard key={item.id} item={item} onToggle={handleToggleStatus} onEdit={(data) => setModalConfig({ isOpen: true, data })} onDelete={handleDelete} onOpenReviews={handleOpenReviews} />
                     ))}
