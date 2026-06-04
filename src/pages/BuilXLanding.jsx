@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 export default function LandingMarketing() {
   const navigate = useNavigate();
+  // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const comparativas = [
     {
       id: 1,
@@ -61,26 +64,65 @@ export default function LandingMarketing() {
                 Buil<span className="text-blue-400 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)] group-hover:text-blue-300 transition-colors">X</span>
               </span>
             </div>
+            
+            {/* ENLACES ESCRITORIO (Se ocultan en móvil) */}
             <div className="hidden md:flex items-center gap-8">
               <a href="#caracteristicas" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Características</a>
               <a href="#precios" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Precios</a>
               <a href="#faq" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">FAQ</a>
             </div>
+            
             <div className="flex items-center gap-4">
+              {/* BOTONES ESCRITORIO (Se ocultan en móvil) */}
               <button 
-              onClick={() => navigate('/login')}
-              className="hidden md:block text-sm font-bold text-slate-300 hover:text-white transition-colors">
+                onClick={() => navigate('/login')}
+                className="hidden md:block text-sm font-bold text-slate-300 hover:text-white transition-colors">
                 Iniciar Sesión
               </button>
               <button 
-              onClick={() => navigate('/register')}
-              className="bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white text-sm font-bold py-2.5 px-6 rounded-lg backdrop-blur-sm transition-all active:scale-95">
+                onClick={() => navigate('/register')}
+                className="hidden md:block bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white text-sm font-bold py-2.5 px-6 rounded-lg backdrop-blur-sm transition-all active:scale-95">
                 Empezar Ahora
+              </button>
+
+              {/* BOTÓN HAMBURGUESA PARA MÓVILES (Se oculta en escritorio) */}
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden text-slate-300 hover:text-white p-2 focus:outline-none transition-colors"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> // Ícono de X
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /> // Ícono de 3 rayas
+                  )}
+                </svg>
               </button>
             </div>
           </div>
-        </nav>
 
+          {/* MENÚ DESPLEGABLE MÓVIL */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden absolute top-20 left-0 w-full bg-[#050B14]/95 backdrop-blur-xl border-b border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl animate-fade-in-down">
+              <a href="#caracteristicas" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-semibold text-slate-300 hover:text-white transition-colors">Características</a>
+              <a href="#precios" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-semibold text-slate-300 hover:text-white transition-colors">Precios</a>
+              <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-semibold text-slate-300 hover:text-white transition-colors">FAQ</a>
+              
+              <hr className="border-white/10 my-2" />
+              
+              <button 
+                onClick={() => { navigate('/login'); setIsMobileMenuOpen(false); }}
+                className="w-full text-left text-xl font-bold text-slate-300 hover:text-white transition-colors">
+                Iniciar Sesión
+              </button>
+              <button 
+                onClick={() => { navigate('/register'); setIsMobileMenuOpen(false); }}
+                className="w-full bg-blue-500 hover:bg-blue-400 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                Empezar Ahora por $15
+              </button>
+            </div>
+          )}
+        </nav>
         {/* I. EL GANCHO DEL PRECIO */}
         <section className="relative pt-32 pb-16 px-6 max-w-7xl mx-auto min-h-[90vh] flex items-center">
           <div className="grid md:grid-cols-2 gap-12 items-center w-full">
