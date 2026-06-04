@@ -140,8 +140,8 @@ export default function LandingMarketing() {
                   {comparativas[index].texto}
                 </span>
               </div>
-              <p className="text-xl md:text-2xl text-slate-300 leading-relaxed mb-10 max-w-lg">
-                No necesitas miles de dólares para tener una tienda profesional. Por solo <strong className="text-white bg-white/10 backdrop-blur-md px-3 py-1 rounded-md border border-white/20">$15 al mes</strong>, obtienes la plataforma completa.
+              <p className="text-xl md:text-2xl text-slate-300 leading-relaxed md:leading-loose mb-10 max-w-lg">
+                No necesitas miles de dólares para tener una tienda profesional. Por solo <strong className="inline-block whitespace-nowrap text-white bg-white/10 backdrop-blur-md px-3 py-1 mx-1 rounded-md border border-white/20">$15 al mes</strong>, obtienes la plataforma completa.
               </p>
               <button className="btn-primary-glow text-white font-black py-4 px-12 rounded-xl text-xl transition-all active:scale-95 flex items-center justify-center gap-3">
                 🚀 Empezar Ahora
