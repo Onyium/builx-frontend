@@ -18,8 +18,8 @@ export default function CheckoutPage() {
 
     // 1. Inicializar Paddle
     initializePaddle({
-      environment: 'production', // Usa 'sandbox' si vas a hacer pruebas falsas primero
-      token: 'live_22754b75a5b0306a909407d77a8', // 🚨 REEMPLAZA: Ve a Developer > Authentication en Paddle
+      environment: 'sandbox', // Usa 'sandbox' si vas a hacer pruebas falsas primero
+      token: 'test_b0fa9ccd76fbb9c03ace32cc54d', // 🚨 REEMPLAZA: Ve a Developer > Authentication en Paddle
       eventCallback: function(event) {
         // Esto imprimirá en la consola TODO lo que hagas en el popup de Paddle
         console.log("📡 Señal de Paddle detectada:", event.name); 
@@ -54,7 +54,7 @@ export default function CheckoutPage() {
     paddle.Checkout.open({
       items: [
         {
-          priceId: 'pri_01ktd7qnz9hzfxp7kbybyfr16n', // 🚨 REEMPLAZA: Tu ID del producto "BuilX base option" de $11/mes
+          priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', // 🚨 REEMPLAZA: Tu ID del producto "BuilX base option" de $11/mes
           quantity: 1
         }
       ],
