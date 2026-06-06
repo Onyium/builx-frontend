@@ -45,19 +45,19 @@ export default function CheckoutPage() {
   // 🚨 LA MAGIA DE PADDLE: Función que se ejecuta al hacer clic en el botón
   const openPaddleCheckout = (e) => {
     e.preventDefault();
+    if (!paddle) return;
 
-    if (!paddle) {
-      console.warn('Paddle no ha terminado de cargar');
-      return;
-    }
-
-   paddle.Checkout.open({
-      items: [
-        {
-          priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', // Tu ID del Sandbox
-          quantity: 1
-        }
-      ]
+    paddle.Checkout.open({
+      items: [{
+        priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', 
+        quantity: 1
+      }],
+      customer: {
+        email: userEmail // Autocompleta el correo en la ventana
+      },
+      customData: {
+        empresa_id: empresaId // 🚨 CRÍTICO PARA EL WEBHOOK
+      }
     });
   };
 
