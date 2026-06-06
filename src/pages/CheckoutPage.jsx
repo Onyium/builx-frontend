@@ -51,19 +51,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    paddle.Checkout.open({
+   paddle.Checkout.open({
       items: [
         {
-          priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', // 🚨 REEMPLAZA: Tu ID del producto "BuilX base option" de $11/mes
+          priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', // Tu ID del Sandbox
           quantity: 1
         }
-      ],
-      customer: {
-        email: userEmail // El correo se autocompleta para el cliente
-      },
-      customData: {
-        empresa_id: empresaId // 🚨 SÚPER IMPORTANTE: Esto viajará a tu Webhook de Node.js
-      }
+      ]
     });
   };
 
