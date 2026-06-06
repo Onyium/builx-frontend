@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { initializePaddle } from '@paddle/paddle-js';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const empresaId = localStorage.getItem('empresa_id');
+  const [paddle, setPaddle] = useState(null);
   
-  // 🚨 OJO: Recuperamos el correo con el que se acaba de registrar
+  const empresaId = localStorage.getItem('empresa_id');
   const userEmail = localStorage.getItem('user_email') || ''; 
 
   useEffect(() => {
@@ -15,58 +16,56 @@ export default function CheckoutPage() {
       return;
     }
 
-    // 1. Inicializar Lemon Squeezy
-    window.createLemonSqueezy?.();
-    const script = document.createElement('script');
-    script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
-    script.async = true;
-    document.body.appendChild(script);
+    // 1. Inicializar Paddle
+    initializePaddle({
+      environment: 'production', // Usa 'sandbox' si vas a hacer pruebas falsas primero
+      token: 'live_22754b75a5b0306a909407d77a8', // 🚨 REEMPLAZA: Ve a Developer > Authentication en Paddle
+      eventCallback: function(event) {
+        // Esto imprimirá en la consola TODO lo que hagas en el popup de Paddle
+        console.log("📡 Señal de Paddle detectada:", event.name); 
 
-    // 🚨 LA MAGIA CORREGIDA:
-    script.onload = () => {
-      // Configuramos el Setup pasándole el objeto 'eventHandler'
-      window.LemonSqueezy?.Setup({
-        eventHandler: (evento) => {
+        // Si el pago es un éxito total (En Paddle el evento se llama 'checkout.completed')
+        if (event.name === 'checkout.completed') {
+          console.log('🎉 ¡Pago exitoso detectado por el frontend!');
           
-          // Esto imprimirá en la consola TODO lo que hagas en el popup
-          console.log("📡 Señal de Lemon Squeezy detectada:", evento.event); 
-
-          // Si el pago es un éxito total:
-          if (evento.event === 'Checkout.Success') {
-            console.log('🎉 ¡Pago exitoso detectado por el frontend!');
-            
-            // Esperamos 2.5 segundos para que veas el "check" verde de éxito y 
-            // le demos tiempo a tu Node.js de guardar el pago en MySQL.
-            setTimeout(() => {
-              navigate('/dashboard'); // ¡Teletransportación automática!
-            }, 2500);
-          }
-          
+          // Esperamos 2.5 segundos para que vea el check verde y luego lo mandamos al dashboard
+          setTimeout(() => {
+            navigate('/dashboard'); // ¡Teletransportación automática!
+          }, 2500);
         }
-      });
-    };
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
       }
-    };
+    }).then((paddleInstance) => {
+      if (paddleInstance) {
+        setPaddle(paddleInstance);
+      }
+    });
+
   }, [navigate, userEmail]);
 
-  const linkBase = "https://builx.lemonsqueezy.com/checkout/buy/715a2b85-e0d9-49d4-9f48-9e3193e44049"; 
-  
-  // 🚨 EL BLINDAJE DEL CORREO (Adiós al error 422):
-  // Armamos el enlace de forma inteligente y segura
-  let lemonCheckoutUrl = linkBase;
-  const conector = linkBase.includes('?') ? '&' : '?';
+  // 🚨 LA MAGIA DE PADDLE: Función que se ejecuta al hacer clic en el botón
+  const openPaddleCheckout = (e) => {
+    e.preventDefault();
 
-  // 1. Siempre enviamos el ID de la empresa para que el webhook sepa quién pagó
-  lemonCheckoutUrl += `${conector}checkout[custom][empresa_id]=${empresaId}`;
+    if (!paddle) {
+      console.warn('Paddle no ha terminado de cargar');
+      return;
+    }
 
-  // 2. Solo pegamos el correo si realmente existe en el localStorage
-  if (userEmail) {
-    lemonCheckoutUrl += `&checkout[email]=${encodeURIComponent(userEmail)}`;
-  }
+    paddle.Checkout.open({
+      items: [
+        {
+          priceId: 'pro_01kt9p9g1tvtk5negnycg6gvmh', // 🚨 REEMPLAZA: Tu ID del producto "BuilX base option" de $11/mes
+          quantity: 1
+        }
+      ],
+      customer: {
+        email: userEmail // El correo se autocompleta para el cliente
+      },
+      customData: {
+        empresa_id: empresaId // 🚨 SÚPER IMPORTANTE: Esto viajará a tu Webhook de Node.js
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#050B14] text-white font-sans selection:bg-blue-500 flex flex-col relative overflow-hidden">
@@ -120,7 +119,7 @@ export default function CheckoutPage() {
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold mb-2">Resumen de pago</h3>
               <div className="flex items-end justify-center gap-1">
-                <span className="text-5xl font-black tracking-tighter">$15</span>
+                <span className="text-5xl font-black tracking-tighter">$11</span>
                 <span className="text-slate-400 font-medium mb-1">.00 / mes</span>
               </div>
             </div>
@@ -131,16 +130,16 @@ export default function CheckoutPage() {
               <p className="text-emerald-400 font-mono font-bold">{userEmail || 'cargando...'}</p>
             </div>
 
-            {/* BOTÓN DE LEMON SQUEEZY */}
-            <a
-              href={lemonCheckoutUrl}
-              className="lemonsqueezy-button w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer"
+            {/* BOTÓN DE PADDLE */}
+            <button
+              onClick={openPaddleCheckout}
+              className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
               Proceder al Pago Seguro
-            </a>
+            </button>
 
             {/* Garantía y Seguridad */}
             <div className="mt-6 flex flex-col items-center gap-4">
