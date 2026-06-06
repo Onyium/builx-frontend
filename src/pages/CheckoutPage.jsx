@@ -18,7 +18,7 @@ export default function CheckoutPage() {
 
     // 1. Inicializar Paddle
     initializePaddle({
-      environment: 'production', // Usa 'sandbox' si vas a hacer pruebas falsas primero
+      environment: 'sandbox', // Usa 'sandbox' si vas a hacer pruebas falsas primero
       token: 'live_22754b75a5b0306a909407d77a8', // 🚨 REEMPLAZA: Ve a Developer > Authentication en Paddle
       eventCallback: function(event) {
         // Esto imprimirá en la consola TODO lo que hagas en el popup de Paddle
