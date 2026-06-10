@@ -6,33 +6,7 @@ export default function LandingMarketing() {
   // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const comparativas = [
-    {
-      id: 1,
-      texto: "Netflix.",
-      img: "https://cdn-icons-png.flaticon.com/512/732/732228.png" 
-    },
-    {
-      id: 2,
-      texto: "tu plan de datos.",
-      img: "https://marketplace.canva.com/-IThg/MAGF7p-IThg/1/tl/canva-wifi-icon-MAGF7p-IThg.png"
-    },
-    {
-      id: 3,
-      texto: "dos starbucks.",
-      img: "https://png.pngtree.com/recommend-works/png-clipart/20250209/ourmid/pngtree-starbucks-green-disposable-paper-cup-with-lid-png-image_15370420.png"
-    },
-    {
-      id: 4,
-      texto: "una pizza.",
-      img: "https://cdn-icons-png.flaticon.com/512/3132/3132693.png"
-    },
-    {
-      id: 5,
-      texto: "Spotify Premium.",
-      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/500px-Spotify_logo_without_text.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail"
-    }
-  ];
+  
 
   const [index, setIndex] = useState(0);
 
@@ -125,41 +99,7 @@ export default function LandingMarketing() {
         </nav>
 
         {/* I. EL GANCHO DEL PRECIO */}
-        <section className="relative pt-32 pb-16 px-6 max-w-7xl mx-auto min-h-[90vh] flex items-center">
-          <div className="grid md:grid-cols-2 gap-12 items-center w-full">
-            <div className="text-left pt-8">
-              <h2 className="text-5xl md:text-7xl font-black leading-tight tracking-tight mb-4">
-                <span className="block text-white">Tu negocio en</span>
-                <span className="block text-white mb-2">internet por menos</span>
-                <span className="block text-3xl md:text-5xl text-slate-300 font-bold mt-4">de lo que cuesta...</span>
-              </h2>
-              <div className="min-h-[80px] md:min-h-[100px] flex items-center mb-6">
-                <span 
-                  key={`text-${index}`} 
-                  className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 drop-shadow-lg animate-text"
-                >
-                  {comparativas[index].texto}
-                </span>
-              </div>
-              <p className="text-xl md:text-2xl text-slate-300 leading-relaxed md:leading-loose mb-10 max-w-lg">
-                No necesitas miles de dólares para tener una tienda profesional. Por solo <strong className="inline-block whitespace-nowrap text-white bg-white/10 backdrop-blur-md px-3 py-1 mx-1 rounded-md border border-white/20">$15 al mes</strong>, obtienes la plataforma completa.
-              </p>
-              <button className="btn-primary-glow text-white font-black py-4 px-12 rounded-xl text-xl transition-all active:scale-95 flex items-center justify-center gap-3">
-                🚀 Empezar Ahora
-              </button>
-            </div>
-
-            <div className="relative flex justify-center items-center h-[400px] md:h-[600px] w-full">
-              <div key={`img-${index}`} className="enter-animation w-full h-full flex justify-center items-center">
-                <img 
-                  src={comparativas[index].img} 
-                  alt={comparativas[index].texto} 
-                  className="w-full max-w-[300px] md:max-w-[450px] object-contain drop-shadow-[0_20px_50px_rgba(59,130,246,0.4)] animate-3d-model"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
         <section className="py-24 border-y border-white/10 bg-white/[0.02] backdrop-blur-md relative" id="precios">
           <div className="max-w-6xl mx-auto px-6">
@@ -394,7 +334,7 @@ export default function LandingMarketing() {
             <h2 className="text-5xl md:text-6xl font-black mb-6">¿Listo para escalar tus ventas?</h2>
             <p className="text-xl text-slate-300 mb-12">Únete a los emprendedores que ya están vendiendo en automático por el precio de una pizza.</p>
             <button className="bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white font-black py-5 px-16 rounded-2xl text-2xl transition-all active:scale-95 mx-auto block shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-              Empezar Ahora por $15/mes
+              Empezar Ahora
             </button>
           </div>
         </section>
