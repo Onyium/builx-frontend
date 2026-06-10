@@ -8,29 +8,68 @@ export default function CheckoutPage() {
   
   const empresaId = localStorage.getItem('empresa_id');
   const userEmail = localStorage.getItem('user_email') || ''; 
+  
+  // 1. LEEMOS EL PLAN SELECCIONADO (Si no hay, por defecto le mostramos el Pro)
+  const selectedPlan = localStorage.getItem('selected_plan') || 'pro';
+
+  // 2. EL DICCIONARIO DE PLANES (La magia dinámica)
+  const PLANS = {
+    starter: {
+      name: 'BuilX Starter',
+      price: '15',
+      // 🚨 REEMPLAZA ESTE ID con el Price ID de $15 que crees en Paddle
+      priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', 
+      description: 'Empieza a recibir pedidos o consultas hoy mismo sin complicaciones técnicas.',
+      badgeText: 'Plan Starter',
+      badgeColor: 'bg-emerald-500/20 text-emerald-400',
+      iconColor: 'text-emerald-400',
+      iconBg: 'bg-emerald-500/20',
+      benefits: [
+        'Diseño Automatizado con IA',
+        'Integración a WhatsApp',
+        'Panel de Control Simplificado',
+        'Alojamiento en la nube'
+      ]
+    },
+    pro: {
+      name: 'BuilX Pro',
+      price: '39',
+      // 🚨 REEMPLAZA ESTE ID con el Price ID de $39 que crees en Paddle (o usa el que ya tenías)
+      priceId: 'pri_01ktqx3tcwqx4wky96b370tpvj', 
+      description: 'Proyecta autoridad total y elimina a los intermediarios. Tu negocio, tu marca.',
+      badgeText: 'Plan Profesional 🔥',
+      badgeColor: 'bg-blue-500/20 text-blue-400',
+      iconColor: 'text-blue-400',
+      iconBg: 'bg-blue-500/20',
+      benefits: [
+        'Cero Comisiones por Venta',
+        'Dominio Propio Incluido',
+        '100% Marca Blanca',
+        'Galería de Alta Velocidad',
+        'Soporte Técnico Directo'
+      ]
+    }
+  };
+
+  // Cargamos los datos del plan actual basándonos en la selección
+  const currentPlan = PLANS[selectedPlan];
 
   useEffect(() => {
-    // Si por alguna razón no hay correo, lo regresamos al registro
     if (!userEmail) {
       navigate('/register');
       return;
     }
 
-    // 1. Inicializar Paddle
     initializePaddle({
-      environment: 'sandbox', // Usa 'sandbox' si vas a hacer pruebas falsas primero
-      token: 'test_b0fa9ccd76fbb9c03ace32cc54d', // 🚨 REEMPLAZA: Ve a Developer > Authentication en Paddle
+      environment: 'sandbox', 
+      token: 'test_b0fa9ccd76fbb9c03ace32cc54d', // 🚨 Tu token de Sandbox
       eventCallback: function(event) {
-        // Esto imprimirá en la consola TODO lo que hagas en el popup de Paddle
         console.log("📡 Señal de Paddle detectada:", event.name); 
 
-        // Si el pago es un éxito total (En Paddle el evento se llama 'checkout.completed')
         if (event.name === 'checkout.completed') {
           console.log('🎉 ¡Pago exitoso detectado por el frontend!');
-          
-          // Esperamos 2.5 segundos para que vea el check verde y luego lo mandamos al dashboard
           setTimeout(() => {
-            navigate('/dashboard'); // ¡Teletransportación automática!
+            navigate('/dashboard'); 
           }, 2500);
         }
       }
@@ -42,21 +81,22 @@ export default function CheckoutPage() {
 
   }, [navigate, userEmail]);
 
-  // 🚨 LA MAGIA DE PADDLE: Función que se ejecuta al hacer clic en el botón
+  // 3. LA FUNCIÓN DE PAGO AHORA USA EL ID DINÁMICO
   const openPaddleCheckout = (e) => {
     e.preventDefault();
     if (!paddle) return;
 
     paddle.Checkout.open({
       items: [{
-        priceId: 'pri_01ktdbye65tcsedx2w6r3xk96a', 
+        priceId: currentPlan.priceId, // 👈 Se inyecta el ID correcto automáticamente
         quantity: 1
       }],
       customer: {
-        email: userEmail // Autocompleta el correo en la ventana
+        email: userEmail 
       },
       customData: {
-        empresa_id: empresaId // 🚨 CRÍTICO PARA EL WEBHOOK
+        empresa_id: empresaId,
+        plan_elegido: selectedPlan // Opcional: útil para tus webhooks
       }
     });
   };
@@ -70,35 +110,28 @@ export default function CheckoutPage() {
         <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-purple-500/20 rounded-full blur-[120px] md:blur-[180px] animate-blob animation-delay-2000"></div>
       </div>
 
-      {/* NAVBAR SIMPLE */}
       <nav className="w-full p-6 flex justify-center items-center z-10 max-w-7xl mx-auto">
         <div className="text-3xl font-black tracking-tighter text-white">
           Buil<span className="text-blue-400 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]">X</span>
         </div>
       </nav>
 
-      {/* CONTENEDOR PRINCIPAL */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 z-10">
         <div className="max-w-4xl w-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row">
           
-          {/* COLUMNA IZQUIERDA: Beneficios */}
+          {/* COLUMNA IZQUIERDA: Beneficios Dinámicos */}
           <div className="w-full md:w-5/12 bg-white/[0.02] p-8 sm:p-10 border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-center">
-            <div className="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider rounded-full mb-4 w-fit">
-              Plan Profesional
+            <div className={`inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full mb-4 w-fit ${currentPlan.badgeColor}`}>
+              {currentPlan.badgeText}
             </div>
-            <h2 className="text-3xl font-black mb-2">BuilX Pro</h2>
-            <p className="text-slate-400 text-sm mb-8">Todo lo que necesitas para digitalizar tu negocio y recibir pedidos directamente a tu WhatsApp.</p>
+            <h2 className="text-3xl font-black mb-2">{currentPlan.name}</h2>
+            <p className="text-slate-400 text-sm mb-8">{currentPlan.description}</p>
             
             <ul className="space-y-4">
-              {[
-                'Catálogo digital ilimitado',
-                'Panel de administración',
-                'Integración directa a WhatsApp',
-                'Soporte técnico prioritario'
-              ].map((benefit, i) => (
+              {currentPlan.benefits.map((benefit, i) => (
                 <li key={i} className="flex items-center gap-3 text-slate-300 text-sm font-medium">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${currentPlan.iconBg}`}>
+                    <svg className={`w-4 h-4 ${currentPlan.iconColor}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
@@ -108,23 +141,21 @@ export default function CheckoutPage() {
             </ul>
           </div>
 
-          {/* COLUMNA DERECHA: Checkout */}
+          {/* COLUMNA DERECHA: Checkout Dinámico */}
           <div className="w-full md:w-7/12 p-8 sm:p-10 flex flex-col justify-center relative">
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold mb-2">Resumen de pago</h3>
               <div className="flex items-end justify-center gap-1">
-                <span className="text-5xl font-black tracking-tighter">$11</span>
+                <span className="text-5xl font-black tracking-tighter">${currentPlan.price}</span>
                 <span className="text-slate-400 font-medium mb-1">.00 / mes</span>
               </div>
             </div>
 
-            {/* Caja de confirmación de correo */}
             <div className="bg-black/30 border border-white/5 rounded-xl p-4 mb-8 text-center">
               <p className="text-xs text-slate-400 mb-1">Activando cuenta para:</p>
               <p className="text-emerald-400 font-mono font-bold">{userEmail || 'cargando...'}</p>
             </div>
 
-            {/* BOTÓN DE PADDLE */}
             <button
               onClick={openPaddleCheckout}
               className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 cursor-pointer"

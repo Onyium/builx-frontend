@@ -122,7 +122,7 @@ export default function LandingMarketing() {
               <button 
                 onClick={() => { navigate('/register'); setIsMobileMenuOpen(false); }}
                 className="w-full bg-blue-500 hover:bg-blue-400 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                Empezar Ahora por $15
+                Empezar Ahora
               </button>
             </div>
           )}
@@ -166,7 +166,12 @@ export default function LandingMarketing() {
                   <li className="flex gap-3 items-start"><span className="text-yellow-500 text-xl mt-0.5">⚠️</span> <span><strong>Patrocinado:</strong> Incluye una discreta marca de agua de BuilX.</span></li>
                 </ul>
                 
-                <button className="w-full py-4 rounded-xl font-bold border border-white/20 hover:bg-white/10 transition-colors text-white text-lg">
+                <button 
+                  onClick={() => {
+                    localStorage.setItem('selected_plan', 'starter');
+                    navigate('/register'); 
+                  }}
+                  className="w-full py-4 rounded-xl font-bold border border-white/20 hover:bg-white/10 transition-colors text-white text-lg">
                   Iniciar con Starter
                 </button>
               </div>
@@ -193,7 +198,12 @@ export default function LandingMarketing() {
                   <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🛠️</span> <span><strong>Soporte Técnico Directo:</strong> Prioridad en atención y mantenimiento del servidor.</span></li>
                 </ul>
                 
-                <button className="w-full py-4 rounded-xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all active:scale-95 text-lg">
+                <button 
+                  onClick={() => {
+                    localStorage.setItem('selected_plan', 'pro');
+                    navigate('/register'); 
+                  }}
+                  className="w-full py-4 rounded-xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all active:scale-95 text-lg">
                   Escalar al Plan Pro
                 </button>
               </div>
@@ -363,8 +373,10 @@ export default function LandingMarketing() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-5xl md:text-6xl font-black mb-6">¿Listo para escalar tus ventas?</h2>
             <p className="text-xl text-slate-300 mb-12">Únete a los emprendedores que ya están vendiendo en automático por el precio de una pizza.</p>
-            <button className="bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white font-black py-5 px-16 rounded-2xl text-2xl transition-all active:scale-95 mx-auto block shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-              Empezar ahora
+            <button 
+                onClick={() => navigate('/register')}
+                className="hidden md:block bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white text-sm font-bold py-2.5 px-6 rounded-lg backdrop-blur-sm transition-all active:scale-95">
+                Empezar Ahora
             </button>
           </div>
         </section>
