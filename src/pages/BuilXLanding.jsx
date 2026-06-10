@@ -334,7 +334,7 @@ export default function LandingMarketing() {
             <h2 className="text-5xl md:text-6xl font-black mb-6">¿Listo para escalar tus ventas?</h2>
             <p className="text-xl text-slate-300 mb-12">Únete a los emprendedores que ya están vendiendo en automático por el precio de una pizza.</p>
             <button className="bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white font-black py-5 px-16 rounded-2xl text-2xl transition-all active:scale-95 mx-auto block shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-              Empezar Ahora
+              Empezar ahora
             </button>
           </div>
         </section>
