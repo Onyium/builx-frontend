@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Register() {
+export default function RegisterWizard() {
   const navigate = useNavigate();
   
   // ESTADOS DEL WIZARD
@@ -10,26 +10,31 @@ export default function Register() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   
-  // ESTADOS DE VISIBILIDAD (Ojitos)
+  // ESTADOS DE VISUALIZACIÓN
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [mostrarLinkExtra, setMostrarLinkExtra] = useState(false); // Para el paso 2
   
-  // TODOS LOS DATOS DEL LEAD
+  // TODOS LOS DATOS DEL LEAD (Expandido)
   const [formData, setFormData] = useState({
     empresaNombre: '',
     redSocialUrl: '',
+    linkExtra: '', // Nuevo
+    nicho: '', // Nuevo
+    nichoPersonalizado: '', // Nuevo
+    estiloVisual: '', // Nuevo
     whatsapp: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
 
-  const totalSteps = 4;
+  const totalSteps = 6; // ¡Ahora son 6 pasos mágicos!
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setError(''); // Limpiamos el error si el usuario empieza a escribir de nuevo
+    setError(''); 
   };
 
   const nextStep = () => {
@@ -43,12 +48,10 @@ export default function Register() {
     }
   };
 
-  // 🚨 TU LÓGICA DE REGISTRO INTEGRADA AQUÍ
   const handleGenerateStore = async (e) => {
     e.preventDefault();
     setError('');
 
-    // 1. Validar contraseñas
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden. Por favor, verifica.');
       return;
@@ -57,28 +60,33 @@ export default function Register() {
     setIsGenerating(true);
 
     try {
-      // 2. Enviamos TODO el objeto a tu backend (asegúrate de que tu API reciba los nuevos campos)
+      // Determinamos el nicho final (el predefinido o el que escribió a mano)
+      const nichoFinal = formData.nicho === 'Otro' ? formData.nichoPersonalizado : formData.nicho;
+
+      // Enviamos el objeto completo a tu API en Render
       const res = await axios.post('https://builx-api.onrender.com/api/auth/register', { 
         email: formData.email, 
         password: formData.password,
         empresaNombre: formData.empresaNombre,
         redSocialUrl: formData.redSocialUrl,
+        linkExtra: formData.linkExtra,
+        nicho: nichoFinal,
+        estiloVisual: formData.estiloVisual,
         whatsapp: formData.whatsapp
       });
       
       if (res.data && res.data.empresa_id) {
-        // 3. Guardamos las llaves maestras en el navegador
         localStorage.setItem('empresa_id', res.data.empresa_id);
         localStorage.setItem('user_email', formData.email);
         localStorage.setItem('empresa_nombre', formData.empresaNombre);
 
-        // 4. FLUJO PLG: Los mandamos a la pantalla de "Generando Tienda" en lugar del checkout
+        // Los mandamos a la pantalla de éxito
         navigate('/success-generation');
       }
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
-      setIsGenerating(false); // Volvemos a habilitar el botón
+      setIsGenerating(false); 
     }
   };
 
@@ -93,10 +101,7 @@ export default function Register() {
 
       {/* NAVBAR */}
       <nav className="w-full p-6 flex justify-between items-center z-10 max-w-5xl mx-auto">
-        <div 
-          onClick={() => navigate('/')}
-          className="text-2xl font-black tracking-tighter text-white cursor-pointer"
-        >
+        <div onClick={() => navigate('/')} className="text-2xl font-black tracking-tighter text-white cursor-pointer">
           Buil<span className="text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">X</span>
         </div>
         <button onClick={() => navigate('/login')} className="text-sm font-bold text-slate-400 hover:text-white transition-colors">
@@ -115,16 +120,16 @@ export default function Register() {
           </div>
           <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
             <div 
-              className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-500 ease-out"
+              className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${(step / totalSteps) * 100}%` }}
             ></div>
           </div>
         </div>
 
         {/* Cajas de los Pasos */}
-        <div className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden min-h-[400px] flex flex-col justify-center">
+        <div className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden min-h-[400px] flex flex-col justify-center transition-all">
           
-          {/* PASO 1: Nombre de la Empresa */}
+          {/* PASO 1: Nombre */}
           {step === 1 && (
             <div className="animate-fade-in-right w-full">
               <div className="text-4xl mb-4">👋</div>
@@ -151,15 +156,13 @@ export default function Register() {
             </div>
           )}
 
-          {/* PASO 2: Link de Red Social */}
+          {/* PASO 2: Links */}
           {step === 2 && (
             <div className="animate-fade-in-right w-full">
-              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold transition-colors">
-                ← Volver
-              </button>
+              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
               <div className="text-4xl mb-4">✨</div>
-              <h2 className="text-3xl md:text-4xl font-black mb-2">La magia de la IA.</h2>
-              <p className="text-slate-400 mb-8 text-lg">Pega el link de tu Instagram o página principal para extraer tus productos.</p>
+              <h2 className="text-3xl md:text-4xl font-black mb-2">La fuente de la magia.</h2>
+              <p className="text-slate-400 mb-6 text-lg">Pega tu Instagram o página principal para que la IA extraiga tus productos.</p>
               
               <input 
                 type="url" 
@@ -168,34 +171,156 @@ export default function Register() {
                 onChange={handleInputChange}
                 autoFocus
                 placeholder="https://instagram.com/tu_negocio" 
-                className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-5 text-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder:text-slate-600 mb-8"
+                className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-4 text-lg text-white focus:outline-none focus:border-cyan-400 mb-4"
               />
+
+              {mostrarLinkExtra ? (
+                <div className="animate-fade-in-down">
+                  <p className="text-sm text-slate-400 mb-2">Enlace secundario (Opcional)</p>
+                  <input 
+                    type="url" 
+                    name="linkExtra"
+                    value={formData.linkExtra}
+                    onChange={handleInputChange}
+                    placeholder="TikTok, Facebook, Web actual..." 
+                    className="w-full bg-black/20 border border-white/5 rounded-xl px-6 py-4 text-lg text-white focus:outline-none focus:border-cyan-400 mb-6"
+                  />
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setMostrarLinkExtra(true)}
+                  className="text-cyan-400 text-sm font-bold flex items-center gap-2 mb-8 hover:text-cyan-300"
+                >
+                  + Añadir otro enlace 
+                </button>
+              )}
               
               <button 
                 onClick={nextStep}
                 disabled={formData.redSocialUrl.length < 5}
-                className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black py-4 rounded-xl text-xl transition-all active:scale-95"
+                className="w-full mt-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-black py-4 rounded-xl text-xl transition-all active:scale-95"
               >
                 Analizar Link →
               </button>
             </div>
           )}
 
-          {/* PASO 3: WhatsApp */}
+          {/* PASO 3: Nicho de Mercado */}
           {step === 3 && (
             <div className="animate-fade-in-right w-full">
-              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold transition-colors">
-                ← Volver
+              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
+              <h2 className="text-3xl font-black mb-2">¿Qué vendes? 🎯</h2>
+              <p className="text-slate-400 mb-6">Esto ayuda a nuestra IA a estructurar tus categorías correctamente.</p>
+              
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                {['🍔 Comida y Bebida', '👕 Ropa y Moda', '💅 Salud y Belleza', '🛠️ Servicios', '📦 Electrónica', 'Otro'].map((opcion) => (
+                  <button
+                    key={opcion}
+                    onClick={() => setFormData(prev => ({ ...prev, nicho: opcion }))}
+                    className={`py-4 px-2 rounded-xl text-sm font-bold transition-all border ${
+                      formData.nicho === opcion 
+                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' 
+                        : 'bg-black/30 border-white/10 hover:border-white/30 text-slate-300'
+                    }`}
+                  >
+                    {opcion}
+                  </button>
+                ))}
+              </div>
+
+              {formData.nicho === 'Otro' && (
+                <input 
+                  type="text" 
+                  name="nichoPersonalizado"
+                  value={formData.nichoPersonalizado}
+                  onChange={handleInputChange}
+                  placeholder="Escribe tu rubro (Ej. Venta de repuestos)" 
+                  className="w-full animate-fade-in-down bg-black/30 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-cyan-400 mb-6"
+                />
+              )}
+              
+              <button 
+                onClick={nextStep}
+                disabled={!formData.nicho || (formData.nicho === 'Otro' && formData.nichoPersonalizado.length < 2)}
+                className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-black py-4 rounded-xl text-xl transition-all"
+              >
+                Continuar →
               </button>
-              <div className="text-4xl mb-4">💬</div>
-              <h2 className="text-3xl md:text-4xl font-black mb-2">¿Dónde recibirás pedidos?</h2>
-              <p className="text-slate-400 mb-8 text-lg">Ingresa el número de WhatsApp para cerrar tus ventas.</p>
+            </div>
+          )}
+
+          {/* PASO 4: Estilo Visual */}
+          {step === 4 && (
+            <div className="animate-fade-in-right w-full">
+              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
+              <h2 className="text-3xl font-black mb-2">Elige la vibra de tu tienda 🎨</h2>
+              <p className="text-slate-400 mb-6">Selecciona un estilo visual inicial. (Podrás cambiarlo después).</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {/* Opcion Minimalista */}
+                <div 
+                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Minimalista' }))}
+                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Minimalista' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                >
+                  <div className="h-16 bg-white rounded-lg mb-3 flex items-center justify-center">
+                    <div className="w-8 h-1 bg-slate-200 rounded"></div>
+                  </div>
+                  <p className="font-bold text-center text-sm">Minimalista</p>
+                </div>
+
+                {/* Opcion Elegante */}
+                <div 
+                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Elegante' }))}
+                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Elegante' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                >
+                  <div className="h-16 bg-gradient-to-br from-[#d4af37] to-[#8a7322] rounded-lg mb-3"></div>
+                  <p className="font-bold text-center text-sm">Elegante Boutique</p>
+                </div>
+
+                {/* Opcion Oscuro */}
+                <div 
+                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Oscuro' }))}
+                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Oscuro' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                >
+                  <div className="h-16 bg-slate-900 border border-slate-700 rounded-lg mb-3 flex items-center justify-center">
+                    <div className="w-8 h-1 bg-purple-500 rounded shadow-[0_0_8px_#a855f7]"></div>
+                  </div>
+                  <p className="font-bold text-center text-sm">Modo Oscuro</p>
+                </div>
+
+                {/* Opcion Vibrante */}
+                <div 
+                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Vibrante' }))}
+                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Vibrante' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                >
+                  <div className="h-16 bg-gradient-to-br from-orange-400 to-pink-500 rounded-lg mb-3"></div>
+                  <p className="font-bold text-center text-sm">Vibrante</p>
+                </div>
+              </div>
+              
+              <button 
+                onClick={nextStep}
+                disabled={!formData.estiloVisual}
+                className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-black py-4 rounded-xl text-xl transition-all"
+              >
+                Me gusta este estilo →
+              </button>
+            </div>
+          )}
+
+          {/* PASO 5: WhatsApp */}
+          {step === 5 && (
+            <div className="animate-fade-in-right w-full">
+              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
+              <div className="text-4xl mb-4">📱</div>
+              <h2 className="text-3xl md:text-4xl font-black mb-2">¿Dónde cerramos ventas?</h2>
+              <p className="text-slate-400 mb-8 text-lg">Ingresa el número de WhatsApp al que llegarán los pedidos.</p>
               
               <div className="flex gap-4 mb-8">
                 <input 
                   type="text" 
                   disabled
-                  value="+503" // Puedes hacerlo dinámico si vendes en más países
+                  value="+503" 
                   className="w-24 bg-black/30 border border-white/10 rounded-xl px-4 py-5 text-xl text-slate-400 text-center"
                 />
                 <input 
@@ -205,33 +330,31 @@ export default function Register() {
                   onChange={handleInputChange}
                   autoFocus
                   placeholder="7000 0000" 
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-5 text-xl text-white focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all placeholder:text-slate-600"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-5 text-xl text-white focus:outline-none focus:border-[#25D366] focus:ring-1 focus:ring-[#25D366] transition-all"
                 />
               </div>
               
               <button 
                 onClick={nextStep}
                 disabled={formData.whatsapp.length < 8}
-                className="w-full bg-[#25D366] hover:bg-[#20bd5a] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl text-xl transition-all active:scale-95"
+                className="w-full bg-[#25D366] hover:bg-[#20bd5a] disabled:opacity-50 text-white font-black py-4 rounded-xl text-xl transition-all active:scale-95"
               >
                 Confirmar WhatsApp →
               </button>
             </div>
           )}
 
-          {/* PASO 4: Cuenta (Email y Contraseñas) */}
-          {step === 4 && (
+          {/* PASO 6: Cuenta */}
+          {step === 6 && (
             <div className="animate-fade-in-right w-full">
-              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold transition-colors">
-                ← Volver
-              </button>
-              <h2 className="text-3xl font-black mb-2">Guarda tu progreso 🚀</h2>
-              <p className="text-slate-400 mb-6 text-sm">Crea tu cuenta para que la IA estructure tu catálogo ahora mismo.</p>
+              <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
+              <div className="text-4xl mb-4">🚀</div>
+              <h2 className="text-3xl font-black mb-2">Guarda tu progreso.</h2>
+              <p className="text-slate-400 mb-6 text-sm">Crea tu cuenta y en breve nuestra IA armará tu catálogo.</p>
               
-              {/* Alerta de Error */}
               {error && (
-                <div className="bg-red-500/10 text-red-400 p-3 rounded-xl text-sm font-bold mb-4 border border-red-500/20 flex items-center gap-2 animate-fade-in-down">
-                  <span>⚠️</span> {error}
+                <div className="bg-red-500/10 text-red-400 p-3 rounded-xl text-sm font-bold mb-4 border border-red-500/20">
+                  ⚠️ {error}
                 </div>
               )}
 
@@ -243,7 +366,7 @@ export default function Register() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Tu correo electrónico" 
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder:text-slate-600"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 text-white focus:outline-none focus:border-cyan-400"
                 />
                 
                 <div className="relative">
@@ -254,14 +377,10 @@ export default function Register() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Contraseña" 
-                    className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 pr-12 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder:text-slate-600"
+                    className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 pr-12 text-white focus:outline-none focus:border-cyan-400"
                   />
-                  <button 
-                    type="button" 
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "👁️" : "🙈"} {/* Puedes usar tus SVG aquí si prefieres */}
+                  <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? "👁️" : "🙈"} 
                   </button>
                 </div>
 
@@ -273,13 +392,9 @@ export default function Register() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="Confirmar Contraseña" 
-                    className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 pr-12 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder:text-slate-600"
+                    className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 pr-12 text-white focus:outline-none focus:border-cyan-400"
                   />
-                  <button 
-                    type="button" 
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
+                  <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                     {showConfirmPassword ? "👁️" : "🙈"}
                   </button>
                 </div>
@@ -287,7 +402,7 @@ export default function Register() {
                 <button 
                   type="submit"
                   disabled={!formData.email.includes('@') || formData.password.length < 6 || isGenerating}
-                  className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl text-lg transition-all active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)] flex justify-center items-center gap-3"
+                  className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-white font-black py-4 rounded-xl text-lg transition-all active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)] flex justify-center items-center gap-3"
                 >
                   {isGenerating ? 'Construyendo con IA...' : 'Construir mi Tienda Gratis'}
                 </button>
