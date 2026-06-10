@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // <-- Nuevo estado para el ojito
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -17,21 +17,40 @@ export default function Login() {
       const res = await axios.post('https://builx-api.onrender.com/api/auth/login', { email, password });
       
       if (res.data.success) {
+        // 1. Guardamos los datos de sesión esenciales
         localStorage.setItem('empresa_id', res.data.empresaId);
-        // Guardamos la hora exacta en milisegundos en la que se logueó
+        localStorage.setItem('user_email', email); // Útil por si va a success-generation o checkout
         localStorage.setItem('login_time', Date.now()); 
         
-        window.location.href = '/dashboard'; 
+        // 2. LA MÁQUINA DE ESTADOS (Enrutamiento Inteligente)
+        const estado = res.data.suscripcion_estado;
+
+        if (estado === 'building') {
+          // Si la IA de BuilX aún no termina su página
+          navigate('/success-generation'); 
+        } 
+        else if (estado === 'draft') {
+          // Si ya terminó, lo mandamos al dashboard (donde verá el Paywall para pagar)
+          navigate('/dashboard'); 
+        } 
+        else if (estado === 'active') {
+          // Si ya es un cliente Pro/Starter pagado
+          navigate('/dashboard'); 
+        } 
+        else {
+          // Fallback por defecto (ej. 'canceled' o 'past_due')
+          navigate('/dashboard'); 
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al intentar ingresar');
+      setError(err.response?.data?.message || 'Correo o contraseña incorrectos. Intenta de nuevo.');
     }
   };
 
   return (
     <div className="min-h-screen bg-[#050B14] text-white font-sans selection:bg-blue-500 selection:text-white flex flex-col relative overflow-hidden">
       
-      {/* FONDO AURORA MESH (Igual al de tu Landing Page) */}
+      {/* FONDO AURORA MESH */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-purple-600/20 rounded-full blur-[120px] md:blur-[150px] animate-blob"></div>
         <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-cyan-500/20 rounded-full blur-[120px] md:blur-[180px] animate-blob animation-delay-2000"></div>
