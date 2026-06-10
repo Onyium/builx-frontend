@@ -80,8 +80,9 @@ export default function LandingMarketing() {
               </button>
               <button 
                 onClick={() => navigate('/register')}
-                className="hidden md:block bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white text-sm font-bold py-2.5 px-6 rounded-lg backdrop-blur-sm transition-all active:scale-95">
-                Generar Catálogo Gratis
+                className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black py-4 px-10 rounded-xl text-xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] w-full md:w-auto"
+              >
+                Generar mi Catálogo con IA 🚀
               </button>
 
               {/* BOTÓN HAMBURGUESA PARA MÓVILES */}
@@ -141,7 +142,7 @@ export default function LandingMarketing() {
                 </span>
               </div>
               <p className="text-xl md:text-2xl text-slate-300 leading-relaxed md:leading-loose mb-10 max-w-lg">
-                No necesitas miles de dólares para tener una tienda profesional. Nuestra IA la construye por ti, y mantenerla solo cuesta <strong className="inline-block whitespace-nowrap text-white bg-white/10 backdrop-blur-md px-3 py-1 mx-1 rounded-md border border-white/20">$15 al mes</strong>.
+                No necesitas miles de dólares para tener una tienda profesional. Nuestra IA la construye por ti
               </p>
               
               {/* NUEVO BOTÓN HERO */}
