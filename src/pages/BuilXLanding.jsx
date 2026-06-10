@@ -6,7 +6,40 @@ export default function LandingMarketing() {
   // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  
+  // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 👇 VUELVE A PEGAR ESTO AQUÍ 👇
+  const comparativas = [
+    {
+      id: 1,
+      texto: "Netflix.",
+      img: "https://cdn-icons-png.flaticon.com/512/732/732228.png" 
+    },
+    {
+      id: 2,
+      texto: "tu plan de datos.",
+      img: "https://marketplace.canva.com/-IThg/MAGF7p-IThg/1/tl/canva-wifi-icon-MAGF7p-IThg.png"
+    },
+    {
+      id: 3,
+      texto: "dos starbucks.",
+      img: "https://png.pngtree.com/recommend-works/png-clipart/20250209/ourmid/pngtree-starbucks-green-disposable-paper-cup-with-lid-png-image_15370420.png"
+    },
+    {
+      id: 4,
+      texto: "una pizza.",
+      img: "https://cdn-icons-png.flaticon.com/512/3132/3132693.png"
+    },
+    {
+      id: 5,
+      texto: "Spotify Premium.",
+      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/500px-Spotify_logo_without_text.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail"
+    }
+  ];
+  // 👆 FIN DE LA INSERCIÓN 👆
+
+  const [index, setIndex] = useState(0);
 
   const [index, setIndex] = useState(0);
 
