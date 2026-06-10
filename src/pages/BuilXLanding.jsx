@@ -161,89 +161,6 @@ export default function LandingMarketing() {
           </div>
         </section>
 
-        {/* II. EL MERCADO */}
-        <section className="py-20 border-y border-white/10 bg-white/[0.02] backdrop-blur-md" id="caracteristicas">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/3 text-center md:text-left">
-              <h3 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500 mb-2 drop-shadow-lg">73%</h3>
-              <div className="h-1.5 w-24 bg-gradient-to-r from-cyan-400 to-blue-500 mb-6 mx-auto md:mx-0 rounded-full"></div>
-            </div>
-            <div className="md:w-2/3">
-              <h3 className="text-3xl font-bold mb-4 text-white leading-tight">De las decisiones de compra hoy en día comienzan con una búsqueda en internet.</h3>
-              <p className="text-lg text-slate-300 leading-relaxed">
-                Si tu negocio no tiene un catálogo web, literalmente le estás regalando 7 de cada 10 clientes a tu competencia. No dejes tu crecimiento al azar, asegura tu presencia en el mercado digital más grande del mundo.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* SECCIÓN DE MOCKUP */}
-        <section className="py-24 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16">
-            <div className="lg:w-1/2 text-center lg:text-left">
-              <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-purple-400/40 bg-purple-500/10 text-purple-300 text-sm font-bold tracking-widest uppercase backdrop-blur-md">
-                Resultados Reales
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
-                Así de profesional se verá <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">tu próximo catálogo.</span>
-              </h2>
-              <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                Tus clientes podrán navegar por tus productos, ver detalles, agregar al carrito y enviarte el pedido estructurado directamente a tu WhatsApp. <strong>Cero fricción para ellos, más ventas para ti.</strong>
-              </p>
-              <ul className="space-y-4 text-slate-200 text-lg">
-                <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Diseño optimizado para móviles.
-                </li>
-                <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Filtros y categorías automáticas.
-                </li>
-                <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Cierre de ventas en WhatsApp.
-                </li>
-              </ul>
-            </div>
-
-            <div className="lg:w-1/2 flex justify-center w-full">
-              <div className="relative mx-auto border-gray-800 bg-gray-900 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_0_80px_rgba(168,85,247,0.3)] transform transition-transform duration-700 hover:scale-105 hover:-rotate-2 group">
-                <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-20"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
-                <div className="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
-                <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
-                  <video src="/mockup.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover object-top" />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 pointer-events-none"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* III. CERO FRICCIÓN */}
-        <section className="py-24 px-6 max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Sin tutoriales. Sin tocar código.<br/><span className="text-cyan-400">Tú te encargas de vender.</span></h2>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-16">
-            Diseñamos una plataforma tan intuitiva que parece magia. Sube tus fotos, pon el precio y nosotros nos encargamos de toda la tecnología. BuilX hace el trabajo pesado.
-          </p>
-          <div className="grid md:grid-cols-3 gap-8 text-left">
-            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
-              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🚀</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Catálogo en minutos</h4>
-              <p className="text-slate-300 text-sm">Tu inventario en línea más rápido que preparar una taza de café.</p>
-            </div>
-            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
-              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">💬</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Pedidos a WhatsApp</h4>
-              <p className="text-slate-300 text-sm">Recibe facturas detalladas directamente en tu chat, sin intermediarios.</p>
-            </div>
-            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
-              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🤖</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Automatización IA</h4>
-              <p className="text-slate-300 text-sm">Herramientas inteligentes para estructurar tu tienda sin esfuerzo manual.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* IV. NUEVA SECCIÓN DE PRECIOS Y PLANES */}
         <section className="py-24 border-y border-white/10 bg-white/[0.02] backdrop-blur-md relative" id="precios">
           <div className="max-w-6xl mx-auto px-6">
             
@@ -342,6 +259,91 @@ export default function LandingMarketing() {
 
           </div>
         </section>
+
+        {/* II. EL MERCADO */}
+        <section className="py-20 border-y border-white/10 bg-white/[0.02] backdrop-blur-md" id="caracteristicas">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/3 text-center md:text-left">
+              <h3 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500 mb-2 drop-shadow-lg">73%</h3>
+              <div className="h-1.5 w-24 bg-gradient-to-r from-cyan-400 to-blue-500 mb-6 mx-auto md:mx-0 rounded-full"></div>
+            </div>
+            <div className="md:w-2/3">
+              <h3 className="text-3xl font-bold mb-4 text-white leading-tight">De las decisiones de compra hoy en día comienzan con una búsqueda en internet.</h3>
+              <p className="text-lg text-slate-300 leading-relaxed">
+                Si tu negocio no tiene un catálogo web, literalmente le estás regalando 7 de cada 10 clientes a tu competencia. No dejes tu crecimiento al azar, asegura tu presencia en el mercado digital más grande del mundo.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* SECCIÓN DE MOCKUP */}
+        <section className="py-24 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-16">
+            <div className="lg:w-1/2 text-center lg:text-left">
+              <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-purple-400/40 bg-purple-500/10 text-purple-300 text-sm font-bold tracking-widest uppercase backdrop-blur-md">
+                Resultados Reales
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+                Así de profesional se verá <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">tu próximo catálogo.</span>
+              </h2>
+              <p className="text-xl text-slate-300 leading-relaxed mb-8">
+                Tus clientes podrán navegar por tus productos, ver detalles, agregar al carrito y enviarte el pedido estructurado directamente a tu WhatsApp. <strong>Cero fricción para ellos, más ventas para ti.</strong>
+              </p>
+              <ul className="space-y-4 text-slate-200 text-lg">
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <span className="text-cyan-400 text-2xl">✓</span> Diseño optimizado para móviles.
+                </li>
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <span className="text-cyan-400 text-2xl">✓</span> Filtros y categorías automáticas.
+                </li>
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <span className="text-cyan-400 text-2xl">✓</span> Cierre de ventas en WhatsApp.
+                </li>
+              </ul>
+            </div>
+
+            <div className="lg:w-1/2 flex justify-center w-full">
+              <div className="relative mx-auto border-gray-800 bg-gray-900 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_0_80px_rgba(168,85,247,0.3)] transform transition-transform duration-700 hover:scale-105 hover:-rotate-2 group">
+                <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-20"></div>
+                <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
+                <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
+                <div className="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
+                <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white relative">
+                  <video src="/mockup.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover object-top" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* III. CERO FRICCIÓN */}
+        <section className="py-24 px-6 max-w-7xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Sin tutoriales. Sin tocar código.<br/><span className="text-cyan-400">Tú te encargas de vender.</span></h2>
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-16">
+            Diseñamos una plataforma tan intuitiva que parece magia. Sube tus fotos, pon el precio y nosotros nos encargamos de toda la tecnología. BuilX hace el trabajo pesado.
+          </p>
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
+              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🚀</div>
+              <h4 className="text-xl font-bold mb-3 text-white">Catálogo en minutos</h4>
+              <p className="text-slate-300 text-sm">Tu inventario en línea más rápido que preparar una taza de café.</p>
+            </div>
+            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
+              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">💬</div>
+              <h4 className="text-xl font-bold mb-3 text-white">Pedidos a WhatsApp</h4>
+              <p className="text-slate-300 text-sm">Recibe facturas detalladas directamente en tu chat, sin intermediarios.</p>
+            </div>
+            <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
+              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🤖</div>
+              <h4 className="text-xl font-bold mb-3 text-white">Automatización IA</h4>
+              <p className="text-slate-300 text-sm">Herramientas inteligentes para estructurar tu tienda sin esfuerzo manual.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* IV. NUEVA SECCIÓN DE PRECIOS Y PLANES */}
+        
 
         {/* V. PREGUNTAS FRECUENTES */}
         <section className="py-24 px-6 max-w-4xl mx-auto" id="faq">
