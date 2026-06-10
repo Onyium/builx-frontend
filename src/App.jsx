@@ -3,10 +3,11 @@ import LandingFunnel from './pages/BuilXLanding.jsx';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
-import CheckoutPage from './pages/CheckoutPage'; // 👈 Importamos la nueva página
+import CheckoutPage from './pages/CheckoutPage'; 
 import ProtectedRoute from './components/pays/ProtectedRoute.jsx'; 
 import Register from './pages/register';
 import PaginaLegal from './components/BuilxLanding/PaginaLegal.jsx';
+import SuccessGeneration from './pages/SuccessGeneration'; // 👈 Importada correctamente
 
 const terminosTexto = `
   <h3>1. Aceptación de los Términos</h3>
@@ -18,6 +19,7 @@ const terminosTexto = `
   <h3>4. Limitación de Responsabilidad</h3>
   <p>BuilX no interviene en las transacciones entre usted y sus clientes finales (las cuales se realizan vía WhatsApp o métodos externos). Por lo tanto, no nos hacemos responsables por disputas, reembolsos, logística o problemas derivados de sus ventas.</p>
 `;
+
 const privacidadTexto = `
   <h3>1. Información que Recopilamos</h3>
   <p>Recopilamos la información necesaria para brindarle el servicio, incluyendo: nombre, correo electrónico, datos de contacto de su negocio y credenciales de acceso. No almacenamos datos de tarjetas de crédito en nuestros servidores; estos son manejados por nuestra pasarela de pagos segura.</p>
@@ -26,6 +28,7 @@ const privacidadTexto = `
   <h3>3. Protección de Datos</h3>
   <p>Implementamos medidas de seguridad de nivel de industria para proteger su información. Nunca venderemos, alquilaremos ni compartiremos sus datos personales con terceros para fines publicitarios.</p>
 `;
+
 const reembolsosTexto = `
   <h3>1. Política de Suscripción</h3>
   <p>BuilX opera bajo un modelo de suscripción mensual de pago anticipado ($15.00 USD/mes). Usted puede cancelar su suscripción en cualquier momento desde su panel de control para evitar futuros cobros.</p>
@@ -39,11 +42,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. Zona Pública */}
+        {/* 1. Zona Pública (El Embudo Inicial) */}
         <Route path="/" element={<LandingFunnel />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* ✨ LA NUEVA PANTALLA DE ESPERA PLG ✨ */}
+        <Route path="/success-generation" element={<SuccessGeneration />} />
 
-        {/* 🚨 2. Sala de Espera / Pantalla de Pago (Si la cuenta está en trial/past_due caen aquí) */}
+        {/* 🚨 2. Sala de Espera / Pantalla de Pago */}
         <Route path="/checkout" element={<CheckoutPage />} />
 
         {/* 🔒 3. Zona VIP Blindada (Solo entran si están 'active') */}
@@ -65,13 +72,13 @@ function App() {
           } 
         />
 
-        <Route path="/register" element={<Register />} />
-
-        {/* 4. Comodín */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* 4. Páginas Legales */}
         <Route path="/terminos" element={<PaginaLegal titulo="Términos de Servicio" contenido={terminosTexto} />} />
         <Route path="/privacidad" element={<PaginaLegal titulo="Política de Privacidad" contenido={privacidadTexto} />} />
         <Route path="/reembolsos" element={<PaginaLegal titulo="Política de Reembolsos" contenido={reembolsosTexto} />} />
+        
+        {/* 5. Comodín (Fallback) */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
