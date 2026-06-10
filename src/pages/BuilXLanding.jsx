@@ -6,8 +6,6 @@ export default function LandingMarketing() {
   // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 👇 VUELVE A PEGAR ESTO AQUÍ 👇
   const comparativas = [
@@ -39,7 +37,6 @@ export default function LandingMarketing() {
   ];
   // 👆 FIN DE LA INSERCIÓN 👆
 
-  const [index, setIndex] = useState(0);
 
   const [index, setIndex] = useState(0);
 
