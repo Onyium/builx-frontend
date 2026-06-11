@@ -13,23 +13,23 @@ export default function RegisterWizard() {
   // ESTADOS DE VISUALIZACIÓN
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [mostrarLinkExtra, setMostrarLinkExtra] = useState(false); // Para el paso 2
+  const [mostrarLinkExtra, setMostrarLinkExtra] = useState(false);
   
-  // TODOS LOS DATOS DEL LEAD (Expandido)
+  // TODOS LOS DATOS DEL LEAD
   const [formData, setFormData] = useState({
     empresaNombre: '',
     redSocialUrl: '',
-    linkExtra: '', // Nuevo
-    nicho: '', // Nuevo
-    nichoPersonalizado: '', // Nuevo
-    estiloVisual: '', // Nuevo
+    linkExtra: '',
+    nicho: '',
+    nichoPersonalizado: '',
+    estiloVisual: '',
     whatsapp: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
 
-  const totalSteps = 6; // ¡Ahora son 6 pasos mágicos!
+  const totalSteps = 6; 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -60,19 +60,19 @@ export default function RegisterWizard() {
     setIsGenerating(true);
 
     try {
-      // Determinamos el nicho final (el predefinido o el que escribió a mano)
-      const nichoFinal = formData.nicho === 'Otro' ? formData.nichoPersonalizado : formData.nicho;
+      // Determinamos el rubro final
+      const rubroFinal = formData.nicho === 'Otro' ? formData.nichoPersonalizado : formData.nicho;
 
-      // Enviamos el objeto completo a tu API en Render
+      // 🚨 PASO MÁGICO: Enviamos los datos con los nombres EXACTOS de tu tabla MySQL
       const res = await axios.post('https://builx-api.onrender.com/api/auth/register', { 
-        email: formData.email, 
-        password: formData.password,
-        empresaNombre: formData.empresaNombre,
-        redSocialUrl: formData.redSocialUrl,
-        linkExtra: formData.linkExtra,
-        nicho: nichoFinal,
-        estiloVisual: formData.estiloVisual,
-        whatsapp: formData.whatsapp
+        email_administrador: formData.email, 
+        password_mensual: formData.password,
+        nombre: formData.empresaNombre,
+        rubro: rubroFinal,
+        whatsapp_pedidos: formData.whatsapp,
+        tema_visual: formData.estiloVisual,
+        link_instagram: formData.redSocialUrl,
+        link_facebook: formData.linkExtra
       });
       
       if (res.data && res.data.empresa_id) {
