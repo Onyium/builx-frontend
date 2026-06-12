@@ -90,12 +90,14 @@ const SuperAdminBuilx = () => {
                                         {new Date(lead.creado_en).toLocaleDateString()}
                                     </td>
                                     <td className="p-4 flex justify-center gap-3">
-                                        {/* Acceso rápido a WhatsApp */}
+                                        {/* Reemplaza tu botón de WhatsApp actual por este */}
                                         <a 
-                                            href={`https://wa.me/${lead.whatsapp_pedidos}?text=¡Hola! Soy Jonathan de BuilX...`}
+                                            href={`https://wa.me/${lead.whatsapp_pedidos || lead.telefono}?text=${encodeURIComponent(
+                                                `¡Hola! Soy Jonathan de BuilX. 🚀\n\nNuestra IA ya terminó de estructurar el catálogo web para ${lead.nombre}.\n\nPuedes ver la vista previa privada de tu sitio aquí:\nhttps://www.builxapp.com/v/${lead.slug || lead.id}\n\nCuéntame, ¿qué te parece?`
+                                            )}`}
                                             target="_blank" 
                                             rel="noopener noreferrer"
-                                            className="bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                                            className="bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer"
                                         >
                                             WhatsApp
                                         </a>
