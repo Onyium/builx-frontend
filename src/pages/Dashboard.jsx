@@ -237,6 +237,17 @@ export default function Dashboard() {
               🎨 Editar Página Web
             </button>
           )}
+          {/* 👇 BOTÓN PARA VER EL SITIO PÚBLICO 👇 */}
+          {['active', 'starter', 'pro', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
+              <a 
+                  href={`/v/${datosEmpresa.slug || empresaId}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all bg-blue-600/10 text-blue-400 border border-blue-600/20 shadow-lg hover:bg-blue-600/20 active:scale-95 mt-2"
+              >
+                  👁️ Ver Sitio Público
+              </a>
+          )}
         </nav>
 
         <div className="p-4 border-t border-slate-800 bg-slate-950/40 text-center">
