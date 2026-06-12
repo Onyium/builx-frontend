@@ -19,7 +19,11 @@ export default function ProtectedRoute({ children }) {
         
         console.log("🕵️ Guardián de Acceso:", datosBD?.suscripcion_estado); 
         
-        if (datosBD && datosBD.suscripcion_estado === 'active') {
+        // 🚨 LA NUEVA LISTA VIP 🚨
+        const estadosPermitidos = ['active', 'starter', 'pro', 'building', 'trial'];
+        
+        // Verificamos si el estado de la BD está en nuestra lista de permitidos
+        if (datosBD && estadosPermitidos.includes(datosBD.suscripcion_estado)) {
           setEstado('permitido');
         } else {
           setEstado('denegado');
@@ -45,7 +49,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (estado === 'denegado') {
-    // 🚨 CAMBIO CLAVE: Si no ha pagado, va directo a la zona de facturación
+    // Si no ha pagado o tiene un estado inválido, lo mandamos al checkout
     return <Navigate to="/checkout" replace />;
   }
 
