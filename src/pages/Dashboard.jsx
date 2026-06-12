@@ -73,21 +73,25 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`https://builx-api.onrender.com/api/empresa/${empresaId}`);
       if (res.data) {
+        // 1. Extraemos el objeto limpio
         const data = Array.isArray(res.data) ? res.data[0] : res.data;
+        
+        // 2. 🚨 USAMOS "data", NO "res.data" 🚨
         setDatosEmpresa({
-          
-          slug: res.data.slug || '',
-          direccion: res.data.direccion || '',
-          telefono: res.data.telefono || '',
-          link_google_maps: res.data.link_google_maps || '',
-          link_facebook: res.data.link_facebook || '',
-          link_instagram: res.data.link_instagram || '',
-          link_whatsapp: res.data.link_whatsapp || '',
-          link_tiktok: res.data.link_tiktok || '',
-          suscripcion_estado: res.data.suscripcion_estado || 'trial', 
-          email: res.data.email_administrador || '' 
+          slug: data.slug || '', 
+          direccion: data.direccion || '',
+          telefono: data.telefono || '',
+          link_google_maps: data.link_google_maps || '',
+          link_facebook: data.link_facebook || '',
+          link_instagram: data.link_instagram || '',
+          link_whatsapp: data.link_whatsapp || '',
+          link_tiktok: data.link_tiktok || '',
+          suscripcion_estado: data.suscripcion_estado || 'trial', 
+          email: data.email_administrador || '' 
         });
-        setCurrentLogo(res.data.logo_url || null);
+        
+        // Aquí también usamos "data"
+        setCurrentLogo(data.logo_url || null);
       }
     } catch (err) {
       console.error("Error al obtener datos de la empresa:", err);
