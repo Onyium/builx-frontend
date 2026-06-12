@@ -99,7 +99,7 @@ const SuperAdminBuilx = () => {
                                         
                                         {/* Salto al dashboard del cliente */}
                                         <button 
-                                            onClick={() => entrarComoCliente(lead.id)}
+                                            onClick={() => entrarComoCliente(lead)}
                                             className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer"
                                         >
                                             Ver Dashboard
