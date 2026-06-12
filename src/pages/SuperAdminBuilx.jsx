@@ -10,17 +10,20 @@ const SuperAdminBuilx = () => {
     const navigate = useNavigate();
 
     const entrarComoCliente = (lead) => {
-    // 1. 🔥 LIMPIEZA TOTAL: Borramos cualquier sesión vieja para evitar contaminación de datos
+        // 1. Limpieza total
         localStorage.clear();
         
-        // 2. Inyectamos TODOS los datos que tu Dashboard necesita para renderizar correctamente
-        localStorage.setItem('empresaId', lead.id);
-        localStorage.setItem('suscripcion_estado', lead.suscripcion_estado);
+        // 2. Inyectamos las credenciales exactas de la "radiografía"
+        localStorage.setItem('empresaId', lead.id); // El ID sin guion
+        localStorage.setItem('empresa_id', lead.id); // El ID con guion (¡Este era el que faltaba!)
         localStorage.setItem('nombre', lead.nombre);
+        localStorage.setItem('suscripcion_estado', lead.suscripcion_estado);
+        localStorage.setItem('user_email', lead.email_administrador);
         
-        // Si usas alguna otra variable en tu login normal (como un token), puedes ponerla aquí.
+        // Generamos un timestamp actual falso para que crea que acabamos de iniciar sesión
+        localStorage.setItem('login_time', Date.now().toString()); 
 
-        // 3. Forzamos la recarga total hacia el dashboard con la casa limpia
+        // 3. ¡Adentro!
         window.location.href = '/dashboard'; 
     };
     useEffect(() => {
