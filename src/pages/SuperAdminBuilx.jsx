@@ -10,16 +10,15 @@ const SuperAdminBuilx = () => {
     const navigate = useNavigate();
 
     const entrarComoCliente = (empresaId) => {
-        // 1. Engañamos al navegador inyectando el ID de este cliente como si hubiera hecho login
-        localStorage.setItem('empresaId', empresaId);
-        
-        // 2. Si guardas otros datos en el login (como el token o el nombre), puedes inyectarlos aquí también
-        // localStorage.setItem('token', 'token-falso-o-real-si-lo-necesitas');
-        
-        // 3. Lo mandamos a la ruta general de tu dashboard (cámbiala si tu ruta principal es otra, como '/panel')
-        navigate('/dashboard'); 
+    // 1. Guardamos el ID del cliente al que queremos infiltrar
+    localStorage.setItem('empresaId', empresaId);
+    
+    // 2. 🚨 LA MAGIA AQUÍ 🚨 
+    // En vez de usar navigate(), usamos window.location.href
+    // Esto fuerza al navegador a recargar la pestaña entera. 
+    // Al recargar, React se "despierta", lee el nuevo ID y te mete a esa cuenta.
+    window.location.href = '/dashboard'; 
     };
-
     useEffect(() => {
         const fetchLeads = async () => {
             try {
