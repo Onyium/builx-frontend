@@ -182,10 +182,8 @@ export default function Dashboard() {
       )}
 
       {/* ─── BARRA LATERAL (SIDEBAR) PREMIUM ─── */}
-      {/* 📱 Responsivo: En móviles se oculta usando transformaciones, en escritorio (lg:) se queda fija */}
       <aside className={`w-64 bg-[#0F172A] text-slate-300 flex flex-col fixed h-full z-30 shadow-2xl border-r border-slate-800 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         
-        {/* Marca/SaaS Identificador */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-md shadow-blue-500/20">
@@ -196,7 +194,6 @@ export default function Dashboard() {
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Admin Panel</span>
             </div>
           </div>
-          {/* Botón para cerrar en móviles */}
           <button 
             onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden text-slate-400 hover:text-white"
@@ -205,7 +202,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Links de Navegación del Panel */}
         <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-1 mt-3 custom-scrollbar">
           <button onClick={() => handleNavClick('catalogo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'catalogo' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             📦 <span>Catálogo / Ítems</span>
@@ -231,7 +227,9 @@ export default function Dashboard() {
           <button onClick={() => handleNavClick('config')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'config' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             ⚙️ <span>Configuración</span>
           </button>
-          {datosEmpresa.suscripcion_estado === 'active' && (
+          
+          {/* 👇 BOTÓN LIBERADO PARA ACTIVE, STARTER, PRO Y BUILDING 👇 */}
+          {['active', 'starter', 'pro', 'building', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
             <button 
               onClick={() => navigate('/admin/builder')} 
               className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 mt-4"
@@ -241,21 +239,17 @@ export default function Dashboard() {
           )}
         </nav>
 
-        {/* Sección de Meta Info Inferior */}
         <div className="p-4 border-t border-slate-800 bg-slate-950/40 text-center">
           <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Empresa ID: {empresaId}</p>
         </div>
       </aside>
 
       {/* ─── ÁREA DE TRABAJO PRINCIPAL (DERECHA) ─── */}
-      {/* 📱 Responsivo: Quitamos el margen izquierdo en móviles (w-full) y lo devolvemos en escritorio (lg:pl-64) */}
       <div className="flex-1 lg:pl-64 min-h-screen flex flex-col w-full">
         
-        {/* Barra Superior Inteligente */}
         <header className="h-16 lg:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 lg:px-12 sticky top-0 z-10 shadow-sm">
           
           <div className="flex items-center gap-3">
-            {/* 📱 Botón Hamburguesa (Solo visible en móviles) */}
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -271,7 +265,8 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-2 lg:gap-4">
-            {seccionActiva === 'catalogo' && datosEmpresa.suscripcion_estado === 'active' && (
+            {/* 👇 PERMITIR AÑADIR ÍTEMS EN TODOS ESTOS ESTADOS 👇 */}
+            {seccionActiva === 'catalogo' && ['active', 'starter', 'pro', 'building', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
               <button onClick={() => setModalConfig({ isOpen: true, data: null })} className="bg-blue-600 text-white px-3 py-2 lg:px-5 lg:py-2.5 rounded-xl font-bold shadow-md shadow-blue-500/10 active:scale-95 transition-all hover:bg-blue-700 text-xs lg:text-sm whitespace-nowrap">
                 + Nuevo Ítem
               </button>
@@ -281,7 +276,6 @@ export default function Dashboard() {
               Cerrar Sesión
             </button>
             
-            {/* Botón de logout icono para móviles muy pequeños */}
             <button onClick={handleLogout} className="sm:hidden bg-red-50 text-red-600 border border-red-100 p-2 rounded-xl font-bold hover:bg-red-100 transition-all">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
@@ -291,48 +285,56 @@ export default function Dashboard() {
         {/* ─── CONTENEDOR DE COMPONENTES DINÁMICOS ─── */}
         <main className="p-4 md:p-8 lg:p-12 max-w-6xl w-full mx-auto flex-1 overflow-x-hidden">
           
-          {/* 🚨 AQUÍ ESTÁ LA MAGIA: EL MURO DE PAGO 🚨 */}
-          {datosEmpresa.suscripcion_estado !== 'active' ? (
-            
-            <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-10 text-center max-w-2xl mx-auto mt-6 lg:mt-10 border border-gray-100 mx-4 lg:mx-auto">
-              <div className="w-16 h-16 lg:w-20 lg:h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fa-solid fa-rocket text-3xl lg:text-4xl text-blue-600"></i>
+          {/* 🚨 EL BANNER CONDICIONAL MÁGICO (Solo aparece en modo building o trial) 🚨 */}
+          {['building', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
+              <div className="relative overflow-hidden bg-blue-900/30 border border-blue-500/50 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_0_30px_rgba(37,99,235,0.15)]">
+                  <div className="absolute inset-0 w-full h-[2px] bg-blue-400/20 blur-sm animate-pulse"></div>
+                  
+                  <div className="flex items-center gap-4 z-10">
+                      <div className="bg-blue-500/20 p-3 rounded-full animate-pulse text-blue-400">
+                          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                          </svg>
+                      </div>
+                      <div>
+                          <h3 className="text-xl font-bold text-blue-400">🤖 Analizando y construyendo tu sitio...</h3>
+                          <p className="text-slate-300 text-sm mt-1">
+                              Nuestra IA está trabajando en el diseño. Mientras tanto, puedes subir tus fotos, agregar productos o configurar tus datos.
+                          </p>
+                      </div>
+                  </div>
+
+                  <button 
+                      onClick={() => navigate('/checkout')} 
+                      className="z-10 whitespace-nowrap bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition-colors shadow-[0_0_20px_rgba(37,99,235,0.4)]"
+                  >
+                      Lanzar mi Sitio 🚀
+                  </button>
               </div>
-              <h2 className="text-2xl lg:text-3xl font-black text-gray-900 mb-4">¡Desbloquea todo el poder de BuilX!</h2>
-              <p className="text-gray-500 mb-8 text-base lg:text-lg">Para gestionar tu catálogo, recibir leads y usar nuestro Importador IA, necesitas activar tu suscripción premium.</p>
-              
-              <BotonSuscripcion 
-                empresaId={empresaId} 
-                emailEmpresa={datosEmpresa.email} 
-              />
-            </div>
-
-          ) : (
-            // 🔓 SI YA PAGÓ, LE MOSTRAMOS SU PANEL NORMAL 🔓
-            <>
-              {seccionActiva === 'catalogo' && (
-                <div className="animate-fade-in">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl lg:text-2xl font-bold text-gray-800">Catálogo de Productos</h3>
-                    <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-xs">Total: {items.length}</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
-                    {items.map(item => (
-                      <ItemCard key={item.id} item={item} onToggle={handleToggleStatus} onEdit={(data) => setModalConfig({ isOpen: true, data })} onDelete={handleDelete} onOpenReviews={handleOpenReviews} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {seccionActiva === 'leads' && <div className="animate-fade-in"><BandejaContacto empresaId={empresaId} /></div>}
-              {seccionActiva === 'galeria' && <div className="animate-fade-in"><GaleriaManager empresaId={empresaId} /></div>}
-              {seccionActiva === 'categorias' && <div className="animate-fade-in"><CategoriasManager empresaId={empresaId} /></div>}
-              {seccionActiva === 'testimonios' && <div className="animate-fade-in"><TestimoniosManager empresaId={empresaId} /></div>}
-              {seccionActiva === 'faqs' && <div className="animate-fade-in"><FAQManager empresaId={empresaId} /></div>}
-              {seccionActiva === 'importador' && <div className="animate-fade-in"><ImportadorIA empresaId={empresaId} /></div>}
-              {seccionActiva === 'config' && <div className="animate-fade-in"><EmpresaConfig datos={datosEmpresa} onUpdate={handleUpdateEmpresa} currentLogo={currentLogo} /></div>}
-            </>
           )}
+
+          {/* 🔓 EL PANEL LIBERADO PARA QUE PUEDAN TOCAR TODO EN CUALQUIER ESTADO 🔓 */}
+          {seccionActiva === 'catalogo' && (
+            <div className="animate-fade-in">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl lg:text-2xl font-bold text-gray-800">Catálogo de Productos</h3>
+                <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-xs">Total: {items.length}</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
+                {items.map(item => (
+                  <ItemCard key={item.id} item={item} onToggle={handleToggleStatus} onEdit={(data) => setModalConfig({ isOpen: true, data })} onDelete={handleDelete} onOpenReviews={handleOpenReviews} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {seccionActiva === 'leads' && <div className="animate-fade-in"><BandejaContacto empresaId={empresaId} /></div>}
+          {seccionActiva === 'galeria' && <div className="animate-fade-in"><GaleriaManager empresaId={empresaId} /></div>}
+          {seccionActiva === 'categorias' && <div className="animate-fade-in"><CategoriasManager empresaId={empresaId} /></div>}
+          {seccionActiva === 'testimonios' && <div className="animate-fade-in"><TestimoniosManager empresaId={empresaId} /></div>}
+          {seccionActiva === 'faqs' && <div className="animate-fade-in"><FAQManager empresaId={empresaId} /></div>}
+          {seccionActiva === 'importador' && <div className="animate-fade-in"><ImportadorIA empresaId={empresaId} /></div>}
+          {seccionActiva === 'config' && <div className="animate-fade-in"><EmpresaConfig datos={datosEmpresa} onUpdate={handleUpdateEmpresa} currentLogo={currentLogo} /></div>}
 
         </main>
       </div>
