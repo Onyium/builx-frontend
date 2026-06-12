@@ -81,7 +81,7 @@ export default function RegisterWizard() {
         localStorage.setItem('empresa_nombre', formData.empresaNombre);
 
         // Los mandamos a la pantalla de éxito
-        navigate('/success-generation');
+        navigate('/dashboard');
       }
     } catch (err) {
       console.error(err);

@@ -19,28 +19,14 @@ export default function Login() {
       if (res.data.success) {
         // 1. Guardamos los datos de sesión esenciales
         localStorage.setItem('empresa_id', res.data.empresaId);
-        localStorage.setItem('user_email', email); // Útil por si va a success-generation o checkout
+        localStorage.setItem('user_email', email); 
         localStorage.setItem('login_time', Date.now()); 
         
-        // 2. LA MÁQUINA DE ESTADOS (Enrutamiento Inteligente)
-        const estado = res.data.suscripcion_estado;
-
-        if (estado === 'building') {
-          // Si la IA de BuilX aún no termina su página
-          navigate('/success-generation'); 
-        } 
-        else if (estado === 'draft') {
-          // Si ya terminó, lo mandamos al dashboard (donde verá el Paywall para pagar)
-          navigate('/dashboard'); 
-        } 
-        else if (estado === 'active') {
-          // Si ya es un cliente Pro/Starter pagado
-          navigate('/dashboard'); 
-        } 
-        else {
-          // Fallback por defecto (ej. 'canceled' o 'past_due')
-          navigate('/dashboard'); 
-        }
+        // 🚨 MUY IMPORTANTE: Guarda el estado aquí para que el Dashboard lo lea al instante
+        localStorage.setItem('suscripcion_estado', res.data.suscripcion_estado);
+        
+        // 2. Enrutamiento directo: Todos a la zona VIP (Dashboard)
+        navigate('/dashboard'); 
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Correo o contraseña incorrectos. Intenta de nuevo.');
