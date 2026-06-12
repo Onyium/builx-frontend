@@ -244,15 +244,15 @@ export default function Dashboard() {
               🎨 Editar Página Web
             </button>
           )}
-          {/* Botón corregido en la barra lateral de Dashboard.jsx */}
-          {['active', 'starter', 'pro', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
+          {/* 👇 BOTÓN ACTUALIZADO PARA INCLUIR 'BUILDING' Y EL PASE VIP 👇 */}
+          {['active', 'starter', 'pro', 'trial', 'building'].includes(datosEmpresa.suscripcion_estado) && (
               <a 
-                  href={`/v/${datosEmpresa.slug}`} // 👈 Ya no necesita el fallback de ID porque el slug siempre estará cargado
+                  href={`/v/${datosEmpresa.slug}${datosEmpresa.suscripcion_estado === 'building' ? '?preview=true' : ''}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all bg-blue-600/10 text-blue-400 border border-blue-600/20 shadow-lg hover:bg-blue-600/20 active:scale-95 mt-2"
               >
-                  👁️ Ver Sitio Público
+                  👁️ {datosEmpresa.suscripcion_estado === 'building' ? 'Ver Vista Previa' : 'Ver Sitio Público'}
               </a>
           )}
         </nav>
