@@ -73,7 +73,9 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`https://builx-api.onrender.com/api/empresa/${empresaId}`);
       if (res.data) {
+        const data = Array.isArray(res.data) ? res.data[0] : res.data;
         setDatosEmpresa({
+          
           slug: res.data.slug || '',
           direccion: res.data.direccion || '',
           telefono: res.data.telefono || '',
