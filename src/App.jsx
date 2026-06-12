@@ -7,7 +7,8 @@ import CheckoutPage from './pages/CheckoutPage';
 import ProtectedRoute from './components/pays/ProtectedRoute.jsx'; 
 import Register from './pages/register';
 import PaginaLegal from './components/BuilxLanding/PaginaLegal.jsx';
-import SuccessGeneration from './pages/SuccessGeneration'; // 👈 Importada correctamente
+import SuccessGeneration from './pages/SuccessGeneration'; 
+import SuperAdminBuilx from './vistas/SuperAdminBuilx'; // 👈 Ajusta la carpeta si lo guardaste en otro lado
 
 const terminosTexto = `
   <h3>1. Aceptación de los Términos</h3>
@@ -79,6 +80,8 @@ function App() {
         
         {/* 5. Comodín (Fallback) */}
         <Route path="*" element={<Navigate to="/" />} />
+
+        <Route path="/mando-secreto-jonathan" element={<SuperAdminBuilx />} />
       </Routes>
     </BrowserRouter>
   );
