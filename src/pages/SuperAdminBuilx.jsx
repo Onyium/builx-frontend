@@ -1,10 +1,24 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+
 
 const SuperAdminBuilx = () => {
     const [leads, setLeads] = useState([]);
     const [cargando, setCargando] = useState(true);
+    const navigate = useNavigate();
+
+    const entrarComoCliente = (empresaId) => {
+        // 1. Engañamos al navegador inyectando el ID de este cliente como si hubiera hecho login
+        localStorage.setItem('empresaId', empresaId);
+        
+        // 2. Si guardas otros datos en el login (como el token o el nombre), puedes inyectarlos aquí también
+        // localStorage.setItem('token', 'token-falso-o-real-si-lo-necesitas');
+        
+        // 3. Lo mandamos a la ruta general de tu dashboard (cámbiala si tu ruta principal es otra, como '/panel')
+        navigate('/dashboard'); 
+    };
 
     useEffect(() => {
         const fetchLeads = async () => {
@@ -81,12 +95,12 @@ const SuperAdminBuilx = () => {
                                         </a>
                                         
                                         {/* Salto al dashboard del cliente */}
-                                        <Link 
-                                            to={`/dashboard/${lead.id}`} 
-                                            className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                                        <button 
+                                            onClick={() => entrarComoCliente(lead.id)}
+                                            className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer"
                                         >
                                             Ver Dashboard
-                                        </Link>
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
