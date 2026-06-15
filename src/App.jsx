@@ -8,8 +8,8 @@ import ProtectedRoute from './components/pays/ProtectedRoute.jsx';
 import Register from './pages/register';
 import PaginaLegal from './components/BuilxLanding/PaginaLegal.jsx';
 import SuccessGeneration from './pages/SuccessGeneration'; 
-import SuperAdminBuilx from './pages/SuperAdminBuilx'; // 👈 Ajusta la carpeta si lo guardaste en otro lado
-
+import SuperAdminBuilx from './pages/SuperAdminBuilx'; 
+import VisorPublico from './pages/VisorPublico';
 const terminosTexto = `
   <h3>1. Aceptación de los Términos</h3>
   <p>Al acceder y utilizar la plataforma BuilX, usted acepta estar sujeto a estos Términos de Servicio. Nuestra plataforma proporciona herramientas de software como servicio (SaaS) para la creación de catálogos digitales.</p>
@@ -43,44 +43,25 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. Zona Pública (El Embudo Inicial) */}
         <Route path="/" element={<LandingFunnel />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* ✨ LA NUEVA PANTALLA DE ESPERA PLG ✨ */}
         <Route path="/success-generation" element={<SuccessGeneration />} />
-
-        {/* 🚨 2. Sala de Espera / Pantalla de Pago */}
         <Route path="/checkout" element={<CheckoutPage />} />
 
-        {/* 🔒 3. Zona VIP Blindada (Solo entran si están 'active') */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/admin/builder" 
-          element={
-            <ProtectedRoute>
-              <Builder />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin/builder" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
 
-        {/* 4. Páginas Legales */}
+        {/* 👇 2. LA NUEVA RUTA PARA LOS CLIENTES FINALES 👇 */}
+        {/* El :slug capturará cosas como "floristeriaChristian" */}
+        <Route path="/v/:slug" element={<VisorPublico />} />
+
         <Route path="/terminos" element={<PaginaLegal titulo="Términos de Servicio" contenido={terminosTexto} />} />
         <Route path="/privacidad" element={<PaginaLegal titulo="Política de Privacidad" contenido={privacidadTexto} />} />
         <Route path="/reembolsos" element={<PaginaLegal titulo="Política de Reembolsos" contenido={reembolsosTexto} />} />
         
-        {/* 5. Comodín (Fallback) */}
         <Route path="*" element={<Navigate to="/" />} />
-
         <Route path="/mando-secreto-jonathan" element={<SuperAdminBuilx />} />
       </Routes>
     </BrowserRouter>
