@@ -14,11 +14,14 @@ export default function VisorPublico() {
     useEffect(() => {
         const fetchSitio = async () => {
             try {
+                setCargando(true);
                 // 🚨 IMPORTANTE: Necesitas que tu backend tenga una ruta para buscar por SLUG
                 const res = await axios.get(`https://builx-api.onrender.com/api/empresa/slug/${slug}`);
                 
                 if (res.data && res.data.success) {
                     setDatosSitio(res.data.data);
+                    // Actualiza el título de la pestaña con el nombre del sitio
+                    document.title = res.data.data.nombre || 'Sitio Web';
                 } else {
                     setError(true);
                 }
@@ -30,7 +33,9 @@ export default function VisorPublico() {
             }
         };
 
-        fetchSitio();
+        if (slug) {
+            fetchSitio();
+        }
     }, [slug]);
 
     if (cargando) {
@@ -43,8 +48,10 @@ export default function VisorPublico() {
 
     if (error || !datosSitio) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-                <h1 className="text-2xl font-bold">Sitio no encontrado 😢</h1>
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+                <span className="text-6xl mb-4">😢</span>
+                <h1 className="text-2xl font-bold">Sitio no encontrado</h1>
+                <p className="text-gray-400 mt-2">La URL parece incorrecta o el sitio no existe.</p>
             </div>
         );
     }
@@ -63,17 +70,21 @@ export default function VisorPublico() {
     }
 
     // 👇 RENDERIZADO DEL SITIO FINAL 👇
+    // Si es preview, agregamos un padding superior (pt-8) para que el banner amarillo no tape el diseño
     return (
-        <div className="w-full min-h-screen">
+        <div className={`w-full min-h-screen ${datosSitio.suscripcion_estado === 'building' && isPreview ? 'pt-8' : ''}`}>
+            
             {/* Aviso flotante solo para el dueño / administrador */}
             {datosSitio.suscripcion_estado === 'building' && isPreview && (
-                <div className="bg-yellow-500 text-black text-center text-xs font-bold py-1.5 w-full fixed top-0 z-[9999] shadow-md">
+                <div className="bg-yellow-500 text-black text-center text-xs font-bold py-2 w-full fixed top-0 left-0 z-[9999] shadow-md">
                     ⚠️ MODO VISTA PREVIA: Este sitio aún no es visible para el público general.
                 </div>
             )}
             
             {/* Inyectamos el CSS de GrapeJS */}
-            <style dangerouslySetInnerHTML={{ __html: datosSitio.css_guardado || '' }} />
+            {datosSitio.css_guardado && (
+                <style dangerouslySetInnerHTML={{ __html: datosSitio.css_guardado }} />
+            )}
             
             {/* Inyectamos el HTML de GrapeJS */}
             <div dangerouslySetInnerHTML={{ __html: datosSitio.html_guardado || '<p class="text-center mt-20">Aún no hay diseño generado.</p>' }} />
