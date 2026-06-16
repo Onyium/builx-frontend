@@ -13,7 +13,7 @@ import { serviciosBlock } from './serviciosBlock';
 import { galeriaBlock } from './galeriaBlock';
 import { bannerPromoBlock } from './bannerPromoBlock';
 import { formularioLeadsBlock } from './formularioLeadsBlock';
-
+import { habitacionesBlock } from './habitacionesBlock';
 
 export const todosLosBloques = [
   navbarBlock,
@@ -28,5 +28,6 @@ export const todosLosBloques = [
   serviciosBlock,
   galeriaBlock,
   bannerPromoBlock,
-  formularioLeadsBlock
+  formularioLeadsBlock,
+  habitacionesBlock
 ];
