@@ -2,26 +2,38 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
+// 🚀 AQUÍ IMPORTARÁS TODAS TUS PLANTILLAS PREMIUM EN EL FUTURO
+import TemaAwwwards from '../components/templates/TemaAwwwards';
+import TemaBasico from '../components/templates/TemaBasico';
+
 export default function VisorPublico() {
-    const { slug } = useParams(); // Saca el nombre de la URL (ej. floristeriaChristian)
+    // 🚀 La variable 'subpagina' te permite manejar rutas tipo /v/hotel/reservas
+    const { slug, subpagina } = useParams(); 
     const [searchParams] = useSearchParams(); 
-    const isPreview = searchParams.get('preview') === 'true'; // Verifica si trae la llave VIP
+    const isPreview = searchParams.get('preview') === 'true'; 
     
     const [datosSitio, setDatosSitio] = useState(null);
+    const [items, setItems] = useState([]); // 🚀 Ahora también traemos los ítems
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const fetchSitio = async () => {
+        const fetchDatosGlobales = async () => {
             try {
                 setCargando(true);
-                // 🚨 IMPORTANTE: Necesitas que tu backend tenga una ruta para buscar por SLUG
-                const res = await axios.get(`https://builx-api.onrender.com/api/empresa/slug/${slug}`);
+                // 1. Traer los datos de la Empresa (Incluye el JSON de configuración)
+                const resEmpresa = await axios.get(`https://builx-api.onrender.com/api/empresa/slug/${slug}`);
                 
-                if (res.data && res.data.success) {
-                    setDatosSitio(res.data.data);
-                    // Actualiza el título de la pestaña con el nombre del sitio
-                    document.title = res.data.data.nombre || 'Sitio Web';
+                if (resEmpresa.data && resEmpresa.data.success) {
+                    const empresaData = resEmpresa.data.data;
+                    setDatosSitio(empresaData);
+                    document.title = empresaData.nombre || 'Sitio Web';
+
+                    // 2. Traer los ítems de ESA empresa
+                    // Necesitarás una ruta en el backend para esto o usar el empresa_id que acabas de descargar
+                    const resItems = await axios.get(`https://builx-api.onrender.com/api/items/${empresaData.id}`);
+                    setItems(resItems.data || []);
+
                 } else {
                     setError(true);
                 }
@@ -33,9 +45,7 @@ export default function VisorPublico() {
             }
         };
 
-        if (slug) {
-            fetchSitio();
-        }
+        if (slug) fetchDatosGlobales();
     }, [slug]);
 
     if (cargando) {
@@ -69,25 +79,52 @@ export default function VisorPublico() {
         );
     }
 
-    // 👇 RENDERIZADO DEL SITIO FINAL 👇
-    // Si es preview, agregamos un padding superior (pt-8) para que el banner amarillo no tape el diseño
+    // ==========================================
+    // 🚀 EL MOTOR DE PLANTILLAS
+    // ==========================================
+    const renderizarPlantilla = () => {
+        // Parseamos el JSON que viene de la base de datos de forma segura
+        let config = {};
+        try {
+            config = typeof datosSitio.configuracion_sitio === 'string' 
+                ? JSON.parse(datosSitio.configuracion_sitio) 
+                : (datosSitio.configuracion_sitio || {});
+        } catch (e) {
+            console.error("Error leyendo JSON de configuración", e);
+        }
+
+        const propsComunes = {
+            config: config, // Pasa el JSON con slogan, colores, links
+            empresa: datosSitio, // Pasa los datos duros (nombre, slug, email)
+            items: items, // Pasa los productos/habitaciones
+            paginaActual: subpagina || 'inicio' // Para el ruteo interno
+        };
+
+        // Decidimos qué componente de React renderizar
+        switch (datosSitio.plantilla_seleccionada) {
+            case 'tema-awwwards':
+                return <TemaAwwwards {...propsComunes} />;
+            case 'tema-basico':
+                return <TemaBasico {...propsComunes} />;
+            default:
+                // Si no hay plantilla seleccionada, o no se encuentra, cargamos una genérica
+                return <TemaBasico {...propsComunes} />; 
+        }
+    };
+
     return (
         <div className={`w-full min-h-screen ${datosSitio.suscripcion_estado === 'building' && isPreview ? 'pt-8' : ''}`}>
             
-            {/* Aviso flotante solo para el dueño / administrador */}
+            {/* Aviso flotante modo Preview */}
             {datosSitio.suscripcion_estado === 'building' && isPreview && (
                 <div className="bg-yellow-500 text-black text-center text-xs font-bold py-2 w-full fixed top-0 left-0 z-[9999] shadow-md">
                     ⚠️ MODO VISTA PREVIA: Este sitio aún no es visible para el público general.
                 </div>
             )}
             
-            {/* Inyectamos el CSS de GrapeJS */}
-            {datosSitio.css_guardado && (
-                <style dangerouslySetInnerHTML={{ __html: datosSitio.css_guardado }} />
-            )}
+            {/* 🚀 INYECTAMOS LA MAGIA REACT 🚀 */}
+            {renderizarPlantilla()}
             
-            {/* Inyectamos el HTML de GrapeJS */}
-            <div dangerouslySetInnerHTML={{ __html: datosSitio.html_guardado || '<p class="text-center mt-20">Aún no hay diseño generado.</p>' }} />
         </div>
     );
 }

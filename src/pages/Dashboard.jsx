@@ -73,25 +73,24 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`https://builx-api.onrender.com/api/empresa/${empresaId}`);
       if (res.data) {
-        // 1. Extraemos el objeto limpio
         const data = Array.isArray(res.data) ? res.data[0] : res.data;
         
-        // 2. 🚨 USAMOS "data", NO "res.data" 🚨
+        // 1. Extraemos y parseamos la bolsa mágica (JSON) si es que existe
+        let configObj = {};
+        if (data.configuracion_sitio) {
+          configObj = typeof data.configuracion_sitio === 'string' 
+            ? JSON.parse(data.configuracion_sitio) 
+            : data.configuracion_sitio;
+        }
+
+        // 2. Guardamos la data combinada: Infraestructura + JSON
         setDatosEmpresa({
-          slug: data.slug || '', 
-          direccion: data.direccion || '',
-          telefono: data.telefono || '',
-          link_google_maps: data.link_google_maps || '',
-          link_facebook: data.link_facebook || '',
-          link_instagram: data.link_instagram || '',
-          link_whatsapp: data.link_whatsapp || '',
-          link_tiktok: data.link_tiktok || '',
-          suscripcion_estado: data.suscripcion_estado || 'trial', 
-          email: data.email_administrador || '' 
+          ...data, // Mantiene el slug, email, suscripcion_estado, etc.
+          configuracion_sitio: configObj // Inyectamos el objeto listo para usarse
         });
         
-        // Aquí también usamos "data"
-        setCurrentLogo(data.logo_url || null);
+        // 3. Extraemos el logo_url directamente desde el JSON
+        setCurrentLogo(configObj.logo_url || null);
       }
     } catch (err) {
       console.error("Error al obtener datos de la empresa:", err);
@@ -107,18 +106,17 @@ export default function Dashboard() {
     }
   };
 
-  const handleUpdateEmpresa = async (nuevosDatos, file) => {
+  const handleUpdateEmpresa = async (configuracion, file) => {
     try {
       const formData = new FormData();
-      formData.append('direccion', nuevosDatos.direccion || '');
-      formData.append('telefono', nuevosDatos.telefono || '');
-      formData.append('whatsapp_pedidos', nuevosDatos.whatsapp_pedidos || '');
-      formData.append('link_google_maps', nuevosDatos.link_google_maps || '');
-      formData.append('link_facebook', nuevosDatos.link_facebook || '');
-      formData.append('link_instagram', nuevosDatos.link_instagram || '');
-      formData.append('link_whatsapp', nuevosDatos.link_whatsapp || '');
-      formData.append('link_tiktok', nuevosDatos.link_tiktok || '');
       
+      // 1. Convertimos TODO el objeto de configuración a un string para enviarlo
+      formData.append('configuracion_sitio', JSON.stringify(configuracion));
+      
+      // 2. Si hay plantilla seleccionada, la enviamos (si no, usamos 'default')
+      formData.append('plantilla_seleccionada', datosEmpresa.plantilla_seleccionada || 'default');
+
+      // 3. Multer atrapa la imagen física
       if (file) {
         formData.append('logo', file);
       }
@@ -128,13 +126,12 @@ export default function Dashboard() {
       });
       
       alert("¡Configuración de la sucursal guardada con éxito! 📍");
-      fetchEmpresa(); 
+      fetchEmpresa(); // Recargamos para reflejar cambios (como el nuevo logo)
     } catch (err) {
       console.error(err);
       alert("Error al guardar la configuración de la empresa");
     }
   };
-
   const handleSave = async (formData) => {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     const id = formData.get('id');
