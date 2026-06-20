@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingFunnel from './pages/BuilXLanding.jsx'; 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Builder from './pages/Builder';
+// 👻 ELIMINAMOS EL IMPORT DE BUILDER AQUÍ
 import CheckoutPage from './pages/CheckoutPage'; 
 import ProtectedRoute from './components/pays/ProtectedRoute.jsx'; 
 import Register from './pages/register';
@@ -10,6 +10,7 @@ import PaginaLegal from './components/BuilxLanding/PaginaLegal.jsx';
 import SuccessGeneration from './pages/SuccessGeneration'; 
 import SuperAdminBuilx from './pages/SuperAdminBuilx'; 
 import VisorPublico from './pages/VisorPublico';
+
 const terminosTexto = `
   <h3>1. Aceptación de los Términos</h3>
   <p>Al acceder y utilizar la plataforma BuilX, usted acepta estar sujeto a estos Términos de Servicio. Nuestra plataforma proporciona herramientas de software como servicio (SaaS) para la creación de catálogos digitales.</p>
@@ -51,11 +52,10 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
 
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/admin/builder" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
+        {/* 👻 ELIMINAMOS LA RUTA DE BUILDER AQUÍ */}
 
-        {/* 👇 2. LA NUEVA RUTA PARA LOS CLIENTES FINALES 👇 */}
-        {/* El :slug capturará cosas como "floristeriaChristian" */}
-        <Route path="/v/:slug" element={<VisorPublico />} />
+        {/* 👇 LA NUEVA RUTA PARA LOS CLIENTES FINALES (AHORA SOPORTA SUB-PÁGINAS) 👇 */}
+        <Route path="/v/:slug/:subpagina?" element={<VisorPublico />} />
 
         <Route path="/terminos" element={<PaginaLegal titulo="Términos de Servicio" contenido={terminosTexto} />} />
         <Route path="/privacidad" element={<PaginaLegal titulo="Política de Privacidad" contenido={privacidadTexto} />} />
