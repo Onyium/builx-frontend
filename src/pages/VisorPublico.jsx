@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // 🚀 AQUÍ IMPORTARÁS TODAS TUS PLANTILLAS PREMIUM EN EL FUTURO
 import TemaAwwwards from '../components/templates/TemaAwwwards';
-import TemaBasico from '../components/templates/TemaBasico';
+import TemaBasico from '../components/templates/TemaBasico/TemaBasico';
 
 export default function VisorPublico() {
     // 🚀 La variable 'subpagina' te permite manejar rutas tipo /v/hotel/reservas
