@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
-// 🚀 AQUÍ IMPORTARÁS TODAS TUS PLANTILLAS PREMIUM EN EL FUTURO
-import TemaAwwwards from '../components/templates/TemaAwwwards/index';
+// 🚀 IMPORTACIONES DE TUS PLANTILLAS
+import TemaAwwwards from '../components/templates/TemaAwwwards';
 import TemaBasico from '../components/templates/TemaBasico/TemaBasico';
 
 export default function VisorPublico() {
@@ -13,7 +13,7 @@ export default function VisorPublico() {
     const isPreview = searchParams.get('preview') === 'true'; 
     
     const [datosSitio, setDatosSitio] = useState(null);
-    const [items, setItems] = useState([]); // 🚀 Ahora también traemos los ítems
+    const [items, setItems] = useState([]); 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(false);
 
@@ -30,7 +30,6 @@ export default function VisorPublico() {
                     document.title = empresaData.nombre || 'Sitio Web';
 
                     // 2. Traer los ítems de ESA empresa
-                    // Necesitarás una ruta en el backend para esto o usar el empresa_id que acabas de descargar
                     const resItems = await axios.get(`https://builx-api.onrender.com/api/items/${empresaData.id}`);
                     setItems(resItems.data || []);
 
@@ -94,10 +93,10 @@ export default function VisorPublico() {
         }
 
         const propsComunes = {
-            config: config, // Pasa el JSON con slogan, colores, links
-            empresa: datosSitio, // Pasa los datos duros (nombre, slug, email)
-            items: items, // Pasa los productos/habitaciones
-            paginaActual: subpagina || 'inicio' // Para el ruteo interno
+            config: config, 
+            empresa: datosSitio, 
+            items: items, 
+            paginaActual: subpagina || 'inicio' 
         };
 
         // Decidimos qué componente de React renderizar
@@ -107,7 +106,7 @@ export default function VisorPublico() {
             case 'tema-basico':
                 return <TemaBasico {...propsComunes} />;
             default:
-                // Si no hay plantilla seleccionada, o no se encuentra, cargamos una genérica
+                // Si no hay plantilla seleccionada, cargamos una genérica
                 return <TemaBasico {...propsComunes} />; 
         }
     };
@@ -115,6 +114,11 @@ export default function VisorPublico() {
     return (
         <div className={`w-full min-h-screen ${datosSitio.suscripcion_estado === 'building' && isPreview ? 'pt-8' : ''}`}>
             
+            {/* 🚨 BANDERÍN DE PRUEBA: Si ves esto, el código nuevo SÍ se subió 🚨 */}
+            <div className="bg-red-600 text-white text-2xl md:text-4xl font-black text-center p-6 z-[99999] relative shadow-lg">
+                ¡HOLA JONATHAN, EL NUEVO CÓDIGO SÍ ESTÁ CORRIENDO EN VERCEL! 🚀
+            </div>
+
             {/* Aviso flotante modo Preview */}
             {datosSitio.suscripcion_estado === 'building' && isPreview && (
                 <div className="bg-yellow-500 text-black text-center text-xs font-bold py-2 w-full fixed top-0 left-0 z-[9999] shadow-md">
