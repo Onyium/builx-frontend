@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 // 🚀 AQUÍ IMPORTARÁS TODAS TUS PLANTILLAS PREMIUM EN EL FUTURO
-import TemaAwwwards from '../components/templates/TemaAwwwards';
+import TemaAwwwards from '../components/templates/TemaAwwwards/index';
 import TemaBasico from '../components/templates/TemaBasico/TemaBasico';
 
 export default function VisorPublico() {
