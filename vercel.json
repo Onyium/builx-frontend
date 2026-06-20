@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/v/:match*",
-      "destination": "https://builx-api.onrender.com/v/:match*"
-    },
-    {
       "source": "/api/:match*",
       "destination": "https://builx-api.onrender.com/api/:match*"
     },
