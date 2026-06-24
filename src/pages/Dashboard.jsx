@@ -355,7 +355,14 @@ export default function Dashboard() {
       </div>
 
       {/* MODAL CENTRALIZADO */}
-      <CreateItemModal isOpen={modalConfig.isOpen} initialData={modalConfig.data} onClose={() => setModalConfig({ isOpen: false, data: null })} onSave={handleSave} />
+      <CreateItemModal 
+    isOpen={modalConfig.isOpen} 
+    initialData={modalConfig.data} 
+    onClose={() => setModalConfig({ isOpen: false, data: null })} 
+    onSave={handleSave} 
+    // 🚀 AQUÍ LE PASAMOS EL MAPA QUE HIZO LA IA:
+    esquemaIA={datosEmpresa?.configuracion_sitio?.esquema_detalles_item || {}} 
+      />
       <ReviewsModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} item={itemToReview} />
 
     </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function CreateItemModal({ isOpen, onClose, onSave, initialData = null }) {
+// 🚀 Añadimos esquemaIA a las props
+export default function CreateItemModal({ isOpen, onClose, onSave, initialData = null, esquemaIA = {} }) {
   const [categorias, setCategorias] = useState([]);
   const [modoGaleria, setModoGaleria] = useState(false);
   
@@ -12,14 +13,14 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
 
   const [tabInterna, setTabInterna] = useState('general');
 
-  // 🚀 formData SIMPLIFICADO: Adiós a los 10 campos de acordeones
+  // formData estándar
   const [formData, setFormData] = useState({
     nombre: '', descripcion: '', precio: '', tipo_item: 'producto', categoria_id: '',
     sku: '', precio_anterior: '', badge_oferta: false, badge_nuevo: false,
     controlar_inventario: false, stock: 0, mostrar_sku: true, mostrar_reviews: false,
   });
 
-  // 🚀 LA BOLSA MÁGICA DEL ÍTEM
+  // 🚀 LA BOLSA MÁGICA DEL ÍTEM (Aquí viven los detalles anidados)
   const [detallesExtra, setDetallesExtra] = useState({});
 
   const empresaId = localStorage.getItem('empresa_id') || 1;
@@ -38,7 +39,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
         })
         .catch(err => console.error("Error cargando categorías:", err));
 
-      // 2. Cargar datos iniciales
+      // 2. Cargar datos iniciales (MODO EDICIÓN)
       if (initialData) {
         setFormData({
           nombre: initialData.nombre || '', descripcion: initialData.descripcion || '', precio: initialData.precio || '',
@@ -50,7 +51,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
           mostrar_reviews: !!initialData.mostrar_reviews,
         });
 
-        // 🚀 Cargar el JSON de detalles extra
+        // 🚀 Desempaquetar el JSON de detalles extra
         try {
           if (initialData.detalles_extra) {
             setDetallesExtra(typeof initialData.detalles_extra === 'string' 
@@ -72,11 +73,21 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
         setModoGaleria(fotosParseadas.length > 1);
         
       } else {
+        // 🚀 MODO NUEVO ÍTEM
         setFormData({
           nombre: '', descripcion: '', precio: '', tipo_item: 'producto', categoria_id: '', sku: '', precio_anterior: '',
           badge_oferta: false, badge_nuevo: false, controlar_inventario: false, stock: 0, mostrar_sku: true, mostrar_reviews: false,
         });
-        setDetallesExtra({});
+        
+        // Leemos el esquema de la IA y creamos las cajitas vacías
+        const detallesVacios = {};
+        if (esquemaIA && typeof esquemaIA === 'object') {
+            Object.keys(esquemaIA).forEach(llave => {
+                detallesVacios[llave] = ''; 
+            });
+        }
+        setDetallesExtra(detallesVacios);
+
         setFotosGuardadas([]);
         setModoGaleria(false);
       }
@@ -84,7 +95,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
       setArchivos([]);
       setFotosAEliminar([]);
     }
-  }, [initialData, isOpen, empresaId]);
+  }, [initialData, isOpen, empresaId, esquemaIA]);
 
   if (!isOpen) return null;
 
@@ -104,7 +115,6 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
     setFotosAEliminar(prev => [...prev, foto]); 
   };
 
-  // Manejador para el JSON de detalles extra
   const handleDetalleChange = (key, value) => {
     setDetallesExtra(prev => ({ ...prev, [key]: value }));
   };
@@ -123,7 +133,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
 
     data.append('empresa_id', empresaId);
     
-    // 🚀 Empaquetamos el JSON dinámico
+    // 🚀 Empaquetamos el objeto React y lo convertimos a String (JSON puro)
     data.append('detalles_extra', JSON.stringify(detallesExtra));
 
     archivos.forEach(file => data.append('fotos', file));
@@ -165,20 +175,38 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-5 custom-scrollbar">
           
-          {/* SECCIÓN 1 Y 2 SE QUEDAN EXACTAMENTE IGUAL COMO LAS TENÍAS */}
           {tabInterna === 'general' && (
-             // ... Todo tu código de general (nombre, precio, fotos) ...
              <div className="space-y-4 animate-fade-in">
              <div>
                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Nombre</label>
                <input required placeholder="Ej. Lavamanos Ovalado" className="w-full p-3 sm:p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" 
                  value={formData.nombre} onChange={(e) => setFormData({...formData, nombre: e.target.value})} />
              </div>
-             {/* ... el resto de tu código de general ... */}
+             
+             <div>
+               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Descripción</label>
+               <textarea placeholder="Descripción del producto..." className="w-full p-3 sm:p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm h-24 resize-none" 
+                 value={formData.descripcion} onChange={(e) => setFormData({...formData, descripcion: e.target.value})} />
+             </div>
+
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Precio ($)</label>
+                 <input required type="number" step="0.01" placeholder="0.00" className="w-full p-3 sm:p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm font-bold text-blue-600" 
+                   value={formData.precio} onChange={(e) => setFormData({...formData, precio: e.target.value})} />
+               </div>
+               <div>
+                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Categoría</label>
+                 <select required className="w-full p-3 sm:p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                   value={formData.categoria_id} onChange={(e) => setFormData({...formData, categoria_id: e.target.value})}>
+                   {categorias.map(cat => <option key={cat.id} value={cat.id}>{cat.nombre}</option>)}
+                 </select>
+               </div>
+             </div>
              </div>
           )}
+
           {tabInterna === 'marketing' && (
-            // ... Todo tu código de marketing ...
             <div className="space-y-4 animate-fade-in">
               <div className="bg-gray-50/60 p-4 sm:p-5 rounded-2xl border border-gray-100 space-y-4">
                 <div className="flex justify-between items-center">
@@ -191,34 +219,37 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
                 <input placeholder="Ej. SKU-115542" className="w-full p-3 sm:p-4 bg-white border border-gray-200 rounded-xl outline-none text-sm" 
                   value={formData.sku} onChange={(e) => setFormData({...formData, sku: e.target.value})} />
               </div>
-              {/* ... el resto de tu código de marketing ... */}
             </div>
           )}
 
-          {/* 🚀 SECCIÓN 3: DETALLES DINÁMICOS (El JSON) */}
+          {/* 🚀 SECCIÓN 3: DETALLES DINÁMICOS (El JSON visual) */}
           {tabInterna === 'detalles' && (
             <div className="space-y-4 animate-fade-in">
-              <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-sm text-blue-800">
-                Estos campos fueron generados por la IA específicamente para tu tipo de negocio.
+              <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-sm text-blue-800 font-medium">
+                ✨ Campos personalizados para tu catálogo.
               </div>
               
               {Object.keys(detallesExtra).length === 0 ? (
                 <div className="text-center p-8 text-gray-400 font-medium border-2 border-dashed border-gray-200 rounded-2xl">
-                  Aún no hay detalles extra. La IA los creará cuando diseñe tu sitio.
+                  Este catálogo no usa campos dinámicos extra.
                 </div>
               ) : (
-                Object.entries(detallesExtra).map(([key, value]) => (
-                  <div key={key} className="border border-gray-100 rounded-2xl p-4 bg-gray-50/40">
-                    <label className="block text-xs font-black text-gray-800 mb-2 capitalize">
-                      {key.replace(/_/g, ' ')}
-                    </label>
-                    <textarea 
-                      className="w-full p-3 sm:p-4 bg-white border border-gray-200 rounded-xl outline-none h-20 text-xs resize-none focus:ring-2 focus:ring-blue-500"
-                      value={value} 
-                      onChange={(e) => handleDetalleChange(key, e.target.value)} 
-                    />
-                  </div>
-                ))
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {Object.entries(detallesExtra).map(([key, value]) => (
+                    <div key={key} className="border border-gray-100 rounded-2xl p-4 bg-gray-50/40 focus-within:bg-white focus-within:border-blue-200 transition-colors">
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
+                        {key.replace(/_/g, ' ')}
+                      </label>
+                      <input 
+                        type={esquemaIA[key] === 'numero' ? 'number' : 'text'}
+                        className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-blue-500"
+                        placeholder={`Ej. Escribe aquí...`}
+                        value={value || ''} 
+                        onChange={(e) => handleDetalleChange(key, e.target.value)} 
+                      />
+                    </div>
+                  ))}
+                </div>
               )}
 
               <div className="border border-gray-100 rounded-2xl p-4 sm:p-5 bg-emerald-50/30 flex justify-between items-center mt-6">
