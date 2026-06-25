@@ -1,144 +1,220 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-// Ahora recibimos 'config' (identidad visual) e 'items' (la tabla de tu backend)
+// --- SUB-COMPONENTE: El Formulario Mágico de WhatsApp ---
+// Lo dejamos aquí mismo para que no tengas que crear más archivos
+const FormularioReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [extras, setExtras] = useState({ almuerzo: false, transporte: false });
+
+  const calcularNoches = () => {
+    if (!checkIn || !checkOut) return 0;
+    const dias = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+    return dias > 0 ? dias : 0;
+  };
+
+  const noches = calcularNoches();
+  const costoAlmuerzo = extras.almuerzo ? (10 * noches) : 0;
+  const costoTransporte = extras.transporte ? 15 : 0;
+  const total = (item.precio * noches) + costoAlmuerzo + costoTransporte;
+
+  const enviarPorWhatsApp = () => {
+    if (!checkIn || !checkOut) {
+      alert("Por favor selecciona las fechas de tu estadía.");
+      return;
+    }
+    let mensaje = `👋 Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
+    mensaje += `🏨 *Habitación:* ${item.nombre}\n`;
+    mensaje += `📅 *Check-in:* ${checkIn}\n`;
+    mensaje += `📅 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
+    if (extras.almuerzo || extras.transporte) {
+      mensaje += `✨ *Extras solicitados:*\n`;
+      if (extras.almuerzo) mensaje += `- Almuerzos incluidos\n`;
+      if (extras.transporte) mensaje += `- Transporte desde el aeropuerto\n`;
+      mensaje += `\n`;
+    }
+    mensaje += `💰 *Total estimado:* $${total}\n\n`;
+    mensaje += `¿Tienen disponibilidad para estas fechas?`;
+
+    window.open(`https://wa.me/${telefonoHotel}?text=${encodeURIComponent(mensaje)}`, '_blank');
+  };
+
+  return (
+    <div className="mt-4 pt-4 border-t border-gray-100 animate-fade-in">
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Llegada</label>
+          <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Salida</label>
+          <input type="date" value={checkOut} min={checkIn} onChange={(e) => setCheckOut(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+        </div>
+      </div>
+
+      <div className="space-y-2 mb-5">
+        <label className="flex items-center gap-3 text-sm cursor-pointer group">
+          <input type="checkbox" checked={extras.almuerzo} onChange={(e) => setExtras({...extras, almuerzo: e.target.checked})} className="w-4 h-4 accent-blue-600" />
+          <span className="text-gray-600 group-hover:text-gray-900 transition-colors">Almuerzo incluido (+$10/noche)</span>
+        </label>
+        <label className="flex items-center gap-3 text-sm cursor-pointer group">
+          <input type="checkbox" checked={extras.transporte} onChange={(e) => setExtras({...extras, transporte: e.target.checked})} className="w-4 h-4 accent-blue-600" />
+          <span className="text-gray-600 group-hover:text-gray-900 transition-colors">Transporte al aeropuerto (+$15)</span>
+        </label>
+      </div>
+
+      <div className="flex justify-between items-end mb-5 bg-gray-50 p-3 rounded-lg">
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total aprox:</span>
+        <span className="font-black text-2xl text-gray-900">${total}</span>
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={onCancel} className="px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors text-sm">
+          Cancelar
+        </button>
+        <button onClick={enviarPorWhatsApp} className="flex-1 py-3 rounded-xl font-bold text-white transition-transform active:scale-95 text-sm shadow-lg flex justify-center items-center gap-2" style={{ backgroundColor: '#25D366', shadowColor: 'rgba(37, 211, 102, 0.3)' }}>
+          Reservar por WhatsApp
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+// --- COMPONENTE PRINCIPAL ---
 export default function TemaBasico({ config, items }) {
-    // 1. Configuraciones visuales y de texto desde el JSON global
-    const { hotelIdentity, terminologia } = config;
-    const isDark = hotelIdentity?.theme?.mode === 'dark';
-    const primaryColor = hotelIdentity?.theme?.primaryAccent || '#3b82f6';
-    const secondaryColor = hotelIdentity?.theme?.secondaryAccent || '#9ca3af';
+    const [reservaActiva, setReservaActiva] = useState(null); // Controla qué tarjeta tiene el formulario abierto
 
-    // Textos adaptables: Si es hotel dice "Cabañas", si es ferretería dice "Productos"
+    const { hotelIdentity, terminologia, contactChannels } = config;
+    const isDark = hotelIdentity?.theme?.mode === 'dark';
+    const primaryColor = hotelIdentity?.theme?.primaryAccent || '#000000';
+    const secondaryColor = hotelIdentity?.theme?.secondaryAccent || '#f3f4f6';
+    const telefonoHotel = contactChannels?.whatsapp?.phoneNumber || '';
+
     const tituloCatalogo = terminologia?.catalogo_plural || "Nuestro Catálogo";
 
     return (
-        <div 
-            className={`font-sans min-h-screen ${isDark ? 'text-gray-100' : 'text-gray-800'}`} 
-            style={{ backgroundColor: isDark ? '#121212' : '#f9fafb' }}
-        >
-            {/* --- HEADER --- */}
-            <header 
-                className="p-8 text-center shadow-md relative overflow-hidden" 
-                style={{ backgroundColor: primaryColor, color: '#fff' }}
-            >
-                {/* Si la IA puso una imagen de fondo en el JSON, la mostramos */}
-                {config.modules?.heroSection?.backgroundImage && (
-                   <div 
-                     className="absolute inset-0 opacity-30 bg-cover bg-center"
-                     style={{ backgroundImage: `url(${config.modules.heroSection.backgroundImage})` }}
-                   />
+        <div className={`font-sans min-h-screen selection:bg-blue-200 selection:text-blue-900 ${isDark ? 'text-gray-100 bg-[#0a0a0a]' : 'text-gray-800 bg-[#f8fafc]'}`}>
+            
+            {/* --- HEADER MINIMALISTA --- */}
+            <header className="relative py-24 px-8 text-center overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10"></div>
+                {config.modules?.heroSection?.backgroundImage ? (
+                   <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${config.modules.heroSection.backgroundImage})` }} />
+                ) : (
+                   <div className="absolute inset-0" style={{ backgroundColor: primaryColor }} />
                 )}
-                <div className="relative z-10">
-                    <h1 className="text-4xl font-black">{hotelIdentity?.name}</h1>
-                    <p className="mt-2 text-xl opacity-90">{hotelIdentity?.slogan}</p>
+                
+                <div className="relative z-20 max-w-3xl mx-auto">
+                    <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-4 drop-shadow-lg">
+                        {hotelIdentity?.name}
+                    </h1>
+                    <p className="text-lg md:text-2xl text-white/90 font-medium tracking-wide drop-shadow-md">
+                        {hotelIdentity?.slogan}
+                    </p>
                 </div>
             </header>
 
-            {/* --- CATÁLOGO DE ÍTEMS DE MYSQL --- */}
-            <main className="max-w-5xl mx-auto p-8">
-                <h2 
-                    className="text-2xl font-bold border-b pb-2 mb-8" 
-                    style={{ borderColor: secondaryColor }}
-                >
-                    {tituloCatalogo}
-                </h2>
+            {/* --- CATÁLOGO --- */}
+            <main className="max-w-6xl mx-auto p-6 md:p-12 -mt-10 relative z-30">
+                <div className="flex items-center justify-between mb-10">
+                    <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
+                        {tituloCatalogo}
+                    </h2>
+                    <div className="h-1 w-20 rounded-full" style={{ backgroundColor: primaryColor }}></div>
+                </div>
                 
-                {/* Grid Responsivo */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Mapeamos los ítems REALES de tu base de datos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {items.map(item => {
-                        // Si el producto no está disponible, no lo renderizamos
                         if (!item.esta_disponible) return null;
 
-                        // Parseamos la columna detalles_extra (si existe)
                         let detalles = {};
-                        try {
-                            detalles = item.detalles_extra ? JSON.parse(item.detalles_extra) : {};
-                        } catch (e) { console.warn("Error leyendo detalles_extra", e); }
+                        try { detalles = item.detalles_extra ? JSON.parse(item.detalles_extra) : {}; } 
+                        catch (e) { console.warn("Error", e); }
+
+                        const isReservaAbierta = reservaActiva === item.id;
 
                         return (
                             <div 
                                 key={item.id} 
-                                className="flex flex-col rounded-xl shadow-sm border transition-all hover:shadow-md hover:-translate-y-1 overflow-hidden"
-                                style={{ 
-                                    backgroundColor: isDark ? '#1e1e1e' : '#ffffff',
-                                    borderColor: isDark ? '#333333' : '#e5e7eb'
-                                }}
+                                className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group"
                             >
-                                {/* Imagen del producto */}
+                                {/* Imagen con zoom suave en hover */}
                                 {item.imagen_url && (
-                                    <div className="h-48 overflow-hidden relative">
+                                    <div className="h-56 overflow-hidden relative bg-gray-100">
                                         <img 
                                             src={`https://builx-api.onrender.com${item.imagen_url}`} 
                                             alt={item.nombre} 
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         />
-                                        {/* Badges de Oferta/Nuevo si están en MySQL */}
                                         {item.badge_oferta && (
-                                           <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">OFERTA</span>
+                                           <span className="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full tracking-widest uppercase shadow-lg">OFERTA</span>
                                         )}
                                     </div>
                                 )}
 
-                                {/* Información del producto */}
-                                <div className="p-5 flex-1 flex flex-col">
-                                    <h3 className="font-bold text-xl">{item.nombre}</h3>
-                                    <p className="text-sm opacity-80 mt-1 line-clamp-2">
-                                        {item.descripcion}
-                                    </p>
+                                <div className="p-8 flex-1 flex flex-col">
+                                    <div className="flex justify-between items-start gap-4 mb-2">
+                                        <h3 className="font-black text-2xl leading-tight text-gray-900 dark:text-white">{item.nombre}</h3>
+                                    </div>
                                     
-                                    {/* Precio desde MySQL */}
-                                    <div className="mt-4 flex items-end gap-2">
-                                        <p className="font-black text-2xl" style={{ color: primaryColor }}>
-                                            ${item.precio}
-                                        </p>
-                                        {item.precio_anterior && (
-                                            <p className="text-sm line-through opacity-50 mb-1">
-                                                ${item.precio_anterior}
-                                            </p>
-                                        )}
+                                    <div className="flex items-baseline gap-2 mb-4">
+                                        <p className="font-black text-3xl tracking-tighter" style={{ color: primaryColor }}>${item.precio}</p>
+                                        <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">/ noche</span>
                                     </div>
 
-                                    {/* --- LA MAGIA: DETALLES EXTRA DINÁMICOS --- */}
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">
+                                        {item.descripcion}
+                                    </p>
+
+                                    {/* Detalles Extra (Diseño ultra limpio) */}
                                     {Object.keys(detalles).length > 0 && (
-                                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                            {/* Iteramos sobre cualquier llave rara que venga en detalles_extra */}
+                                        <div className="mb-6 space-y-3">
                                             {Object.entries(detalles).map(([clave, valor]) => {
-                                                // Si es un arreglo (ej: amenidades), lo mostramos como lista
                                                 if (Array.isArray(valor)) {
                                                     return (
-                                                        <div key={clave} className="mb-2">
-                                                            <span className="text-xs font-bold uppercase opacity-60 block mb-1">
-                                                                {clave.replace(/_/g, ' ')}:
-                                                            </span>
-                                                            <ul className="text-sm space-y-1">
+                                                        <div key={clave} className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl">
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">{clave.replace(/_/g, ' ')}</span>
+                                                            <ul className="text-sm space-y-1.5 text-gray-700 dark:text-gray-300">
                                                                 {valor.map((v, i) => (
-                                                                    <li key={i} className="flex items-center gap-2">
-                                                                        <span style={{ color: secondaryColor }}>•</span> {v}
+                                                                    <li key={i} className="flex items-center gap-2 font-medium">
+                                                                        <span style={{ color: primaryColor }}>•</span> {v}
                                                                     </li>
                                                                 ))}
                                                             </ul>
                                                         </div>
                                                     );
                                                 }
-                                                // Si es texto normal (ej: capacidad, talla, medida)
                                                 return (
-                                                    <p key={clave} className="text-sm flex justify-between border-b border-gray-100 dark:border-gray-800 py-1">
-                                                        <span className="opacity-70 capitalize">{clave.replace(/_/g, ' ')}</span>
-                                                        <span className="font-medium">{valor}</span>
-                                                    </p>
+                                                    <div key={clave} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800/50 last:border-0">
+                                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{clave.replace(/_/g, ' ')}</span>
+                                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{valor}</span>
+                                                    </div>
                                                 );
                                             })}
                                         </div>
                                     )}
 
-                                    {/* Botón de Acción Dinámico */}
-                                    <button 
-                                        className="w-full mt-5 py-2.5 rounded-lg font-bold text-white transition-opacity hover:opacity-90 mt-auto"
-                                        style={{ backgroundColor: primaryColor }}
-                                    >
-                                        {config.modules?.heroSection?.ctaText || "Solicitar"}
-                                    </button>
+                                    {/* CONTROLES DE RESERVA */}
+                                    <div className="mt-auto">
+                                        {!isReservaAbierta ? (
+                                            <button 
+                                                onClick={() => setReservaActiva(item.id)}
+                                                className="w-full py-4 rounded-2xl font-black text-white transition-all hover:opacity-90 active:scale-95 shadow-lg"
+                                                style={{ backgroundColor: primaryColor, shadowColor: `${primaryColor}40` }}
+                                            >
+                                                {config.modules?.heroSection?.ctaText || "Solicitar Disponibilidad"}
+                                            </button>
+                                        ) : (
+                                            <FormularioReserva 
+                                                item={item} 
+                                                telefonoHotel={telefonoHotel} 
+                                                primaryColor={primaryColor}
+                                                onCancel={() => setReservaActiva(null)}
+                                            />
+                                        )}
+                                    </div>
+
                                 </div>
                             </div>
                         );
