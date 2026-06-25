@@ -87,7 +87,7 @@ export default function TemaBasico({ config, items }) {
 
     const { hotelIdentity, terminologia, contactChannels } = config;
     const isDark = hotelIdentity?.theme?.mode === 'dark';
-    const primaryColor = hotelIdentity?.theme?.primaryAccent || '#000000';
+    const primaryColor = hotelIdentity?.theme?.primaryAccent || '#342b2b';
     const secondaryColor = hotelIdentity?.theme?.secondaryAccent || '#f3f4f6';
     const telefonoHotel = contactChannels?.whatsapp?.phoneNumber || '';
 
