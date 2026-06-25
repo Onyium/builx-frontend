@@ -1,6 +1,121 @@
 import React, { useState, useEffect } from 'react';
 
-// --- SUB-COMPONENTE: El Panel Lateral (Drawer) de WhatsApp ---
+const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primaryColor }) => {
+  const [fechaVista, setFechaVista] = useState(new Date());
+
+  const diasSemana = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
+  const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  // Lógica matemática del calendario
+  const obtenerDiasDelMes = (año, mes) => new Date(año, mes + 1, 0).getDate();
+  const obtenerPrimerDiaDelMes = (año, mes) => new Date(año, mes, 1).getDay();
+
+  const añoActual = fechaVista.getFullYear();
+  const mesActual = fechaVista.getMonth();
+  const diasEnMes = obtenerDiasDelMes(añoActual, mesActual);
+  const primerDia = obtenerPrimerDiaDelMes(añoActual, mesActual);
+
+  const cambiarMes = (incremento) => {
+    setFechaVista(new Date(añoActual, mesActual + incremento, 1));
+  };
+
+  const handleSeleccionDia = (dia) => {
+    const fechaSeleccionada = new Date(añoActual, mesActual, dia);
+    // Formato YYYY-MM-DD para compatibilidad
+    const fechaString = fechaSeleccionada.toISOString().split('T')[0];
+    const hoyString = new Date().toISOString().split('T')[0];
+
+    if (fechaString < hoyString) return; // No permitir fechas pasadas
+
+    if (!checkIn || (checkIn && checkOut)) {
+      // Nueva selección, empezamos por el Check-in
+      setCheckIn(fechaString);
+      setCheckOut('');
+    } else if (fechaString > checkIn) {
+      // Seleccionó una fecha posterior, es el Check-out
+      setCheckOut(fechaString);
+    } else {
+      // Seleccionó una fecha anterior al Check-in, reiniciamos
+      setCheckIn(fechaString);
+      setCheckOut('');
+    }
+  };
+
+  // Generar la cuadrícula de días
+  const cuadricula = [];
+  for (let i = 0; i < primerDia; i++) cuadricula.push(null); // Espacios vacíos
+  for (let i = 1; i <= diasEnMes; i++) cuadricula.push(i);
+
+  return (
+    <div className="bg-white dark:bg-[#1a1a1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm w-full select-none">
+      
+      {/* Controles del Mes */}
+      <div className="flex justify-between items-center mb-6">
+        <button onClick={() => cambiarMes(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <span className="font-black text-gray-800 dark:text-white capitalize tracking-wide">
+          {meses[mesActual]} {añoActual}
+        </span>
+        <button onClick={() => cambiarMes(1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </div>
+
+      {/* Días de la semana */}
+      <div className="grid grid-cols-7 gap-1 mb-2 text-center">
+        {diasSemana.map(dia => (
+          <div key={dia} className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{dia}</div>
+        ))}
+      </div>
+
+      {/* Cuadrícula de números */}
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {cuadricula.map((dia, index) => {
+          if (!dia) return <div key={`empty-${index}`} className="h-10"></div>;
+
+          const fechaActual = new Date(añoActual, mesActual, dia).toISOString().split('T')[0];
+          const hoy = new Date().toISOString().split('T')[0];
+          const esPasado = fechaActual < hoy;
+          
+          const esCheckIn = fechaActual === checkIn;
+          const esCheckOut = fechaActual === checkOut;
+          const esRango = checkIn && checkOut && fechaActual > checkIn && fechaActual < checkOut;
+
+          // Clases dinámicas de Tailwind
+          let clasesBase = "h-10 w-full flex items-center justify-center text-sm font-medium rounded-xl transition-all cursor-pointer ";
+          
+          if (esPasado) {
+            clasesBase += "text-gray-300 dark:text-gray-700 cursor-not-allowed";
+          } else if (esCheckIn || esCheckOut) {
+            clasesBase += "text-white shadow-md transform scale-105 font-bold";
+          } else if (esRango) {
+            clasesBase += "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-none";
+          } else {
+            clasesBase += "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800";
+          }
+
+          return (
+            <div 
+              key={index} 
+              onClick={() => handleSeleccionDia(dia)}
+              className={clasesBase}
+              style={(esCheckIn || esCheckOut) ? { backgroundColor: primaryColor } : {}}
+            >
+              {dia}
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Resumen visual de la selección */}
+      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between text-xs font-bold text-gray-500">
+        <div>Llegada: {checkIn ? checkIn.split('-').reverse().join('/') : '--/--/----'}</div>
+        <div>Salida: {checkOut ? checkOut.split('-').reverse().join('/') : '--/--/----'}</div>
+      </div>
+    </div>
+  );
+}
 const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -83,16 +198,17 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
           <div className="h-px w-full bg-gray-100 dark:bg-gray-800 mb-8"></div>
 
           {/* Calendario */}
-          <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Fechas</h5>
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Llegada</label>
-              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all dark:text-white" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Salida</label>
-              <input type="date" value={checkOut} min={checkIn} onChange={(e) => setCheckOut(e.target.value)} className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all dark:text-white" />
-            </div>
+          <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Fechas de Estadía</h5>
+          
+          {/* --- AQUÍ INYECTAMOS EL NUEVO CALENDARIO --- */}
+          <div className="mb-8">
+            <CalendarioPremium 
+              checkIn={checkIn}
+              checkOut={checkOut}
+              setCheckIn={setCheckIn}
+              setCheckOut={setCheckOut}
+              primaryColor={primaryColor}
+            />
           </div>
 
           {/* Servicios Extra */}
