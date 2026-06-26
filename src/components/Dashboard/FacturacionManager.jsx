@@ -11,33 +11,39 @@ export default function FacturacionManager({ empresa }) {
     const esPro = planActual === 'pro';
 
     const handleGestionarSuscripcion = async () => {
-    setEnviando(true);
-    try {
-        // Pedimos el link al backend
-        const res = await axios.post('https://builx-api.onrender.com/api/pagos/generar-portal', { 
-            empresaId: empresa.id 
-        });
+        setEnviando(true);
         
-        console.log("📦 Paquete recibido del backend:", res.data);
+        // 🚀 TRUCO MAESTRO: Abrimos una pestaña en blanco INMEDIATAMENTE
+        // al hacer clic. Así engañamos al bloqueador de pop-ups.
+        const nuevaPestana = window.open('about:blank', '_blank');
 
-        // 🚀 AQUÍ ESTÁ EL FIX: Extraemos específicamente res.data.url
-        if (res.data && res.data.url) {
-            // Usamos window.location.href para ir en la misma pestaña, 
-            // o window.open para abrir una nueva.
-            window.open(res.data.url, '_blank'); 
-        } else {
-            console.error("El backend no mandó la URL correctamente", res.data);
-            alert("Hubo un problema al generar el enlace seguro.");
+        try {
+            // Pedimos el link al backend
+            const res = await axios.post('https://builx-api.onrender.com/api/pagos/generar-portal', { 
+                empresaId: empresa.id 
+            });
+            
+            console.log("📦 Paquete recibido del backend:", res.data);
+
+            if (res.data && res.data.url) {
+                // 🚀 Inyectamos la URL real en la pestaña que ya teníamos abierta
+                nuevaPestana.location.href = res.data.url;
+            } else {
+                nuevaPestana.close(); // Si algo sale mal, cerramos la pestaña fantasma
+                console.error("El backend no mandó la URL correctamente", res.data);
+                alert("Hubo un problema al generar el enlace seguro.");
+            }
+
+        } catch (error) {
+            nuevaPestana.close(); // Cerramos si hubo error en el backend
+            console.error("❌ Error al abrir portal:", error.response?.data || error.message);
+            alert("Aún no tienes una suscripción activa o hubo un error de conexión.");
         }
-
-    } catch (error) {
-        console.error("❌ Error al abrir portal:", error.response?.data || error.message);
-        alert("Aún no tienes una suscripción activa o hubo un error de conexión.");
-    }
-    
-    setEnviando(false);
-    setMostrarModal(false);
+        
+        setEnviando(false);
+        setMostrarModal(false);
     };
+
     return (
         <div className="p-8 max-w-4xl mx-auto animate-fade-in">
             <h2 className="text-3xl font-black text-gray-800 mb-2">Facturación y Plan</h2>
