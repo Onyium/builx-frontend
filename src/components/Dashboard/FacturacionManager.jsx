@@ -11,33 +11,20 @@ export default function FacturacionManager({ empresa }) {
     const esPro = planActual === 'pro';
 
     const handleGestionarSuscripcion = async () => {
-        // Si tienes la URL de Paddle guardada en la base de datos, úsala aquí.
-        // Si no, puedes redirigir a un endpoint de tu backend que genere la URL.
-        const managementUrl = empresa?.paddle_management_url; 
-
-        if (motivo) {
-            setEnviando(true);
-            try {
-                // Guardamos el motivo en la BD silenciosamente (opcional)
-                await axios.post('https://builx-api.onrender.com/api/feedback-cancelacion', { 
-                    empresaId: empresa.id, 
-                    motivo 
-                });
-            } catch (error) {
-                console.error("Error guardando feedback", error);
-            }
-            setEnviando(false);
-        }
-
-        // 🚀 Redirigir al portal de Paddle (o mostrar alerta si aún no tienes el link guardado)
-        if (managementUrl) {
-            window.open(managementUrl, '_blank');
-        } else {
-            alert("Redirigiendo al portal seguro de Paddle...");
-            // window.open('https://paddle.com/tu-link-generico-por-ahora', '_blank');
-        }
+    setEnviando(true);
+    try {
+        // Le pedimos al backend el link mágico
+        const res = await axios.post('https://builx-api.onrender.com/api/pagos/generar-portal', { empresaId: empresa.id });
         
-        setMostrarModal(false);
+        if (res.data.url) {
+            // Abrimos el portal de Paddle en otra pestaña
+            window.open(res.data.url, '_blank');
+        }
+    } catch (error) {
+        alert("Aún no tienes una suscripción activa para gestionar.");
+    }
+    setEnviando(false);
+    setMostrarModal(false);
     };
 
     return (
