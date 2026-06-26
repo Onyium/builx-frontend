@@ -202,55 +202,57 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
                    {categorias.map(cat => <option key={cat.id} value={cat.id}>{cat.nombre}</option>)}
                  </select>
                </div>
-               {/* 📸 SECCIÓN DE IMÁGENES RECUPERADA */}
-              <div className="pt-4 border-t border-gray-100 mt-4">
-                <div className="flex justify-between items-center mb-3">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    Fotografías del Ítem
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-500">
-                    <input 
-                      type="checkbox" 
-                      checked={modoGaleria} 
-                      onChange={(e) => setModoGaleria(e.target.checked)} 
-                      className="accent-blue-600 w-4 h-4" 
-                    />
-                    Permitir varias fotos (Galería)
-                  </label>
-                </div>
-                
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  multiple={modoGaleria} 
-                  onChange={handleFileSelect}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer transition-colors"
-                />
-
-                {/* Previsualización de las fotos */}
-                {(fotosGuardadas.length > 0 || archivos.length > 0) && (
-                  <div className="flex gap-2 overflow-x-auto py-3 custom-scrollbar mt-2">
-                    
-                    {/* Fotos que ya estaban guardadas en MySQL */}
-                    {fotosGuardadas.map((foto, index) => (
-                      <div key={`old-${index}`} className="relative flex-shrink-0 animate-fade-in">
-                        <img src={foto} alt="guardada" className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm" />
-                        <button type="button" onClick={() => removeFotoGuardada(index, foto)} className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md">✕</button>
-                      </div>
-                    ))}
-                    
-                    {/* Fotos nuevas recién seleccionadas */}
-                    {archivos.map((file, index) => (
-                      <div key={`new-${index}`} className="relative flex-shrink-0 animate-fade-in">
-                        <img src={URL.createObjectURL(file)} alt="nueva" className="w-16 h-16 object-cover rounded-xl border-2 border-blue-400 shadow-sm" />
-                        <button type="button" onClick={() => removeArchivoNuevo(index)} className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md">✕</button>
-                      </div>
-                    ))}
-                    
-                  </div>
-                )}
-              </div>
              </div>
+
+             {/* 📸 SECCIÓN DE IMÁGENES RECUPERADA Y UBICADA CORRECTAMENTE */}
+             <div className="pt-4 border-t border-gray-100 mt-4">
+               <div className="flex justify-between items-center mb-3">
+                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                   Fotografías del Ítem
+                 </label>
+                 <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-500">
+                   <input 
+                     type="checkbox" 
+                     checked={modoGaleria} 
+                     onChange={(e) => setModoGaleria(e.target.checked)} 
+                     className="accent-blue-600 w-4 h-4" 
+                   />
+                   Permitir varias fotos (Galería)
+                 </label>
+               </div>
+               
+               <input 
+                 type="file" 
+                 accept="image/*"
+                 multiple={modoGaleria} 
+                 onChange={handleFileSelect}
+                 className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer transition-colors"
+               />
+
+               {/* Previsualización de las fotos */}
+               {(fotosGuardadas.length > 0 || archivos.length > 0) && (
+                 <div className="flex gap-2 overflow-x-auto py-3 custom-scrollbar mt-2">
+                   
+                   {/* Fotos que ya estaban guardadas en MySQL */}
+                   {fotosGuardadas.map((foto, index) => (
+                     <div key={`old-${index}`} className="relative flex-shrink-0 animate-fade-in">
+                       <img src={foto} alt="guardada" className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                       <button type="button" onClick={() => removeFotoGuardada(index, foto)} className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md">✕</button>
+                     </div>
+                   ))}
+                   
+                   {/* Fotos nuevas recién seleccionadas */}
+                   {archivos.map((file, index) => (
+                     <div key={`new-${index}`} className="relative flex-shrink-0 animate-fade-in">
+                       <img src={URL.createObjectURL(file)} alt="nueva" className="w-16 h-16 object-cover rounded-xl border-2 border-blue-400 shadow-sm" />
+                       <button type="button" onClick={() => removeArchivoNuevo(index)} className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md">✕</button>
+                     </div>
+                   ))}
+                   
+                 </div>
+               )}
+             </div>
+
              </div>
           )}
 
