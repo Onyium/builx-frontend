@@ -5,13 +5,17 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
   const BACKEND_URL = "https://builx-api.onrender.com"; 
 
   // 🚀 EL FIX INTELIGENTE Y EXTREMO: Limpia basura de MySQL antes de evaluar
+  // 🚀 EL FIX INTELIGENTE Y EXTREMO: Limpia basura de MySQL antes de evaluar
   const formatearUrl = (rawUrl) => {
     if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
     
-    // Le quitamos corchetes, comillas y espacios por si viene crudo de la BD
-    const limpia = String(rawUrl).replace(/[\[\]"']/g, '').trim();
+    // Le quitamos corchetes, comillas y barras diagonales perdidas
+    let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
     
-    if (limpia.startsWith('http')) return limpia; // Ahora sí pasará la prueba
+    // 🛠️ AUTO-CORRECTOR: Si la BD guardó https// en vez de https://, lo reparamos
+    limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
+    
+    if (limpia.startsWith('http')) return limpia; 
     
     return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
   };
