@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 
 export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenReviews }) {
-  // --- LÓGICA DE NAVEGACIÓN (NUEVO) ---
-  // Estado para controlar qué imagen estamos viendo (0 es la primera)
+  // --- LÓGICA DE NAVEGACIÓN ---
   const [indiceActual, setIndiceActual] = useState(0);
 
-  // Verificamos qué imágenes tenemos disponibles
-// Asegúrate de que este sea el puerto real donde corre tu servidor Node.js
   const BACKEND_URL = "https://builx-api.onrender.com"; 
 
-  const imagenes = item.todasLasFotos && item.todasLasFotos.length > 0 
-    ? item.todasLasFotos 
-    : item.imagen_url 
-      ? [`${BACKEND_URL}${item.imagen_url}`] 
-      : ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
+  // 🚀 EL FIX INTELIGENTE: Función que decide si pegar el BACKEND_URL o no
+  const formatearUrl = (url) => {
+    if (!url) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+    if (url.startsWith('http')) return url; // Si ya trae http (Cloudinary), la deja intacta
+    return `${BACKEND_URL}${url}`; // Si es una ruta local vieja, le pega el backend
+  };
+
+  // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
+  let imagenes = [];
+  if (item.todasLasFotos && item.todasLasFotos.length > 0) {
+    imagenes = item.todasLasFotos.map(foto => formatearUrl(foto));
+  } else if (item.imagen_url) {
+    imagenes = [formatearUrl(item.imagen_url)];
+  } else {
+    imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
+  }
 
   // Función para ir a la siguiente imagen
   const siguienteImagen = (e) => {
@@ -35,7 +43,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
       {/* --- CONTENEDOR DE IMAGEN CON FLECHAS --- */}
       <div className="w-full h-44 rounded-2xl bg-gray-100 mb-4 overflow-hidden relative group/slider">
         
-        {/* Imagen Actual (Cambia dinámicamente según 'indiceActual') */}
+        {/* Imagen Actual */}
         <img 
           src={imagenes[indiceActual]} 
           alt={`${item.nombre}-${indiceActual}`} 
@@ -77,7 +85,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
         )}
       </div>
 
-      {/* --- INFORMACIÓN DEL ÍTEM (IGUAL QUE ANTES) --- */}
+      {/* --- INFORMACIÓN DEL ÍTEM --- */}
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="font-bold text-gray-800 line-clamp-1 text-lg">{item.nombre}</h4>
@@ -92,7 +100,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
         {item.descripcion || "Sin descripción disponible"}
       </p>
       
-      {/* --- ACCIONES (IGUAL QUE ANTES) --- */}
+      {/* --- ACCIONES --- */}
       <div className="flex items-center justify-between border-t border-gray-50 pt-4">
         <div className="flex gap-1">
           <button 
