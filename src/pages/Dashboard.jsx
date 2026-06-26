@@ -13,6 +13,8 @@ import BandejaContacto from '../components/Dashboard/BandejaContacto';
 import ReviewsModal from '../components/Dashboard/ReviewsModal';
 import ImportadorIA from '../components/Dashboard/ImportadorIA';
 import BotonSuscripcion from '../components/pays/BotonSuscripcion';
+// 🚀 IMPORTAMOS EL NUEVO COMPONENTE DE FACTURACIÓN
+import FacturacionManager from '../components/Dashboard/FacturacionManager';
 
 export default function Dashboard() {
   const [items, setItems] = useState([]);
@@ -132,6 +134,7 @@ export default function Dashboard() {
       alert("Error al guardar la configuración de la empresa");
     }
   };
+  
   const handleSave = async (formData) => {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     const id = formData.get('id');
@@ -231,16 +234,17 @@ export default function Dashboard() {
           <button onClick={() => handleNavClick('config')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'config' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}>
             ⚙️ <span>Configuración</span>
           </button>
+
           
-          {/* 👇 BOTÓN LIBERADO PARA ACTIVE, STARTER, PRO Y BUILDING 👇 */}
-          {['active', 'starter', 'pro', 'building', 'trial'].includes(datosEmpresa.suscripcion_estado) && (
-            <button 
-              onClick={() => navigate('/admin/builder')} 
-              className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 mt-4"
-            >
-              🎨 Editar Página Web
-            </button>
-          )}
+          {/* 🚀 EL BOTÓN DE LA NUEVA SECCIÓN DE FACTURACIÓN */}
+          <button 
+              onClick={() => handleNavClick('facturacion')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${seccionActiva === 'facturacion' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'hover:bg-slate-800/60 text-slate-400 hover:text-slate-200'}`}
+          >
+              <span className="text-xl">💳</span>
+              <span>Facturación y Plan</span>
+          </button>
+          
           {/* 👇 BOTÓN ACTUALIZADO PARA INCLUIR 'BUILDING' Y EL PASE VIP 👇 */}
           {['active', 'starter', 'pro', 'trial', 'building'].includes(datosEmpresa.suscripcion_estado) && (
               <a 
@@ -275,7 +279,9 @@ export default function Dashboard() {
             </button>
             
             <h2 className="text-lg lg:text-xl font-black text-gray-900 tracking-tight capitalize truncate max-w-[150px] sm:max-w-xs">
-              {seccionActiva === 'catalogo' ? 'Gestión de Catálogo' : seccionActiva}
+              {seccionActiva === 'catalogo' ? 'Gestión de Catálogo' : 
+               seccionActiva === 'facturacion' ? 'Facturación' : 
+               seccionActiva}
             </h2>
           </div>
           
@@ -350,18 +356,21 @@ export default function Dashboard() {
           {seccionActiva === 'faqs' && <div className="animate-fade-in"><FAQManager empresaId={empresaId} /></div>}
           {seccionActiva === 'importador' && <div className="animate-fade-in"><ImportadorIA empresaId={empresaId} /></div>}
           {seccionActiva === 'config' && <div className="animate-fade-in"><EmpresaConfig datos={datosEmpresa} onUpdate={handleUpdateEmpresa} currentLogo={currentLogo} /></div>}
+          
+          {/* 🚀 CONECTAMOS LA NUEVA VISTA DE FACTURACIÓN */}
+          {seccionActiva === 'facturacion' && <div className="animate-fade-in"><FacturacionManager empresa={datosEmpresa} /></div>}
 
         </main>
       </div>
 
       {/* MODAL CENTRALIZADO */}
       <CreateItemModal 
-    isOpen={modalConfig.isOpen} 
-    initialData={modalConfig.data} 
-    onClose={() => setModalConfig({ isOpen: false, data: null })} 
-    onSave={handleSave} 
-    // 🚀 AQUÍ LE PASAMOS EL MAPA QUE HIZO LA IA:
-    esquemaIA={datosEmpresa?.configuracion_sitio?.esquema_detalles_item || {}} 
+        isOpen={modalConfig.isOpen} 
+        initialData={modalConfig.data} 
+        onClose={() => setModalConfig({ isOpen: false, data: null })} 
+        onSave={handleSave} 
+        // 🚀 AQUÍ LE PASAMOS EL MAPA QUE HIZO LA IA:
+        esquemaIA={datosEmpresa?.configuracion_sitio?.esquema_detalles_item || {}} 
       />
       <ReviewsModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} item={itemToReview} />
 
