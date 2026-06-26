@@ -20,10 +20,21 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
     controlar_inventario: false, stock: 0, mostrar_sku: true, mostrar_reviews: false,
   });
 
-  // 🚀 LA BOLSA MÁGICA DEL ÍTEM (Aquí viven los detalles anidados)
   const [detallesExtra, setDetallesExtra] = useState({});
-
   const empresaId = localStorage.getItem('empresa_id') || 1;
+
+  // 🚀 LIMPIADOR DE URLS PARA LA PREVISUALIZACIÓN
+  const formatearUrlPreview = (rawUrl) => {
+    if (!rawUrl) return '';
+    let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
+    if (limpia.includes('cloudinary.com')) {
+      const pos = limpia.lastIndexOf('http');
+      if (pos !== -1) limpia = limpia.substring(pos);
+    }
+    limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
+    if (limpia.startsWith('http')) return limpia;
+    return `https://builx-api.onrender.com${limpia.startsWith('/') ? limpia : '/' + limpia}`;
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -51,7 +62,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
           mostrar_reviews: !!initialData.mostrar_reviews,
         });
 
-        // 🚀 Desempaquetar el JSON de detalles extra
+        // Desempaquetar detalles extra
         try {
           if (initialData.detalles_extra) {
             setDetallesExtra(typeof initialData.detalles_extra === 'string' 
@@ -62,24 +73,33 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
           }
         } catch(e) { setDetallesExtra({}); }
         
-        // Cargar fotos existentes
+        // 🚀 BÚSQUEDA INTELIGENTE DE FOTOS EXISTENTES
         let fotosParseadas = [];
         if (initialData.fotos) {
           try {
             fotosParseadas = typeof initialData.fotos === 'string' ? JSON.parse(initialData.fotos) : initialData.fotos;
+            if (!Array.isArray(fotosParseadas)) fotosParseadas = [];
           } catch(e) { fotosParseadas = []; }
         }
-        setFotosGuardadas(fotosParseadas);
-        setModoGaleria(fotosParseadas.length > 1);
+        
+        // Si no encontró fotos en la galería, busca la principal
+        if (fotosParseadas.length === 0 && initialData.imagen_url) {
+            fotosParseadas = [initialData.imagen_url];
+        }
+
+        // Limpiamos las URLs antes de meterlas al estado
+        const fotosLimpias = fotosParseadas.map(f => formatearUrlPreview(f));
+        
+        setFotosGuardadas(fotosLimpias);
+        setModoGaleria(fotosLimpias.length > 1);
         
       } else {
-        // 🚀 MODO NUEVO ÍTEM
+        // MODO NUEVO ÍTEM
         setFormData({
           nombre: '', descripcion: '', precio: '', tipo_item: 'producto', categoria_id: '', sku: '', precio_anterior: '',
           badge_oferta: false, badge_nuevo: false, controlar_inventario: false, stock: 0, mostrar_sku: true, mostrar_reviews: false,
         });
         
-        // Leemos el esquema de la IA y creamos las cajitas vacías
         const detallesVacios = {};
         if (esquemaIA && typeof esquemaIA === 'object') {
             Object.keys(esquemaIA).forEach(llave => {
@@ -87,7 +107,6 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
             });
         }
         setDetallesExtra(detallesVacios);
-
         setFotosGuardadas([]);
         setModoGaleria(false);
       }
@@ -112,6 +131,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
   const removeArchivoNuevo = (index) => setArchivos(prev => prev.filter((_, i) => i !== index));
   const removeFotoGuardada = (index, foto) => {
     setFotosGuardadas(prev => prev.filter((_, i) => i !== index));
+    // Guardamos la URL cruda para que el backend sepa cuál borrar de Cloudinary
     setFotosAEliminar(prev => [...prev, foto]); 
   };
 
@@ -132,8 +152,6 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
     });
 
     data.append('empresa_id', empresaId);
-    
-    // 🚀 Empaquetamos el objeto React y lo convertimos a String (JSON puro)
     data.append('detalles_extra', JSON.stringify(detallesExtra));
 
     archivos.forEach(file => data.append('fotos', file));
@@ -204,7 +222,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
                </div>
              </div>
 
-             {/* 📸 SECCIÓN DE IMÁGENES RECUPERADA Y UBICADA CORRECTAMENTE */}
+             {/* 📸 SECCIÓN DE IMÁGENES */}
              <div className="pt-4 border-t border-gray-100 mt-4">
                <div className="flex justify-between items-center mb-3">
                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -233,7 +251,7 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
                {(fotosGuardadas.length > 0 || archivos.length > 0) && (
                  <div className="flex gap-2 overflow-x-auto py-3 custom-scrollbar mt-2">
                    
-                   {/* Fotos que ya estaban guardadas en MySQL */}
+                   {/* Fotos guardadas */}
                    {fotosGuardadas.map((foto, index) => (
                      <div key={`old-${index}`} className="relative flex-shrink-0 animate-fade-in">
                        <img src={foto} alt="guardada" className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm" />
@@ -241,14 +259,13 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
                      </div>
                    ))}
                    
-                   {/* Fotos nuevas recién seleccionadas */}
+                   {/* Fotos nuevas */}
                    {archivos.map((file, index) => (
                      <div key={`new-${index}`} className="relative flex-shrink-0 animate-fade-in">
                        <img src={URL.createObjectURL(file)} alt="nueva" className="w-16 h-16 object-cover rounded-xl border-2 border-blue-400 shadow-sm" />
                        <button type="button" onClick={() => removeArchivoNuevo(index)} className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md">✕</button>
                      </div>
                    ))}
-                   
                  </div>
                )}
              </div>
@@ -272,7 +289,6 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
             </div>
           )}
 
-          {/* 🚀 SECCIÓN 3: DETALLES DINÁMICOS (El JSON visual) */}
           {tabInterna === 'detalles' && (
             <div className="space-y-4 animate-fade-in">
               <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-sm text-blue-800 font-medium">
