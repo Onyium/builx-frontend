@@ -4,27 +4,35 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
   const [indiceActual, setIndiceActual] = useState(0);
   const BACKEND_URL = "https://builx-api.onrender.com"; 
 
-  // 🚀 EL FIX INTELIGENTE Y EXTREMO: Limpia basura de MySQL antes de evaluar
-  // 🚀 EL FIX INTELIGENTE Y EXTREMO: Limpia basura de MySQL antes de evaluar
+  // 🚀 EL FILTRO SUPREMO: Separa y repara cualquier URL duplicada o corrupta
   const formatearUrl = (rawUrl) => {
     if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
     
-    // Le quitamos corchetes, comillas y barras diagonales perdidas
+    // 1. Limpiamos comillas o corchetes extraños de la base de datos
     let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
     
-    // 🛠️ AUTO-CORRECTOR: Si la BD guardó https// en vez de https://, lo reparamos
+    // 2. Si el backend concatenó el servidor con Cloudinary, extraemos SOLO Cloudinary
+    if (limpia.includes('cloudinary.com')) {
+      const posicionRealHttp = limpia.lastIndexOf('http');
+      if (posicionRealHttp !== -1) {
+        limpia = limpia.substring(posicionRealHttp); // Corta el link de Render y se queda desde "http" de Cloudinary
+      }
+    }
+    
+    // 3. Corregimos si falta el ":" por errores de pruebas anteriores
     limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
     
+    // 4. Si ya es una URL limpia y libre, la devolvemos
     if (limpia.startsWith('http')) return limpia; 
     
+    // 5. Si es una ruta local de las viejas, le ponemos el backend
     return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
   };
 
-  // 🚀 EXTRACCIÓN A PRUEBA DE BALAS
+  // 🚀 EXTRACCIÓN SEGURA DE IMÁGENES
   let imagenes = [];
   try {
     if (item.fotos) {
-      // Si MySQL lo manda como un string '[ "foto1", "foto2" ]', lo convertimos a arreglo real
       const fotosArray = typeof item.fotos === 'string' ? JSON.parse(item.fotos) : item.fotos;
       if (Array.isArray(fotosArray) && fotosArray.length > 0) {
         imagenes = fotosArray.map(foto => formatearUrl(foto));
@@ -34,7 +42,6 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
     console.warn("No se pudo parsear el array de fotos", error);
   }
 
-  // Si después de todo no hay fotos, usamos imagen_url o el placeholder
   if (imagenes.length === 0) {
     if (item.imagen_url) {
       imagenes = [formatearUrl(item.imagen_url)];
