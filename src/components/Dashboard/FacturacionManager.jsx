@@ -13,20 +13,31 @@ export default function FacturacionManager({ empresa }) {
     const handleGestionarSuscripcion = async () => {
     setEnviando(true);
     try {
-        // Le pedimos al backend el link mágico
-        const res = await axios.post('https://builx-api.onrender.com/api/pagos/generar-portal', { empresaId: empresa.id });
+        // Pedimos el link al backend
+        const res = await axios.post('https://builx-api.onrender.com/api/pagos/generar-portal', { 
+            empresaId: empresa.id 
+        });
         
-        if (res.data.url) {
-            // Abrimos el portal de Paddle en otra pestaña
-            window.open(res.data.url, '_blank');
+        console.log("📦 Paquete recibido del backend:", res.data);
+
+        // 🚀 AQUÍ ESTÁ EL FIX: Extraemos específicamente res.data.url
+        if (res.data && res.data.url) {
+            // Usamos window.location.href para ir en la misma pestaña, 
+            // o window.open para abrir una nueva.
+            window.open(res.data.url, '_blank'); 
+        } else {
+            console.error("El backend no mandó la URL correctamente", res.data);
+            alert("Hubo un problema al generar el enlace seguro.");
         }
+
     } catch (error) {
-        alert("Aún no tienes una suscripción activa para gestionar.");
+        console.error("❌ Error al abrir portal:", error.response?.data || error.message);
+        alert("Aún no tienes una suscripción activa o hubo un error de conexión.");
     }
+    
     setEnviando(false);
     setMostrarModal(false);
     };
-
     return (
         <div className="p-8 max-w-4xl mx-auto animate-fade-in">
             <h2 className="text-3xl font-black text-gray-800 mb-2">Facturación y Plan</h2>
