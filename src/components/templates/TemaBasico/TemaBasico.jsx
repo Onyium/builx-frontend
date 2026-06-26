@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
+// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO
+const formatearUrlPublica = (rawUrl) => {
+  if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+  const BACKEND_URL = "https://builx-api.onrender.com";
+  
+  let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
+  
+  if (limpia.includes('cloudinary.com')) {
+    const posicionRealHttp = limpia.lastIndexOf('http');
+    if (posicionRealHttp !== -1) {
+      limpia = limpia.substring(posicionRealHttp); 
+    }
+  }
+  
+  limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
+  if (limpia.startsWith('http')) return limpia; 
+  return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
+};
+
+
 // --- SUB-COMPONENTE: Calendario Premium Custom ---
 const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primaryColor }) => {
   const [fechaVista, setFechaVista] = useState(new Date());
@@ -7,7 +27,6 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
   const diasSemana = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-  // Lógica matemática del calendario
   const obtenerDiasDelMes = (año, mes) => new Date(año, mes + 1, 0).getDate();
   const obtenerPrimerDiaDelMes = (año, mes) => new Date(año, mes, 1).getDay();
 
@@ -155,7 +174,8 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
         </div>
         <div className="p-6 flex-1">
           <div className="mb-8">
-            {item.imagen_url && <img src={`https://builx-api.onrender.com${item.imagen_url}`} alt={item.nombre} className="w-full h-40 object-cover rounded-2xl mb-4 shadow-sm" />}
+            {/* 🚀 ARREGLO IMAGEN SIDEBAR */}
+            {item.imagen_url && <img src={formatearUrlPublica(item.imagen_url)} alt={item.nombre} className="w-full h-40 object-cover rounded-2xl mb-4 shadow-sm" />}
             <h4 className="font-black text-2xl text-gray-900 dark:text-white mb-2">{item.nombre}</h4>
             <p className="text-gray-500 dark:text-gray-400 text-sm">{item.descripcion}</p>
           </div>
@@ -197,11 +217,10 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   );
 };
 
-// 🚀 --- NUEVO SUB-COMPONENTE: Marca de Agua de BuilX ---
 const MarcaDeAgua = () => {
   return (
     <a 
-      href="https://builxapp.com" // Asegúrate de que apunte a la landing correcta de BuilX
+      href="https://builxapp.com" 
       target="_blank" 
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-[9999] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full shadow-2xl border border-gray-200 flex items-center gap-2 hover:scale-105 transition-transform group cursor-pointer"
@@ -215,7 +234,6 @@ const MarcaDeAgua = () => {
 };
 
 // --- COMPONENTE PRINCIPAL ---
-// 🚀 1. Agregamos "empresa" a las props que recibe TemaBasico
 export default function TemaBasico({ config, items, empresa }) {
     const [itemSeleccionado, setItemSeleccionado] = useState(null); 
 
@@ -227,15 +245,12 @@ export default function TemaBasico({ config, items, empresa }) {
 
     const tituloCatalogo = terminologia?.catalogo_plural || "Nuestro Catálogo";
 
-    // 🚀 2. Lógica para decidir si mostrar la marca de agua
-    // Si no hay empresa (raro, pero previene errores) o el plan_actual no es 'pro', mostramos la marca.
     const planActual = empresa?.plan_actual || 'starter';
     const mostrarMarcaDeAgua = planActual !== 'pro';
 
     return (
         <div className={`font-sans min-h-screen selection:bg-blue-200 selection:text-blue-900 ${isDark ? 'text-gray-100 bg-[#0a0a0a]' : 'text-gray-800 bg-[#f8fafc]'}`}>
             
-            {/* 🚀 3. Inyectamos la Mara de Agua condicionalmente */}
             {mostrarMarcaDeAgua && <MarcaDeAgua />}
 
             {itemSeleccionado && (
@@ -250,7 +265,7 @@ export default function TemaBasico({ config, items, empresa }) {
             <header className="relative py-24 px-8 text-center overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10"></div>
                 {config.modules?.heroSection?.backgroundImage ? (
-                   <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${config.modules.heroSection.backgroundImage})` }} />
+                   <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${formatearUrlPublica(config.modules.heroSection.backgroundImage)})` }} />
                 ) : (
                    <div className="absolute inset-0" style={{ backgroundColor: primaryColor }} />
                 )}
@@ -285,7 +300,8 @@ export default function TemaBasico({ config, items, empresa }) {
                             <div key={item.id} className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group">
                                 {item.imagen_url && (
                                     <div className="h-56 overflow-hidden relative bg-gray-100">
-                                        <img src={`https://builx-api.onrender.com${item.imagen_url}`} alt={item.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        {/* 🚀 ARREGLO IMAGEN DEL CATÁLOGO PÚBLICO */}
+                                        <img src={formatearUrlPublica(item.imagen_url)} alt={item.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                     </div>
                                 )}
 
