@@ -52,6 +52,27 @@ export default function FacturacionManager({ empresa }) {
         setEnviando(false);
         setMostrarModal(false);
     };
+
+    const handleMejorarAPro = async () => {
+        const confirmar = window.confirm("¿Seguro que deseas mejorar al Plan Pro? Se cobrará la diferencia a tu tarjeta guardada.");
+        if (!confirmar) return;
+        
+        setEnviando(true);
+        try {
+            await axios.post('https://builx-api.onrender.com/api/pagos/upgrade-pro', { 
+                empresaId: empresa.id 
+            });
+            
+            alert("¡Felicidades! Tu cuenta ha sido mejorada a PRO 🔥");
+            window.location.reload(); // Recarga para que desaparezca la marca de agua y cambie la etiqueta
+            
+        } catch (error) {
+            console.error(error);
+            alert("Hubo un error al procesar la mejora. Intenta más tarde.");
+        }
+        setEnviando(false);
+    };
+
     return (
         <div className="p-8 max-w-4xl mx-auto animate-fade-in">
             <h2 className="text-3xl font-black text-gray-800 mb-2">Facturación y Plan</h2>
@@ -85,12 +106,14 @@ export default function FacturacionManager({ empresa }) {
                     >
                         Gestionar Suscripción
                     </button>
+                    {/* Tu botón azul actualizado */}
                     {!esPro && (
                         <button 
-                            onClick={() => window.location.href = '/checkout'}
+                            onClick={handleMejorarAPro}
+                            disabled={enviando}
                             className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-colors shadow-lg text-center"
                         >
-                            Mejorar a Pro
+                            {enviando ? 'Procesando...' : 'Mejorar a Pro'}
                         </button>
                     )}
                 </div>
