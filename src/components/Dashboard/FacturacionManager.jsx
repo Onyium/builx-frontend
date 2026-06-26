@@ -13,8 +13,7 @@ export default function FacturacionManager({ empresa }) {
     const handleGestionarSuscripcion = async () => {
         setEnviando(true);
         
-        // 🚀 TRUCO MAESTRO: Abrimos una pestaña en blanco INMEDIATAMENTE
-        // al hacer clic. Así engañamos al bloqueador de pop-ups.
+        // Abrimos la pestaña fantasma primero para engañar al navegador
         const nuevaPestana = window.open('about:blank', '_blank');
 
         try {
@@ -25,17 +24,27 @@ export default function FacturacionManager({ empresa }) {
             
             console.log("📦 Paquete recibido del backend:", res.data);
 
-            if (res.data && res.data.url) {
-                // 🚀 Inyectamos la URL real en la pestaña que ya teníamos abierta
-                nuevaPestana.location.href = res.data.url;
+            // 🚀 EL FIX DEFINITIVO: Buscamos la URL exacta dependiendo de cómo la mande Paddle
+            let urlFinal = null;
+            
+            if (typeof res.data.url === 'string') {
+                urlFinal = res.data.url; // Por si Paddle cambia y lo manda como texto
+            } else if (res.data.url && typeof res.data.url === 'object') {
+                // Aquí sacamos la URL de adentro de la cajita 'overview'
+                urlFinal = res.data.url.overview || res.data.url.general; 
+            }
+
+            if (urlFinal) {
+                // 🚀 Inyectamos la URL real en la pestaña
+                nuevaPestana.location.href = urlFinal;
             } else {
-                nuevaPestana.close(); // Si algo sale mal, cerramos la pestaña fantasma
-                console.error("El backend no mandó la URL correctamente", res.data);
-                alert("Hubo un problema al generar el enlace seguro.");
+                nuevaPestana.close(); 
+                console.error("No se encontró la URL dentro del paquete", res.data);
+                alert("Hubo un problema al leer el enlace de Paddle.");
             }
 
         } catch (error) {
-            nuevaPestana.close(); // Cerramos si hubo error en el backend
+            nuevaPestana.close(); 
             console.error("❌ Error al abrir portal:", error.response?.data || error.message);
             alert("Aún no tienes una suscripción activa o hubo un error de conexión.");
         }
@@ -43,7 +52,6 @@ export default function FacturacionManager({ empresa }) {
         setEnviando(false);
         setMostrarModal(false);
     };
-
     return (
         <div className="p-8 max-w-4xl mx-auto animate-fade-in">
             <h2 className="text-3xl font-black text-gray-800 mb-2">Facturación y Plan</h2>
