@@ -25,9 +25,10 @@ export default function CheckoutPage() {
 
         if (event.name === 'checkout.completed') {
           console.log('🎉 ¡Pago exitoso detectado por el frontend!');
-          // Lo mandamos al dashboard después de 2.5 segundos para que vea el mensaje de éxito de Paddle
+          
+          // 🚀 CAMBIO CLAVE AQUÍ: Forzamos la redirección nativa del navegador
           setTimeout(() => {
-            navigate('/dashboard'); 
+            window.location.href = '/dashboard'; 
           }, 2500);
         }
       }
