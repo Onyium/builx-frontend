@@ -1,35 +1,49 @@
 import React, { useState } from 'react';
 
 export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenReviews }) {
-  // --- LÓGICA DE NAVEGACIÓN ---
   const [indiceActual, setIndiceActual] = useState(0);
-
   const BACKEND_URL = "https://builx-api.onrender.com"; 
 
-  // 🚀 EL FIX INTELIGENTE: Función que decide si pegar el BACKEND_URL o no
-  const formatearUrl = (url) => {
-    if (!url) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
-    if (url.startsWith('http')) return url; // Si ya trae http (Cloudinary), la deja intacta
-    return `${BACKEND_URL}${url}`; // Si es una ruta local vieja, le pega el backend
+  // 🚀 EL FIX INTELIGENTE Y EXTREMO: Limpia basura de MySQL antes de evaluar
+  const formatearUrl = (rawUrl) => {
+    if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+    
+    // Le quitamos corchetes, comillas y espacios por si viene crudo de la BD
+    const limpia = String(rawUrl).replace(/[\[\]"']/g, '').trim();
+    
+    if (limpia.startsWith('http')) return limpia; // Ahora sí pasará la prueba
+    
+    return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
   };
 
-  // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
+  // 🚀 EXTRACCIÓN A PRUEBA DE BALAS
   let imagenes = [];
-  if (item.todasLasFotos && item.todasLasFotos.length > 0) {
-    imagenes = item.todasLasFotos.map(foto => formatearUrl(foto));
-  } else if (item.imagen_url) {
-    imagenes = [formatearUrl(item.imagen_url)];
-  } else {
-    imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
+  try {
+    if (item.fotos) {
+      // Si MySQL lo manda como un string '[ "foto1", "foto2" ]', lo convertimos a arreglo real
+      const fotosArray = typeof item.fotos === 'string' ? JSON.parse(item.fotos) : item.fotos;
+      if (Array.isArray(fotosArray) && fotosArray.length > 0) {
+        imagenes = fotosArray.map(foto => formatearUrl(foto));
+      }
+    }
+  } catch (error) {
+    console.warn("No se pudo parsear el array de fotos", error);
   }
 
-  // Función para ir a la siguiente imagen
+  // Si después de todo no hay fotos, usamos imagen_url o el placeholder
+  if (imagenes.length === 0) {
+    if (item.imagen_url) {
+      imagenes = [formatearUrl(item.imagen_url)];
+    } else {
+      imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
+    }
+  }
+
   const siguienteImagen = (e) => {
-    e.stopPropagation(); // Evita que se disparen otros clicks
+    e.stopPropagation(); 
     setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
   };
 
-  // Función para ir a la imagen anterior
   const anteriorImagen = (e) => {
     e.stopPropagation();
     setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
@@ -43,17 +57,15 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
       {/* --- CONTENEDOR DE IMAGEN CON FLECHAS --- */}
       <div className="w-full h-44 rounded-2xl bg-gray-100 mb-4 overflow-hidden relative group/slider">
         
-        {/* Imagen Actual */}
         <img 
           src={imagenes[indiceActual]} 
           alt={`${item.nombre}-${indiceActual}`} 
           className="w-full h-full object-cover transition-all duration-500"
         />
 
-        {/* Flechas de Navegación (Solo si hay más de 1 foto) */}
+        {/* Flechas de Navegación */}
         {imagenes.length > 1 && (
           <>
-            {/* Flecha Izquierda */}
             <button 
               onClick={anteriorImagen}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -64,7 +76,6 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
-            {/* Flecha Derecha */}
             <button 
               onClick={siguienteImagen}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -75,7 +86,6 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
-            {/* Indicadores de posición (Dots) */}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
               {imagenes.map((_, i) => (
                 <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${i === indiceActual ? 'bg-white w-4' : 'bg-white/50'}`} />
