@@ -21,7 +21,7 @@ export default function VisorPublico() {
         const fetchDatosGlobales = async () => {
             try {
                 setCargando(true);
-                // 1. Traer los datos de la Empresa (Incluye el JSON de configuración)
+                // 1. Traer los datos de la Empresa (Incluye el JSON de configuración y plan_actual)
                 const resEmpresa = await axios.get(`https://builx-api.onrender.com/api/empresa/slug/${slug}`);
                 
                 if (resEmpresa.data && resEmpresa.data.success) {
@@ -29,7 +29,7 @@ export default function VisorPublico() {
                     setDatosSitio(empresaData);
                     document.title = empresaData.nombre || 'Sitio Web';
 
-                    // 2. Traer los ítems de ESA empresa
+                    // 2. Traer los ítems de ESA empresa usando su ID
                     const resItems = await axios.get(`https://builx-api.onrender.com/api/items/${empresaData.id}`);
                     setItems(resItems.data || []);
 
@@ -49,7 +49,7 @@ export default function VisorPublico() {
 
     if (cargando) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+            <div className="min-h-screen flex items-center justify-center bg-[#050B14] text-white">
                 <div className="animate-pulse font-bold text-xl text-blue-400">Cargando catálogo...</div>
             </div>
         );
@@ -57,7 +57,7 @@ export default function VisorPublico() {
 
     if (error || !datosSitio) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#050B14] text-white">
                 <span className="text-6xl mb-4">😢</span>
                 <h1 className="text-2xl font-bold">Sitio no encontrado</h1>
                 <p className="text-gray-400 mt-2">La URL parece incorrecta o el sitio no existe.</p>
@@ -92,6 +92,8 @@ export default function VisorPublico() {
             console.error("Error leyendo JSON de configuración", e);
         }
 
+        // 🚀 MAGIA MARCA BLANCA: Al pasar "empresa: datosSitio", el TemaBasico 
+        // ya tiene acceso a empresa.plan_actual para saber si muestra la marca de agua o no.
         const propsComunes = {
             config: config, 
             empresa: datosSitio, 
@@ -114,11 +116,6 @@ export default function VisorPublico() {
     return (
         <div className={`w-full min-h-screen ${datosSitio.suscripcion_estado === 'building' && isPreview ? 'pt-8' : ''}`}>
             
-            {/* 🚨 BANDERÍN DE PRUEBA: Si ves esto, el código nuevo SÍ se subió 🚨 */}
-            <div className="bg-red-600 text-white text-2xl md:text-4xl font-black text-center p-6 z-[99999] relative shadow-lg">
-                ¡HOLA JONATHAN, EL NUEVO CÓDIGO SÍ ESTÁ CORRIENDO EN VERCEL! 🚀
-            </div>
-
             {/* Aviso flotante modo Preview */}
             {datosSitio.suscripcion_estado === 'building' && isPreview && (
                 <div className="bg-yellow-500 text-black text-center text-xs font-bold py-2 w-full fixed top-0 left-0 z-[9999] shadow-md">

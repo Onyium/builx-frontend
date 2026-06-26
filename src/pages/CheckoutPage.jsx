@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 
-export default function PlanesCheckout() {
+export default function CheckoutPage() {
   const navigate = useNavigate();
   const [paddle, setPaddle] = useState(null);
   
@@ -59,7 +59,7 @@ export default function PlanesCheckout() {
       customer: customerConfig,
       customData: {
         empresa_id: empresaId,
-        plan_elegido: plan
+        plan_elegido: plan // 👈 Aquí viaja 'starter' o 'pro' hacia tu webhook
       }
     });
   };
