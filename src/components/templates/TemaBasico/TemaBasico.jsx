@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+// --- SUB-COMPONENTE: Calendario Premium Custom ---
 const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primaryColor }) => {
   const [fechaVista, setFechaVista] = useState(new Date());
 
@@ -21,35 +22,28 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
 
   const handleSeleccionDia = (dia) => {
     const fechaSeleccionada = new Date(añoActual, mesActual, dia);
-    // Formato YYYY-MM-DD para compatibilidad
     const fechaString = fechaSeleccionada.toISOString().split('T')[0];
     const hoyString = new Date().toISOString().split('T')[0];
 
-    if (fechaString < hoyString) return; // No permitir fechas pasadas
+    if (fechaString < hoyString) return; 
 
     if (!checkIn || (checkIn && checkOut)) {
-      // Nueva selección, empezamos por el Check-in
       setCheckIn(fechaString);
       setCheckOut('');
     } else if (fechaString > checkIn) {
-      // Seleccionó una fecha posterior, es el Check-out
       setCheckOut(fechaString);
     } else {
-      // Seleccionó una fecha anterior al Check-in, reiniciamos
       setCheckIn(fechaString);
       setCheckOut('');
     }
   };
 
-  // Generar la cuadrícula de días
   const cuadricula = [];
-  for (let i = 0; i < primerDia; i++) cuadricula.push(null); // Espacios vacíos
+  for (let i = 0; i < primerDia; i++) cuadricula.push(null); 
   for (let i = 1; i <= diasEnMes; i++) cuadricula.push(i);
 
   return (
     <div className="bg-white dark:bg-[#1a1a1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm w-full select-none">
-      
-      {/* Controles del Mes */}
       <div className="flex justify-between items-center mb-6">
         <button onClick={() => cambiarMes(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -62,14 +56,12 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
         </button>
       </div>
 
-      {/* Días de la semana */}
       <div className="grid grid-cols-7 gap-1 mb-2 text-center">
         {diasSemana.map(dia => (
           <div key={dia} className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{dia}</div>
         ))}
       </div>
 
-      {/* Cuadrícula de números */}
       <div className="grid grid-cols-7 gap-1 text-center">
         {cuadricula.map((dia, index) => {
           if (!dia) return <div key={`empty-${index}`} className="h-10"></div>;
@@ -77,23 +69,15 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
           const fechaActual = new Date(añoActual, mesActual, dia).toISOString().split('T')[0];
           const hoy = new Date().toISOString().split('T')[0];
           const esPasado = fechaActual < hoy;
-          
           const esCheckIn = fechaActual === checkIn;
           const esCheckOut = fechaActual === checkOut;
           const esRango = checkIn && checkOut && fechaActual > checkIn && fechaActual < checkOut;
 
-          // Clases dinámicas de Tailwind
           let clasesBase = "h-10 w-full flex items-center justify-center text-sm font-medium rounded-xl transition-all cursor-pointer ";
-          
-          if (esPasado) {
-            clasesBase += "text-gray-300 dark:text-gray-700 cursor-not-allowed";
-          } else if (esCheckIn || esCheckOut) {
-            clasesBase += "text-white shadow-md transform scale-105 font-bold";
-          } else if (esRango) {
-            clasesBase += "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-none";
-          } else {
-            clasesBase += "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800";
-          }
+          if (esPasado) clasesBase += "text-gray-300 dark:text-gray-700 cursor-not-allowed";
+          else if (esCheckIn || esCheckOut) clasesBase += "text-white shadow-md transform scale-105 font-bold";
+          else if (esRango) clasesBase += "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-none";
+          else clasesBase += "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800";
 
           return (
             <div 
@@ -108,20 +92,20 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
         })}
       </div>
       
-      {/* Resumen visual de la selección */}
       <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between text-xs font-bold text-gray-500">
         <div>Llegada: {checkIn ? checkIn.split('-').reverse().join('/') : '--/--/----'}</div>
         <div>Salida: {checkOut ? checkOut.split('-').reverse().join('/') : '--/--/----'}</div>
       </div>
     </div>
   );
-}
+};
+
+// --- SUB-COMPONENTE: Panel Lateral de Reserva ---
 const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [extras, setExtras] = useState({ almuerzo: false, transporte: false, spa: false });
 
-  // Bloquear el scroll del fondo cuando el panel está abierto
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'auto'; };
@@ -136,7 +120,7 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   const noches = calcularNoches();
   const costoAlmuerzo = extras.almuerzo ? (10 * noches) : 0;
   const costoTransporte = extras.transporte ? 15 : 0;
-  const costoSpa = extras.spa ? 40 : 0; // Ejemplo de un extra más caro
+  const costoSpa = extras.spa ? 40 : 0; 
   const total = (item.precio * noches) + costoAlmuerzo + costoTransporte + costoSpa;
 
   const enviarPorWhatsApp = () => {
@@ -161,57 +145,25 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
     window.open(`https://wa.me/${telefonoHotel}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
-  let detalles = {};
-  try { detalles = item.detalles_extra ? JSON.parse(item.detalles_extra) : {}; } 
-  catch (e) { }
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Fondo oscuro con blur (Overlay) */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={onCancel}
-      ></div>
-
-      {/* El Panel que desliza desde la derecha */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onCancel}></div>
       <div className="relative w-full max-w-md h-full bg-white dark:bg-[#121212] shadow-2xl flex flex-col animate-slide-left overflow-y-auto">
-        
-        {/* Header del Panel */}
         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md z-10">
           <h3 className="font-black text-xl text-gray-900 dark:text-white">Configurar Estadía</h3>
-          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:bg-gray-200 transition-colors font-bold">
-            ✕
-          </button>
+          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:bg-gray-200 transition-colors font-bold">✕</button>
         </div>
-
-        {/* Contenido del Panel */}
         <div className="p-6 flex-1">
-          {/* Info de la habitación seleccionada */}
           <div className="mb-8">
-            {item.imagen_url && (
-              <img src={`https://builx-api.onrender.com${item.imagen_url}`} alt={item.nombre} className="w-full h-40 object-cover rounded-2xl mb-4 shadow-sm" />
-            )}
+            {item.imagen_url && <img src={`https://builx-api.onrender.com${item.imagen_url}`} alt={item.nombre} className="w-full h-40 object-cover rounded-2xl mb-4 shadow-sm" />}
             <h4 className="font-black text-2xl text-gray-900 dark:text-white mb-2">{item.nombre}</h4>
             <p className="text-gray-500 dark:text-gray-400 text-sm">{item.descripcion}</p>
           </div>
-
           <div className="h-px w-full bg-gray-100 dark:bg-gray-800 mb-8"></div>
-
-          {/* Calendario */}
           <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Fechas de Estadía</h5>
-          
-          {/* --- AQUÍ INYECTAMOS EL NUEVO CALENDARIO --- */}
           <div className="mb-8">
-            <CalendarioPremium 
-              checkIn={checkIn}
-              checkOut={checkOut}
-              setCheckIn={setCheckIn}
-              setCheckOut={setCheckOut}
-              primaryColor={primaryColor}
-            />
+            <CalendarioPremium checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut} primaryColor={primaryColor} />
           </div>
-
-          {/* Servicios Extra */}
           <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Añadir Servicios</h5>
           <div className="space-y-3 mb-8">
             <label className="flex items-center gap-3 p-4 border border-gray-100 dark:border-gray-800 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
@@ -231,8 +183,6 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
             </label>
           </div>
         </div>
-
-        {/* Footer del Panel (Fijo abajo) */}
         <div className="p-6 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-[#121212] sticky bottom-0">
           <div className="flex justify-between items-end mb-4">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Estimado</span>
@@ -242,16 +192,31 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
             Reservar por WhatsApp
           </button>
         </div>
-
       </div>
     </div>
   );
 };
 
+// 🚀 --- NUEVO SUB-COMPONENTE: Marca de Agua de BuilX ---
+const MarcaDeAgua = () => {
+  return (
+    <a 
+      href="https://builxapp.com" // Asegúrate de que apunte a la landing correcta de BuilX
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-[9999] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full shadow-2xl border border-gray-200 flex items-center gap-2 hover:scale-105 transition-transform group cursor-pointer"
+    >
+      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Creado con</span>
+      <span className="text-sm font-black tracking-tighter text-black">
+        Buil<span className="text-blue-600 group-hover:text-blue-500 transition-colors">X</span>
+      </span>
+    </a>
+  );
+};
 
 // --- COMPONENTE PRINCIPAL ---
-export default function TemaBasico({ config, items }) {
-    // 🚀 Ahora guardamos el objeto COMPLETO del ítem para mandarlo al Sidebar
+// 🚀 1. Agregamos "empresa" a las props que recibe TemaBasico
+export default function TemaBasico({ config, items, empresa }) {
     const [itemSeleccionado, setItemSeleccionado] = useState(null); 
 
     const { hotelIdentity, terminologia, contactChannels } = config;
@@ -262,10 +227,17 @@ export default function TemaBasico({ config, items }) {
 
     const tituloCatalogo = terminologia?.catalogo_plural || "Nuestro Catálogo";
 
+    // 🚀 2. Lógica para decidir si mostrar la marca de agua
+    // Si no hay empresa (raro, pero previene errores) o el plan_actual no es 'pro', mostramos la marca.
+    const planActual = empresa?.plan_actual || 'starter';
+    const mostrarMarcaDeAgua = planActual !== 'pro';
+
     return (
         <div className={`font-sans min-h-screen selection:bg-blue-200 selection:text-blue-900 ${isDark ? 'text-gray-100 bg-[#0a0a0a]' : 'text-gray-800 bg-[#f8fafc]'}`}>
             
-            {/* Si hay un ítem seleccionado, renderizamos el panel flotante encima de todo */}
+            {/* 🚀 3. Inyectamos la Mara de Agua condicionalmente */}
+            {mostrarMarcaDeAgua && <MarcaDeAgua />}
+
             {itemSeleccionado && (
               <SidebarReserva 
                 item={itemSeleccionado} 
@@ -275,7 +247,6 @@ export default function TemaBasico({ config, items }) {
               />
             )}
 
-            {/* --- HEADER MINIMALISTA --- */}
             <header className="relative py-24 px-8 text-center overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10"></div>
                 {config.modules?.heroSection?.backgroundImage ? (
@@ -294,7 +265,6 @@ export default function TemaBasico({ config, items }) {
                 </div>
             </header>
 
-            {/* --- CATÁLOGO --- */}
             <main className="max-w-6xl mx-auto p-6 md:p-12 -mt-10 relative z-30">
                 <div className="flex items-center justify-between mb-10">
                     <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
@@ -312,18 +282,10 @@ export default function TemaBasico({ config, items }) {
                         catch (e) { }
 
                         return (
-                            <div 
-                                key={item.id} 
-                                className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group"
-                            >
-                                {/* Imagen con zoom suave */}
+                            <div key={item.id} className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group">
                                 {item.imagen_url && (
                                     <div className="h-56 overflow-hidden relative bg-gray-100">
-                                        <img 
-                                            src={`https://builx-api.onrender.com${item.imagen_url}`} 
-                                            alt={item.nombre} 
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                        />
+                                        <img src={`https://builx-api.onrender.com${item.imagen_url}`} alt={item.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                     </div>
                                 )}
 
@@ -339,7 +301,6 @@ export default function TemaBasico({ config, items }) {
                                         {item.descripcion}
                                     </p>
 
-                                    {/* Detalles Extra Resumidos */}
                                     {Object.keys(detalles).length > 0 && (
                                         <div className="mb-8 space-y-3">
                                             {Object.entries(detalles).map(([clave, valor]) => {
@@ -356,7 +317,6 @@ export default function TemaBasico({ config, items }) {
                                         </div>
                                     )}
 
-                                    {/* BOTÓN LIMPIO QUE ABRE EL PANEL LATERAL */}
                                     <div className="mt-auto">
                                         <button 
                                             onClick={() => setItemSeleccionado(item)}
@@ -366,23 +326,12 @@ export default function TemaBasico({ config, items }) {
                                             {config.modules?.heroSection?.ctaText || "Solicitar Disponibilidad"}
                                         </button>
                                     </div>
-
                                 </div>
                             </div>
                         );
                     })}
                 </div>
             </main>
-
-            {/* Necesitas agregar esta clase a tu archivo CSS global (ej. index.css) para que la animación funcione:
-            @keyframes slide-left {
-              from { transform: translateX(100%); }
-              to { transform: translateX(0); }
-            }
-            .animate-slide-left {
-              animation: slide-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            }
-            */}
         </div>
     );
 }
