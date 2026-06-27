@@ -1,28 +1,62 @@
 import React, { useState, useEffect } from 'react';
 
-// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO (Inyectado en TemaBasico)
+// 🚀 FILTRO DE IMÁGENES (BuilX Core)
 const formatearUrlPublica = (rawUrl) => {
-  if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+  if (!rawUrl) return 'https://via.placeholder.com/600x400?text=Sin+Imagen';
   const BACKEND_URL = "https://builx-api.onrender.com";
-  
   let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
-  
   if (limpia.includes('cloudinary.com')) {
     const posicionRealHttp = limpia.lastIndexOf('http');
-    if (posicionRealHttp !== -1) {
-      limpia = limpia.substring(posicionRealHttp); 
-    }
+    if (posicionRealHttp !== -1) limpia = limpia.substring(posicionRealHttp); 
   }
-  
   limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
   if (limpia.startsWith('http')) return limpia; 
   return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
 };
 
-// --- SUB-COMPONENTE: Calendario Premium Custom ---
+// 🚀 GALERÍA PÚBLICA (Estilizada para el tema boutique)
+const GaleriaPublica = ({ imagenes, nombre }) => {
+  const [indiceActual, setIndiceActual] = useState(0);
+
+  const siguienteImagen = (e) => {
+    e.stopPropagation(); 
+    setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
+  };
+
+  const anteriorImagen = (e) => {
+    e.stopPropagation();
+    setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
+  };
+
+  return (
+    <div className="relative w-full h-full group/slider overflow-hidden">
+      <img 
+        src={imagenes[indiceActual]} 
+        alt={`${nombre}-${indiceActual}`} 
+        className="w-full h-full object-cover transition-transform duration-1000 group-hover/slider:scale-105" 
+      />
+      {imagenes.length > 1 && (
+        <>
+          <button onClick={anteriorImagen} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 text-gray-900 p-2 rounded-full shadow-lg z-10 transition-all active:scale-90 opacity-0 group-hover/slider:opacity-100 hover:bg-white">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button onClick={siguienteImagen} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 text-gray-900 p-2 rounded-full shadow-lg z-10 transition-all active:scale-90 opacity-0 group-hover/slider:opacity-100 hover:bg-white">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {imagenes.map((_, i) => (
+              <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${i === indiceActual ? 'bg-white scale-125' : 'bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// 🚀 CALENDARIO (Adaptado al color de acento del tema)
 const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primaryColor }) => {
   const [fechaVista, setFechaVista] = useState(new Date());
-
   const diasSemana = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
@@ -34,56 +68,39 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
   const diasEnMes = obtenerDiasDelMes(añoActual, mesActual);
   const primerDia = obtenerPrimerDiaDelMes(añoActual, mesActual);
 
-  const cambiarMes = (incremento) => {
-    setFechaVista(new Date(añoActual, mesActual + incremento, 1));
-  };
-
   const handleSeleccionDia = (dia) => {
-    const fechaSeleccionada = new Date(añoActual, mesActual, dia);
-    const fechaString = fechaSeleccionada.toISOString().split('T')[0];
-    const hoyString = new Date().toISOString().split('T')[0];
-
-    if (fechaString < hoyString) return; 
+    const fecha = new Date(añoActual, mesActual, dia).toISOString().split('T')[0];
+    const hoy = new Date().toISOString().split('T')[0];
+    if (fecha < hoy) return; 
 
     if (!checkIn || (checkIn && checkOut)) {
-      setCheckIn(fechaString);
-      setCheckOut('');
-    } else if (fechaString > checkIn) {
-      setCheckOut(fechaString);
+      setCheckIn(fecha); setCheckOut('');
+    } else if (fecha > checkIn) {
+      setCheckOut(fecha);
     } else {
-      setCheckIn(fechaString);
-      setCheckOut('');
+      setCheckIn(fecha); setCheckOut('');
     }
   };
 
-  const cuadricula = [];
-  for (let i = 0; i < primerDia; i++) cuadricula.push(null); 
-  for (let i = 1; i <= diasEnMes; i++) cuadricula.push(i);
+  const cuadricula = Array(primerDia).fill(null).concat(Array.from({length: diasEnMes}, (_, i) => i + 1));
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm w-full select-none">
+    <div className="bg-white p-5 rounded-none border border-gray-200 shadow-sm w-full select-none font-sans">
       <div className="flex justify-between items-center mb-6">
-        <button onClick={() => cambiarMes(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-          <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+        <button onClick={() => setFechaVista(new Date(añoActual, mesActual - 1, 1))} className="p-2 hover:bg-gray-50 transition-colors rounded-full">
+           <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
-        <span className="font-black text-gray-800 dark:text-white capitalize tracking-wide">
-          {meses[mesActual]} {añoActual}
-        </span>
-        <button onClick={() => cambiarMes(1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-          <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+        <span className="font-serif text-lg text-gray-900 tracking-wide">{meses[mesActual]} {añoActual}</span>
+        <button onClick={() => setFechaVista(new Date(añoActual, mesActual + 1, 1))} className="p-2 hover:bg-gray-50 transition-colors rounded-full">
+           <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
       </div>
-
-      <div className="grid grid-cols-7 gap-1 mb-2 text-center">
-        {diasSemana.map(dia => (
-          <div key={dia} className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{dia}</div>
-        ))}
+      <div className="grid grid-cols-7 gap-1 mb-3 text-center">
+        {diasSemana.map(dia => <div key={dia} className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{dia}</div>)}
       </div>
-
       <div className="grid grid-cols-7 gap-1 text-center">
         {cuadricula.map((dia, index) => {
-          if (!dia) return <div key={`empty-${index}`} className="h-10"></div>;
-
+          if (!dia) return <div key={index} className="h-10"></div>;
           const fechaActual = new Date(añoActual, mesActual, dia).toISOString().split('T')[0];
           const hoy = new Date().toISOString().split('T')[0];
           const esPasado = fechaActual < hoy;
@@ -91,124 +108,84 @@ const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primary
           const esCheckOut = fechaActual === checkOut;
           const esRango = checkIn && checkOut && fechaActual > checkIn && fechaActual < checkOut;
 
-          let clasesBase = "h-10 w-full flex items-center justify-center text-sm font-medium rounded-xl transition-all cursor-pointer ";
-          if (esPasado) clasesBase += "text-gray-300 dark:text-gray-700 cursor-not-allowed";
-          else if (esCheckIn || esCheckOut) clasesBase += "text-white shadow-md transform scale-105 font-bold";
-          else if (esRango) clasesBase += "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-none";
-          else clasesBase += "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800";
+          let estilos = { className: "h-10 w-full flex items-center justify-center text-sm transition-all cursor-pointer rounded-full " };
+          
+          if (esPasado) estilos.className += "text-gray-300 cursor-not-allowed";
+          else if (esCheckIn || esCheckOut) estilos.className += "text-white font-bold shadow-md transform scale-105";
+          else if (esRango) estilos.className += "bg-orange-50 text-orange-900 rounded-none";
+          else estilos.className += "text-gray-700 hover:bg-gray-100";
 
           return (
-            <div 
-              key={index} 
-              onClick={() => handleSeleccionDia(dia)}
-              className={clasesBase}
-              style={(esCheckIn || esCheckOut) ? { backgroundColor: primaryColor } : {}}
-            >
+            <div key={index} onClick={() => handleSeleccionDia(dia)} className={estilos.className} style={(esCheckIn || esCheckOut) ? { backgroundColor: primaryColor } : {}}>
               {dia}
             </div>
           );
         })}
       </div>
-      
-      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between text-xs font-bold text-gray-500">
-        <div>Llegada: {checkIn ? checkIn.split('-').reverse().join('/') : '--/--/----'}</div>
-        <div>Salida: {checkOut ? checkOut.split('-').reverse().join('/') : '--/--/----'}</div>
-      </div>
     </div>
   );
 };
 
-// --- SUB-COMPONENTE: Panel Lateral de Reserva ---
+// 🚀 SIDEBAR RESERVA (Diseño limpio y editorial)
 const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [extras, setExtras] = useState({ almuerzo: false, transporte: false, spa: false });
+  const [extras, setExtras] = useState({ desayuno: false, transporte: false });
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
-  const calcularNoches = () => {
-    if (!checkIn || !checkOut) return 0;
-    const dias = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
-    return dias > 0 ? dias : 0;
-  };
+  const noches = (!checkIn || !checkOut) ? 0 : Math.max(0, Math.ceil((new Date(checkOut) - new Date(checkIn)) / 86400000));
+  const total = (item.precio * noches) + (extras.desayuno ? 15 * noches : 0) + (extras.transporte ? 30 : 0);
 
-  const noches = calcularNoches();
-  const costoAlmuerzo = extras.almuerzo ? (10 * noches) : 0;
-  const costoTransporte = extras.transporte ? 15 : 0;
-  const costoSpa = extras.spa ? 40 : 0; 
-  const total = (item.precio * noches) + costoAlmuerzo + costoTransporte + costoSpa;
-
-  const enviarPorWhatsApp = () => {
-    if (!checkIn || !checkOut) {
-      alert("Por favor selecciona las fechas de tu estadía.");
-      return;
-    }
-    let mensaje = `👋 Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
-    mensaje += `🏨 *Habitación:* ${item.nombre}\n`;
-    mensaje += `📅 *Check-in:* ${checkIn}\n`;
-    mensaje += `📅 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
-    if (extras.almuerzo || extras.transporte || extras.spa) {
-      mensaje += `✨ *Extras solicitados:*\n`;
-      if (extras.almuerzo) mensaje += `- Almuerzos incluidos\n`;
-      if (extras.transporte) mensaje += `- Transporte al aeropuerto\n`;
-      if (extras.spa) mensaje += `- Sesión de Spa\n`;
-      mensaje += `\n`;
-    }
-    mensaje += `💰 *Total estimado:* $${total}\n\n`;
-    mensaje += `¿Tienen disponibilidad para estas fechas?`;
-
-    window.open(`https://wa.me/${telefonoHotel}?text=${encodeURIComponent(mensaje)}`, '_blank');
+  const enviarWhatsApp = () => {
+    if (!checkIn || !checkOut) return alert("Por favor selecciona tus fechas.");
+    const msj = `Hola, quiero reservar:\n🏨 ${item.nombre}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n💰 Total aprox: $${total}\n¿Tienen disponibilidad?`;
+    window.open(`https://wa.me/${telefonoHotel}?text=${encodeURIComponent(msj)}`, '_blank');
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onCancel}></div>
-      <div className="relative w-full max-w-md h-full bg-white dark:bg-[#121212] shadow-2xl flex flex-col animate-slide-left overflow-y-auto">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md z-10">
-          <h3 className="font-black text-xl text-gray-900 dark:text-white">Configurar Estadía</h3>
-          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500 hover:bg-gray-200 transition-colors font-bold">✕</button>
+    <div className="fixed inset-0 z-[100] flex justify-end">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={onCancel}></div>
+      <div className="relative w-full max-w-md h-full bg-[#f2efe9] shadow-2xl flex flex-col animate-[slideIn_0.3s_ease-out] overflow-y-auto">
+        <div className="p-6 border-b border-gray-300 flex justify-between items-center sticky top-0 bg-[#f2efe9]/90 backdrop-blur-md z-10">
+          <h3 className="font-serif text-2xl text-[#2b4535]">Reservar</h3>
+          <button onClick={onCancel} className="text-gray-500 hover:text-black transition-colors text-xl">✕</button>
         </div>
-        <div className="p-6 flex-1">
+        
+        <div className="p-6 flex-1 font-sans text-gray-800">
           <div className="mb-8">
-            {/* 🚀 ARREGLO IMAGEN SIDEBAR */}
-            {item.imagen_url && <img src={formatearUrlPublica(item.imagen_url)} alt={item.nombre} className="w-full h-40 object-cover rounded-2xl mb-4 shadow-sm" />}
-            <h4 className="font-black text-2xl text-gray-900 dark:text-white mb-2">{item.nombre}</h4>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">{item.descripcion}</p>
+            {item.imagen_url && <img src={formatearUrlPublica(item.imagen_url)} alt={item.nombre} className="w-full h-48 object-cover mb-4 rounded-sm shadow-sm" />}
+            <h4 className="font-serif text-3xl mb-2 text-[#2b4535]">{item.nombre}</h4>
+            <p className="text-gray-600 text-sm leading-relaxed">{item.descripcion}</p>
           </div>
-          <div className="h-px w-full bg-gray-100 dark:bg-gray-800 mb-8"></div>
-          <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Fechas de Estadía</h5>
-          <div className="mb-8">
-            <CalendarioPremium checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut} primaryColor={primaryColor} />
-          </div>
-          <h5 className="font-black text-lg mb-4 text-gray-900 dark:text-white">Añadir Servicios</h5>
+          
+          <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Fechas de Estadía</h5>
+          <div className="mb-8"><CalendarioPremium checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut} primaryColor={primaryColor} /></div>
+          
+          <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Extras</h5>
           <div className="space-y-3 mb-8">
-            <label className="flex items-center gap-3 p-4 border border-gray-100 dark:border-gray-800 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <input type="checkbox" checked={extras.almuerzo} onChange={(e) => setExtras({...extras, almuerzo: e.target.checked})} className="w-5 h-5 accent-blue-600" />
-              <div className="flex-1 text-sm font-bold text-gray-700 dark:text-gray-300">Almuerzo incluido</div>
-              <div className="text-sm font-black text-gray-500">+$10/día</div>
+            {/* Opciones de extras simplificadas visualmente */}
+            <label className="flex items-center gap-3 p-4 bg-white border border-gray-200 cursor-pointer hover:border-gray-400 transition-colors">
+              <input type="checkbox" checked={extras.desayuno} onChange={(e) => setExtras({...extras, desayuno: e.target.checked})} className="w-4 h-4 accent-[#d16b47]" />
+              <div className="flex-1 text-sm font-medium">Desayuno Alpino</div><div className="text-sm text-gray-500">+$15/día</div>
             </label>
-            <label className="flex items-center gap-3 p-4 border border-gray-100 dark:border-gray-800 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <input type="checkbox" checked={extras.transporte} onChange={(e) => setExtras({...extras, transporte: e.target.checked})} className="w-5 h-5 accent-blue-600" />
-              <div className="flex-1 text-sm font-bold text-gray-700 dark:text-gray-300">Transporte al aeropuerto</div>
-              <div className="text-sm font-black text-gray-500">+$15</div>
-            </label>
-            <label className="flex items-center gap-3 p-4 border border-gray-100 dark:border-gray-800 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <input type="checkbox" checked={extras.spa} onChange={(e) => setExtras({...extras, spa: e.target.checked})} className="w-5 h-5 accent-blue-600" />
-              <div className="flex-1 text-sm font-bold text-gray-700 dark:text-gray-300">Acceso VIP al Spa</div>
-              <div className="text-sm font-black text-gray-500">+$40</div>
+            <label className="flex items-center gap-3 p-4 bg-white border border-gray-200 cursor-pointer hover:border-gray-400 transition-colors">
+              <input type="checkbox" checked={extras.transporte} onChange={(e) => setExtras({...extras, transporte: e.target.checked})} className="w-4 h-4 accent-[#d16b47]" />
+              <div className="flex-1 text-sm font-medium">Transfer Aeropuerto</div><div className="text-sm text-gray-500">+$30</div>
             </label>
           </div>
         </div>
-        <div className="p-6 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-[#121212] sticky bottom-0">
+        
+        <div className="p-6 bg-white border-t border-gray-200 sticky bottom-0">
           <div className="flex justify-between items-end mb-4">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Estimado</span>
-            <span className="font-black text-3xl text-gray-900 dark:text-white">${total}</span>
+            <span className="font-serif text-3xl text-[#2b4535]">${total}</span>
           </div>
-          <button onClick={enviarPorWhatsApp} className="w-full py-4 rounded-xl font-black text-white transition-transform active:scale-95 shadow-xl flex justify-center items-center gap-3 text-lg" style={{ backgroundColor: '#25D366' }}>
-            Reservar por WhatsApp
+          <button onClick={enviarWhatsApp} className="w-full py-4 font-bold text-white transition-transform active:scale-95 shadow-md flex justify-center items-center gap-2" style={{ backgroundColor: primaryColor }}>
+            Confirmar por WhatsApp
           </button>
         </div>
       </div>
@@ -216,212 +193,128 @@ const SidebarReserva = ({ item, telefonoHotel, primaryColor, onCancel }) => {
   );
 };
 
-const MarcaDeAgua = () => {
-  return (
-    <a 
-      href="https://builxapp.com" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-[9999] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full shadow-2xl border border-gray-200 flex items-center gap-2 hover:scale-105 transition-transform group cursor-pointer"
-    >
-      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Creado con</span>
-      <span className="text-sm font-black tracking-tighter text-black">
-        Buil<span className="text-blue-600 group-hover:text-blue-500 transition-colors">X</span>
-      </span>
-    </a>
-  );
-};
-
-// --- COMPONENTE PRINCIPAL ---
-export default function TemaBasico({ config, items, empresa }) {
-    const [itemSeleccionado, setItemSeleccionado] = useState(null); 
-    const BACKEND_URL = "https://builx-api.onrender.com";
-
-    const { hotelIdentity, terminologia, contactChannels } = config;
-    const isDark = hotelIdentity?.theme?.mode === 'dark';
-    const primaryColor = hotelIdentity?.theme?.primaryAccent || '#000000';
-    const secondaryColor = hotelIdentity?.theme?.secondaryAccent || '#f3f4f6';
-    const telefonoHotel = contactChannels?.whatsapp?.phoneNumber || '';
-
-    const tituloCatalogo = terminologia?.catalogo_plural || "Nuestro Catálogo";
-
-    const planActual = empresa?.plan_actual || 'starter';
-    const mostrarMarcaDeAgua = planActual !== 'pro';
-
-    return (
-        <div className={`font-sans min-h-screen selection:bg-blue-200 selection:text-blue-900 ${isDark ? 'text-gray-100 bg-[#0a0a0a]' : 'text-gray-800 bg-[#f8fafc]'}`}>
-            
-            {mostrarMarcaDeAgua && <MarcaDeAgua />}
-
-            {itemSeleccionado && (
-              <SidebarReserva 
-                item={itemSeleccionado} 
-                telefonoHotel={telefonoHotel} 
-                primaryColor={primaryColor}
-                onCancel={() => setItemSeleccionado(null)}
-              />
-            )}
-
-            <header className="relative py-24 px-8 text-center overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20 z-10"></div>
-                {config.modules?.heroSection?.backgroundImage ? (
-                   <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${formatearUrlPublica(config.modules.heroSection.backgroundImage)})` }} />
-                ) : (
-                   <div className="absolute inset-0" style={{ backgroundColor: primaryColor }} />
-                )}
-                
-                <div className="relative z-20 max-w-3xl mx-auto">
-                    <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-4 drop-shadow-lg">
-                        {hotelIdentity?.name}
-                    </h1>
-                    <p className="text-lg md:text-2xl text-white/90 font-medium tracking-wide drop-shadow-md">
-                        {hotelIdentity?.slogan}
-                    </p>
-                </div>
-            </header>
-
-            <main className="max-w-6xl mx-auto p-6 md:p-12 -mt-10 relative z-30">
-                <div className="flex items-center justify-between mb-10">
-                    <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
-                        {tituloCatalogo}
-                    </h2>
-                    <div className="h-1 w-20 rounded-full" style={{ backgroundColor: primaryColor }}></div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {items.map(item => {
-                        if (!item.esta_disponible) return null;
-
-                        let detalles = {};
-                        try { detalles = item.detalles_extra ? JSON.parse(item.detalles_extra) : {}; } 
-                        catch (e) { }
-
-                        // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
-                        let imagenes = [];
-                        if (item.todasLasFotos && Array.isArray(item.todasLasFotos) && item.todasLasFotos.length > 0) {
-                            imagenes = item.todasLasFotos.map(foto => formatearUrlPublica(foto));
-                        }
-
-                        if (imagenes.length === 0) {
-                          if (item.imagen_url) {
-                            imagenes = [formatearUrlPublica(item.imagen_url)];
-                          } else {
-                            imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
-                          }
-                        }
-
-                        return (
-                            <div key={item.id} className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group">
-                                <div className="h-56 overflow-hidden relative bg-gray-100 group/slider">
-                                    {/* 🚀 ARREGLO IMAGEN DEL CATÁLOGO PÚBLICO: ¡AHORA COMO GALERÍA! */}
-                                    {/* Usamos el componente de slider público */}
-                                    <GaleriaPublica imagenes={imagenes} nombre={item.nombre} />
-                                </div>
-
-                                <div className="p-8 flex-1 flex flex-col">
-                                    <h3 className="font-black text-2xl leading-tight text-gray-900 dark:text-white mb-2">{item.nombre}</h3>
-                                    
-                                    <div className="flex items-baseline gap-2 mb-4">
-                                        <p className="font-black text-3xl tracking-tighter" style={{ color: primaryColor }}>${item.precio}</p>
-                                        <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">/ noche</span>
-                                    </div>
-
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
-                                        {item.descripcion}
-                                    </p>
-
-                                    {Object.keys(detalles).length > 0 && (
-                                        <div className="mb-8 space-y-3">
-                                            {Object.entries(detalles).map(([clave, valor]) => {
-                                                if (!Array.isArray(valor)) {
-                                                    return (
-                                                        <div key={clave} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800/50 last:border-0">
-                                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{clave.replace(/_/g, ' ')}</span>
-                                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{valor}</span>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </div>
-                                    )}
-
-                                    <div className="mt-auto">
-                                        <button 
-                                            onClick={() => setItemSeleccionado(item)}
-                                            className="w-full py-4 rounded-2xl font-black text-white transition-all hover:opacity-90 active:scale-95 shadow-lg flex justify-center items-center gap-2"
-                                            style={{ backgroundColor: primaryColor, shadowColor: `${primaryColor}40` }}
-                                        >
-                                            {config.modules?.heroSection?.ctaText || "Solicitar Disponibilidad"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </main>
-        </div>
-    );
-}
-
-// 🚀 NUEVO COMPONENTE: GaleriaPublica (Para las flechas y puntos)
-const GaleriaPublica = ({ imagenes, nombre }) => {
-  const [indiceActual, setIndiceActual] = useState(0);
-
-  // Función para ir a la siguiente imagen
-  const siguienteImagen = (e) => {
-    e.stopPropagation(); 
-    setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
-  };
-
-  // Función para ir a la imagen anterior
-  const anteriorImagen = (e) => {
-    e.stopPropagation();
-    setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
-  };
+// 🚀 COMPONENTE PRINCIPAL (Orquestador)
+export default function PlantillaJagerhof({ config, items, empresa }) {
+  const [itemSeleccionado, setItemSeleccionado] = useState(null);
+  
+  // Variables del Theme desde config
+  const { bgGreen, bgBeige, accentOrange, textLight, textDark } = config.theme;
+  const telefonoHotel = "50300000000"; // Debería venir de config.contactChannels
 
   return (
-    <>
-      <img 
-        src={imagenes[indiceActual]} 
-        alt={`${nombre}-${indiceActual}`} 
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-      />
-
-      {/* Flechas de Navegación (Solo si hay más de 1 foto) */}
-      {imagenes.length > 1 && (
-        <>
-          {/* Flecha Izquierda */}
-          <button 
-            onClick={anteriorImagen}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10 transition-transform active:scale-90 group-hover/slider:opacity-100 opacity-0"
-            title="Anterior"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          {/* Flecha Derecha */}
-          <button 
-            onClick={siguienteImagen}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10 transition-transform active:scale-90 group-hover/slider:opacity-100 opacity-0"
-            title="Siguiente"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-
-          {/* Indicadores de posición (Dots) */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            {imagenes.map((_, i) => (
-              <div key={i} className={`h-2 w-2 rounded-full transition-all ${i === indiceActual ? 'bg-white w-5' : 'bg-white/50'}`} />
-            ))}
-          </div>
-        </>
+    <div className="relative w-full font-sans antialiased pb-24 bg-[#f2efe9]">
+      
+      {/* Sidebar Overlay Condicional */}
+      {itemSeleccionado && (
+        <SidebarReserva 
+          item={itemSeleccionado} 
+          telefonoHotel={telefonoHotel} 
+          primaryColor={accentOrange}
+          onCancel={() => setItemSeleccionado(null)}
+        />
       )}
-    </>
+
+      {/* HEADER TRANSPARENTE */}
+      <header className="absolute top-0 left-0 w-full z-40 p-6 flex justify-between items-center text-white">
+        <div className="text-2xl font-serif tracking-widest uppercase">{empresa?.nombre || "Jägerhof"}</div>
+        <button aria-label="Menu" className="space-y-2">
+          <div className="w-8 h-px bg-white"></div>
+          <div className="w-8 h-px bg-white"></div>
+        </button>
+      </header>
+
+      {/* HERO SECTION */}
+      <section className="relative w-full h-[85vh] min-h-[600px]">
+        <img src={config.hero.fondo_url} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="relative z-10 w-full h-full flex flex-col justify-center px-8 max-w-7xl mx-auto">
+          <h1 className="text-5xl md:text-7xl font-serif text-white mb-8">
+            <span className="block font-light">{config.hero.titulo_principal}</span>
+            <span className="block font-serif italic text-4xl md:text-6xl mt-2">{config.hero.titulo_cursiva}</span>
+          </h1>
+        </div>
+      </section>
+
+      {/* SECCIÓN INTRO VERDE */}
+      <section className="w-full px-6 py-24 relative" style={{ backgroundColor: bgGreen, color: textLight }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xs tracking-widest uppercase mb-8 font-semibold opacity-80">{config.seccion_intro.etiqueta}</p>
+          <h2 className="text-3xl md:text-5xl font-serif leading-tight">{config.seccion_intro.texto_gigante}</h2>
+        </div>
+      </section>
+
+      {/* CATÁLOGO DE HABITACIONES (Integración de `items` con estilo Jägerhof) */}
+      <section className="w-full px-6 py-24" style={{ backgroundColor: bgBeige, color: textDark }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-serif text-[#2b4535]">Nuestras Habitaciones</h2>
+            <div className="w-16 h-px mx-auto mt-6" style={{ backgroundColor: accentOrange }}></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {items.map(item => {
+              if (!item.esta_disponible) return null;
+              
+              let imagenes = (item.todasLasFotos?.length > 0) 
+                ? item.todasLasFotos.map(formatearUrlPublica) 
+                : [formatearUrlPublica(item.imagen_url)];
+
+              return (
+                <article key={item.id} className="group flex flex-col bg-white border border-gray-200 transition-all duration-500 hover:shadow-xl">
+                  {/* Galería Integrada */}
+                  <div className="h-72 w-full overflow-hidden relative bg-gray-100">
+                    <GaleriaPublica imagenes={imagenes} nombre={item.nombre} />
+                  </div>
+                  
+                  <div className="p-8 flex flex-col flex-1">
+                    <h3 className="font-serif text-2xl mb-3 text-[#2b4535]">{item.nombre}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">{item.descripcion}</p>
+                    
+                    <div className="mt-auto flex justify-between items-center pt-6 border-t border-gray-100">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-400 uppercase tracking-widest">Desde</span>
+                        <span className="font-serif text-2xl text-[#2b4535]">${item.precio}</span>
+                      </div>
+                      
+                      {/* Botón que dispara el Sidebar */}
+                      <button 
+                        onClick={() => setItemSeleccionado(item)}
+                        className="px-6 py-2.5 text-white text-sm font-medium transition-transform active:scale-95"
+                        style={{ backgroundColor: accentOrange }}
+                      >
+                        Verfügbarkeit
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="w-full px-6 py-24 text-center border-t border-gray-200" style={{ backgroundColor: bgBeige, color: textDark }}>
+         <h2 className="text-4xl md:text-5xl font-serif mb-8 text-[#2b4535]">
+           {config.footer.frase_final} <br/><span className="italic">{config.footer.frase_cursiva}</span>
+         </h2>
+      </footer>
+
+      {/* BARRA FLOTANTE INFERIOR */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex justify-between items-center bg-white/95 backdrop-blur-md rounded-full p-2 pr-2 shadow-2xl border border-gray-200 w-[90%] max-w-md">
+        <div className="flex items-center space-x-3 px-4">
+          <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <span className="text-gray-600 font-medium text-sm">{config.barra_flotante.temporada}</span>
+        </div>
+        <button 
+          onClick={() => window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' })}
+          className="px-6 py-3 rounded-full text-white font-bold text-sm shadow-md transition-transform active:scale-95"
+          style={{ backgroundColor: accentOrange }}
+        >
+          {config.barra_flotante.btn_texto}
+        </button>
+      </div>
+
+    </div>
   );
-};
+}
