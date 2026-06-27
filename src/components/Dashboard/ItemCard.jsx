@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO (Inyectado en la tarjeta del Admin)
+// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO
 const formatearUrlItemCard = (url) => {
   if (!url) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
   const BACKEND_URL = "https://builx-api.onrender.com";
@@ -20,16 +20,15 @@ const formatearUrlItemCard = (url) => {
 };
 
 export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenReviews }) {
-  // --- LÓGICA DE NAVEGACIÓN ---
   const [indiceActual, setIndiceActual] = useState(0);
 
-  // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
-  // 🚀 EXTRACCIÓN SEGURA DE IMÁGENES (Ahora lee todasLasFotos)
+  // 🚀 EXTRACCIÓN SEGURA DE IMÁGENES
   let imagenes = [];
   if (item.todasLasFotos && Array.isArray(item.todasLasFotos) && item.todasLasFotos.length > 0) {
       imagenes = item.todasLasFotos.map(foto => formatearUrlItemCard(foto));
   }
 
+  // Si después de todo no hay fotos en la galería, usamos la imagen principal o el placeholder
   if (imagenes.length === 0) {
     if (item.imagen_url) {
       imagenes = [formatearUrlItemCard(item.imagen_url)];
@@ -38,17 +37,26 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
     }
   }
 
-  // Función para ir a la siguiente imagen
+  // 👻 SEGURO ANTI-FANTASMAS: Si la cantidad de fotos baja (porque borraste una), 
+  // y el índice se quedó apuntando al vacío, lo reiniciamos a la foto 1 (índice 0).
+  useEffect(() => {
+    if (indiceActual >= imagenes.length) {
+      setIndiceActual(0);
+    }
+  }, [imagenes.length, indiceActual]);
+
   const siguienteImagen = (e) => {
     e.stopPropagation(); 
-    setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
+    setIndiceActual((prev) => (prev + 1 >= imagenes.length ? 0 : prev + 1));
   };
 
-  // Función para ir a la imagen anterior
   const anteriorImagen = (e) => {
     e.stopPropagation();
-    setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
+    setIndiceActual((prev) => (prev === 0 ? Math.max(0, imagenes.length - 1) : prev - 1));
   };
+
+  // Asegurarnos de que el índice jamás sea inválido al renderizar
+  const indiceSeguro = indiceActual >= imagenes.length ? 0 : indiceActual;
 
   return (
     <div className={`group p-4 rounded-3xl border transition-all duration-300 ${
@@ -58,17 +66,16 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
       {/* --- CONTENEDOR DE IMAGEN CON FLECHAS --- */}
       <div className="w-full h-44 rounded-2xl bg-gray-100 mb-4 overflow-hidden relative group/slider">
         
-        {/* Imagen Actual */}
+        {/* Imagen Actual (Usando el índiceSeguro) */}
         <img 
-          src={imagenes[indiceActual]} 
-          alt={`${item.nombre}-${indiceActual}`} 
+          src={imagenes[indiceSeguro]} 
+          alt={`${item.nombre}-${indiceSeguro}`} 
           className="w-full h-full object-cover transition-all duration-500"
         />
 
-        {/* Flechas de Navegación (Solo si hay más de 1 foto) */}
+        {/* Flechas de Navegación */}
         {imagenes.length > 1 && (
           <>
-            {/* Flecha Izquierda */}
             <button 
               onClick={anteriorImagen}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -79,7 +86,6 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
-            {/* Flecha Derecha */}
             <button 
               onClick={siguienteImagen}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -90,17 +96,17 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
-            {/* Indicadores de posición (Dots) */}
+            {/* Indicadores de posición */}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
               {imagenes.map((_, i) => (
-                <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${i === indiceActual ? 'bg-white w-4' : 'bg-white/50'}`} />
+                <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${i === indiceSeguro ? 'bg-white w-4' : 'bg-white/50'}`} />
               ))}
             </div>
           </>
         )}
       </div>
 
-      {/* ... INFORMACIÓN DEL ÍTEM Y ACCIONES SIGUEN IGUAL QUE ANTES ... */}
+      {/* --- INFORMACIÓN DEL ÍTEM --- */}
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="font-bold text-gray-800 line-clamp-1 text-lg">{item.nombre}</h4>
@@ -115,6 +121,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
         {item.descripcion || "Sin descripción disponible"}
       </p>
       
+      {/* --- ACCIONES --- */}
       <div className="flex items-center justify-between border-t border-gray-50 pt-4">
         <div className="flex gap-1">
           <button 
