@@ -75,11 +75,8 @@ export default function CreateItemModal({ isOpen, onClose, onSave, initialData =
         
         // 🚀 BÚSQUEDA INTELIGENTE DE FOTOS EXISTENTES
         let fotosParseadas = [];
-        if (initialData.fotos) {
-          try {
-            fotosParseadas = typeof initialData.fotos === 'string' ? JSON.parse(initialData.fotos) : initialData.fotos;
-            if (!Array.isArray(fotosParseadas)) fotosParseadas = [];
-          } catch(e) { fotosParseadas = []; }
+        if (initialData.todasLasFotos && Array.isArray(initialData.todasLasFotos)) {
+            fotosParseadas = initialData.todasLasFotos;
         }
         
         // Si no encontró fotos en la galería, busca la principal

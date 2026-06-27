@@ -298,15 +298,8 @@ export default function TemaBasico({ config, items, empresa }) {
 
                         // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
                         let imagenes = [];
-                        try {
-                          if (item.fotos) {
-                            const fotosArray = typeof item.fotos === 'string' ? JSON.parse(item.fotos) : item.fotos;
-                            if (Array.isArray(fotosArray) && fotosArray.length > 0) {
-                              imagenes = fotosArray.map(foto => formatearUrlPublica(foto));
-                            }
-                          }
-                        } catch (error) {
-                          console.warn("No se pudo parsear el array de fotos en TemaBasico", error);
+                        if (item.todasLasFotos && Array.isArray(item.todasLasFotos) && item.todasLasFotos.length > 0) {
+                            imagenes = item.todasLasFotos.map(foto => formatearUrlPublica(foto));
                         }
 
                         if (imagenes.length === 0) {
