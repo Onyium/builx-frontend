@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO
+// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO (Inyectado en TemaBasico)
 const formatearUrlPublica = (rawUrl) => {
   if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
   const BACKEND_URL = "https://builx-api.onrender.com";
@@ -18,7 +18,6 @@ const formatearUrlPublica = (rawUrl) => {
   if (limpia.startsWith('http')) return limpia; 
   return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
 };
-
 
 // --- SUB-COMPONENTE: Calendario Premium Custom ---
 const CalendarioPremium = ({ checkIn, checkOut, setCheckIn, setCheckOut, primaryColor }) => {
@@ -236,6 +235,7 @@ const MarcaDeAgua = () => {
 // --- COMPONENTE PRINCIPAL ---
 export default function TemaBasico({ config, items, empresa }) {
     const [itemSeleccionado, setItemSeleccionado] = useState(null); 
+    const BACKEND_URL = "https://builx-api.onrender.com";
 
     const { hotelIdentity, terminologia, contactChannels } = config;
     const isDark = hotelIdentity?.theme?.mode === 'dark';
@@ -296,14 +296,34 @@ export default function TemaBasico({ config, items, empresa }) {
                         try { detalles = item.detalles_extra ? JSON.parse(item.detalles_extra) : {}; } 
                         catch (e) { }
 
+                        // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
+                        let imagenes = [];
+                        try {
+                          if (item.fotos) {
+                            const fotosArray = typeof item.fotos === 'string' ? JSON.parse(item.fotos) : item.fotos;
+                            if (Array.isArray(fotosArray) && fotosArray.length > 0) {
+                              imagenes = fotosArray.map(foto => formatearUrlPublica(foto));
+                            }
+                          }
+                        } catch (error) {
+                          console.warn("No se pudo parsear el array de fotos en TemaBasico", error);
+                        }
+
+                        if (imagenes.length === 0) {
+                          if (item.imagen_url) {
+                            imagenes = [formatearUrlPublica(item.imagen_url)];
+                          } else {
+                            imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
+                          }
+                        }
+
                         return (
                             <div key={item.id} className="flex flex-col bg-white dark:bg-[#121212] rounded-[2rem] border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden group">
-                                {item.imagen_url && (
-                                    <div className="h-56 overflow-hidden relative bg-gray-100">
-                                        {/* 🚀 ARREGLO IMAGEN DEL CATÁLOGO PÚBLICO */}
-                                        <img src={formatearUrlPublica(item.imagen_url)} alt={item.nombre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    </div>
-                                )}
+                                <div className="h-56 overflow-hidden relative bg-gray-100 group/slider">
+                                    {/* 🚀 ARREGLO IMAGEN DEL CATÁLOGO PÚBLICO: ¡AHORA COMO GALERÍA! */}
+                                    {/* Usamos el componente de slider público */}
+                                    <GaleriaPublica imagenes={imagenes} nombre={item.nombre} />
+                                </div>
 
                                 <div className="p-8 flex-1 flex flex-col">
                                     <h3 className="font-black text-2xl leading-tight text-gray-900 dark:text-white mb-2">{item.nombre}</h3>
@@ -351,3 +371,64 @@ export default function TemaBasico({ config, items, empresa }) {
         </div>
     );
 }
+
+// 🚀 NUEVO COMPONENTE: GaleriaPublica (Para las flechas y puntos)
+const GaleriaPublica = ({ imagenes, nombre }) => {
+  const [indiceActual, setIndiceActual] = useState(0);
+
+  // Función para ir a la siguiente imagen
+  const siguienteImagen = (e) => {
+    e.stopPropagation(); 
+    setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
+  };
+
+  // Función para ir a la imagen anterior
+  const anteriorImagen = (e) => {
+    e.stopPropagation();
+    setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
+  };
+
+  return (
+    <>
+      <img 
+        src={imagenes[indiceActual]} 
+        alt={`${nombre}-${indiceActual}`} 
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+      />
+
+      {/* Flechas de Navegación (Solo si hay más de 1 foto) */}
+      {imagenes.length > 1 && (
+        <>
+          {/* Flecha Izquierda */}
+          <button 
+            onClick={anteriorImagen}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10 transition-transform active:scale-90 group-hover/slider:opacity-100 opacity-0"
+            title="Anterior"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Flecha Derecha */}
+          <button 
+            onClick={siguienteImagen}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md z-10 transition-transform active:scale-90 group-hover/slider:opacity-100 opacity-0"
+            title="Siguiente"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* Indicadores de posición (Dots) */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {imagenes.map((_, i) => (
+              <div key={i} className={`h-2 w-2 rounded-full transition-all ${i === indiceActual ? 'bg-white w-5' : 'bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  );
+};

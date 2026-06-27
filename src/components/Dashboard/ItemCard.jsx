@@ -1,60 +1,56 @@
 import React, { useState } from 'react';
 
-export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenReviews }) {
-  const [indiceActual, setIndiceActual] = useState(0);
-  const BACKEND_URL = "https://builx-api.onrender.com"; 
-
-  // 🚀 EL FILTRO SUPREMO: Separa y repara cualquier URL duplicada o corrupta
-  const formatearUrl = (rawUrl) => {
-    if (!rawUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
-    
-    // 1. Limpiamos comillas o corchetes extraños de la base de datos
-    let limpia = String(rawUrl).replace(/[\[\]"'\\]/g, '').trim();
-    
-    // 2. Si el backend concatenó el servidor con Cloudinary, extraemos SOLO Cloudinary
-    if (limpia.includes('cloudinary.com')) {
-      const posicionRealHttp = limpia.lastIndexOf('http');
-      if (posicionRealHttp !== -1) {
-        limpia = limpia.substring(posicionRealHttp); // Corta el link de Render y se queda desde "http" de Cloudinary
-      }
+// 🚀 EL FILTRO SUPREMO PARA EL LADO PÚBLICO (Inyectado en la tarjeta del Admin)
+const formatearUrlItemCard = (url) => {
+  if (!url) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+  const BACKEND_URL = "https://builx-api.onrender.com";
+  
+  let limpia = String(url).replace(/[\[\]"'\\]/g, '').trim();
+  
+  if (limpia.includes('cloudinary.com')) {
+    const posicionRealHttp = limpia.lastIndexOf('http');
+    if (posicionRealHttp !== -1) {
+      limpia = limpia.substring(posicionRealHttp); 
     }
-    
-    // 3. Corregimos si falta el ":" por errores de pruebas anteriores
-    limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
-    
-    // 4. Si ya es una URL limpia y libre, la devolvemos
-    if (limpia.startsWith('http')) return limpia; 
-    
-    // 5. Si es una ruta local de las viejas, le ponemos el backend
-    return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
-  };
+  }
+  
+  limpia = limpia.replace('https//', 'https://').replace('http//', 'http://');
+  if (limpia.startsWith('http')) return limpia; 
+  return limpia.startsWith('/') ? `${BACKEND_URL}${limpia}` : `${BACKEND_URL}/${limpia}`;
+};
 
-  // 🚀 EXTRACCIÓN SEGURA DE IMÁGENES
+export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenReviews }) {
+  // --- LÓGICA DE NAVEGACIÓN ---
+  const [indiceActual, setIndiceActual] = useState(0);
+
+  // Armamos el arreglo de imágenes pasándolas por nuestro filtro inteligente
   let imagenes = [];
   try {
     if (item.fotos) {
       const fotosArray = typeof item.fotos === 'string' ? JSON.parse(item.fotos) : item.fotos;
       if (Array.isArray(fotosArray) && fotosArray.length > 0) {
-        imagenes = fotosArray.map(foto => formatearUrl(foto));
+        imagenes = fotosArray.map(foto => formatearUrlItemCard(foto));
       }
     }
   } catch (error) {
-    console.warn("No se pudo parsear el array de fotos", error);
+    console.warn("No se pudo parsear el array de fotos en ItemCard", error);
   }
 
   if (imagenes.length === 0) {
     if (item.imagen_url) {
-      imagenes = [formatearUrl(item.imagen_url)];
+      imagenes = [formatearUrlItemCard(item.imagen_url)];
     } else {
       imagenes = ['https://via.placeholder.com/300x200?text=Sin+Imagen'];
     }
   }
 
+  // Función para ir a la siguiente imagen
   const siguienteImagen = (e) => {
     e.stopPropagation(); 
     setIndiceActual((prev) => (prev + 1 === imagenes.length ? 0 : prev + 1));
   };
 
+  // Función para ir a la imagen anterior
   const anteriorImagen = (e) => {
     e.stopPropagation();
     setIndiceActual((prev) => (prev === 0 ? imagenes.length - 1 : prev - 1));
@@ -68,15 +64,17 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
       {/* --- CONTENEDOR DE IMAGEN CON FLECHAS --- */}
       <div className="w-full h-44 rounded-2xl bg-gray-100 mb-4 overflow-hidden relative group/slider">
         
+        {/* Imagen Actual */}
         <img 
           src={imagenes[indiceActual]} 
           alt={`${item.nombre}-${indiceActual}`} 
           className="w-full h-full object-cover transition-all duration-500"
         />
 
-        {/* Flechas de Navegación */}
+        {/* Flechas de Navegación (Solo si hay más de 1 foto) */}
         {imagenes.length > 1 && (
           <>
+            {/* Flecha Izquierda */}
             <button 
               onClick={anteriorImagen}
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -87,6 +85,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
+            {/* Flecha Derecha */}
             <button 
               onClick={siguienteImagen}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md z-10 transition-transform active:scale-90"
@@ -97,6 +96,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
               </svg>
             </button>
 
+            {/* Indicadores de posición (Dots) */}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
               {imagenes.map((_, i) => (
                 <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${i === indiceActual ? 'bg-white w-4' : 'bg-white/50'}`} />
@@ -106,7 +106,7 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
         )}
       </div>
 
-      {/* --- INFORMACIÓN DEL ÍTEM --- */}
+      {/* ... INFORMACIÓN DEL ÍTEM Y ACCIONES SIGUEN IGUAL QUE ANTES ... */}
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="font-bold text-gray-800 line-clamp-1 text-lg">{item.nombre}</h4>
@@ -121,7 +121,6 @@ export default function ItemCard({ item, onToggle, onEdit, onDelete, onOpenRevie
         {item.descripcion || "Sin descripción disponible"}
       </p>
       
-      {/* --- ACCIONES --- */}
       <div className="flex items-center justify-between border-t border-gray-50 pt-4">
         <div className="flex gap-1">
           <button 
