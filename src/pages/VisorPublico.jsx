@@ -109,10 +109,10 @@ export default function VisorPublico() {
             case 'tema-awwwards':
                 return <TemaAwwwards {...propsComunes} />;
             case 'tema-basico':
-                return <TemaBasico {...propsComunes} />;
+                return <TemplateJagerhof {...propsComunes} />;
             default:
                 // Si no hay plantilla seleccionada, cargamos una genérica
-                return <TemaBasico {...propsComunes} />; 
+                return <TemplateJagerhof {...propsComunes} />; 
         }
     };
 
