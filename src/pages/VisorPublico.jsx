@@ -4,9 +4,10 @@ import axios from 'axios';
 
 // 🚀 IMPORTACIONES DE TUS PLANTILLAS
 import TemaAwwwards from '../components/templates/TemaAwwwards';
-// ✅ La nueva forma de importarlo
-import TemplateJagerhof from '../components/templates/TemaBasico'; 
-// (Ajusta los '../' dependiendo de en qué nivel de carpetas esté VisorPublico)
+
+// ✅ Importamos la carpeta (asegúrate de que la ruta coincida con donde la guardaste)
+import TemaBasico from '../plantillas/Jagerhof'; 
+// (Si la dejaste en components/templates/TemaBasico, usa: import TemaBasico from '../components/templates/TemaBasico';)
 
 export default function VisorPublico() {
     // 🚀 La variable 'subpagina' te permite manejar rutas tipo /v/hotel/reservas
