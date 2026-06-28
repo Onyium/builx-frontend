@@ -5,7 +5,7 @@ import axios from 'axios';
 // 🚀 IMPORTACIONES DE TUS PLANTILLAS
 import TemaAwwwards from '../components/templates/TemaAwwwards';
 // ✅ La nueva forma de importarlo
-import Jagerhof from '../components/templates/TemaBasico'; 
+import TemplateJagerhof from '../components/templates/TemaBasico'; 
 // (Ajusta los '../' dependiendo de en qué nivel de carpetas esté VisorPublico)
 
 export default function VisorPublico() {
