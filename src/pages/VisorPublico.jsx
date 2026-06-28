@@ -6,7 +6,7 @@ import axios from 'axios';
 import TemaAwwwards from '../components/templates/TemaAwwwards';
 
 // ✅ Importamos la carpeta (asegúrate de que la ruta coincida con donde la guardaste)
-import TemaBasico from '../plantillas/Jagerhof'; 
+import TemplateJagerhof from '../components/templates/TemaBasico'; 
 // (Si la dejaste en components/templates/TemaBasico, usa: import TemaBasico from '../components/templates/TemaBasico';)
 
 export default function VisorPublico() {
