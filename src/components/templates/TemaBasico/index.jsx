@@ -8,6 +8,7 @@ import InfoBooking from './InfoBooking'; // <-- NUEVO COMPONENTE
 import CatalogoHabitaciones from './CatalogoHabitaciones';
 import Footer from './Footer';
 import SidebarReserva from './components/SidebarReserva';
+import GaleriaInteractiva from './GaleriaInteractiva';
 
 export default function TemplateJagerhof({ config, items, empresa, paginaActual }) {
   const [itemSeleccionado, setItemSeleccionado] = useState(null);
@@ -46,6 +47,10 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
       {/* 2. INTRODUCCIÓN */}
       <section id="intro" className="snap-start snap-always w-full min-h-screen flex items-center justify-center relative">
         <Intro introConfig={config.seccion_intro} theme={config.theme} />
+      </section>
+
+      <section id="galeria" className="snap-start w-full min-h-screen flex items-center relative" style={{ backgroundColor: '#ffffff' }}>
+        <GaleriaInteractiva galeriaConfig={config.galeria_interactiva} theme={config.theme} />
       </section>
 
       {/* 3. NUEVA SECCIÓN TIPO BOOKING (Integrada elegantemente) */}
