@@ -10,7 +10,7 @@ import Intro from './Intro';
 import GaleriaInteractiva from './components/GaleriaInteractiva'; // <-- Importamos la galería
 import InfoBooking from './InfoBooking'; 
 import CatalogoHabitaciones from './CatalogoHabitaciones';
-import Contacto from './Contacto'; // <-- Importamos la nueva sección de Contacto
+import Contacto from './contacto'; // <-- Importamos la nueva sección de Contacto
 import Footer from './Footer';
 
 // --- MICRO-COMPONENTES (MODALES Y LÓGICA) ---
