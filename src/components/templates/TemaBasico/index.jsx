@@ -7,7 +7,7 @@ import BarraFlotante from './BarraFlotante';
 // --- SECCIONES (SCROLL PAGES) ---
 import Hero from './Hero';
 import Intro from './Intro';
-import GaleriaInteractiva from './components/GaleriaInteractiva'; // <-- Importamos la galería
+import GaleriaInteractiva from './GaleriaInteractiva'; // <-- Importamos la galería
 import InfoBooking from './InfoBooking'; 
 import CatalogoHabitaciones from './CatalogoHabitaciones';
 import Contacto from './contacto'; // <-- Importamos la nueva sección de Contacto
