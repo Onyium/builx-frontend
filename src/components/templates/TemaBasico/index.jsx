@@ -68,14 +68,13 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
         />
       </section>
 
-      {/* 5. FOOTER */}
-      <section id="footer" className="snap-start snap-always w-full min-h-screen flex flex-col justify-end relative">
-        <Footer 
-          footerConfig={config.footer} 
-          theme={config.theme} 
-          contacto={config.contacto}
-          getUrl={getUrl} 
-        />
+      <section id="contacto" className="snap-start w-full min-h-screen relative">
+        <Contacto contactoConfig={config.contacto} theme={config.theme} />
+      </section>
+
+      {/* SECCIÓN 6: Footer Simplificado (id="footer") */}
+      <section id="footer" className="snap-start snap-always w-full flex flex-col justify-end relative">
+        <Footer footerConfig={config.footer} faq={config.faq} theme={config.theme} getUrl={getUrl} />
       </section>
     </div>
   );
