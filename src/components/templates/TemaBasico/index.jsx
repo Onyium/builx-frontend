@@ -9,6 +9,7 @@ import CatalogoHabitaciones from './CatalogoHabitaciones';
 import Footer from './Footer';
 import SidebarReserva from './components/SidebarReserva';
 import GaleriaInteractiva from './GaleriaInteractiva';
+import Contacto from './contacto';
 
 export default function TemplateJagerhof({ config, items, empresa, paginaActual }) {
   const [itemSeleccionado, setItemSeleccionado] = useState(null);
