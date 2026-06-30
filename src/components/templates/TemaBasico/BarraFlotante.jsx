@@ -2,7 +2,12 @@ import React from 'react';
 
 export default function BarraFlotante({ barraConfig, color }) {
   const hacerScrollAlCatalogo = () => {
-    window.scrollTo({ top: window.innerHeight * 2, behavior: 'smooth' });
+    // Buscamos la sección por su ID exacto en lugar de calcular alturas a ciegas
+    const seccionCatalogo = document.getElementById('catalogo');
+    
+    if (seccionCatalogo) {
+      seccionCatalogo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (

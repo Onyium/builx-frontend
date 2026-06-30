@@ -78,7 +78,10 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
     mensaje += `💰 *Total estimado:* $${total}\n\n`;
     mensaje += `¿Tienen disponibilidad para estas fechas?`;
 
-    window.open(`https://wa.me/${telefonoHotel}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    // 🚀 MAGIA AQUÍ: Limpiamos el teléfono quitando el '+', espacios y cualquier letra
+    const numeroLimpio = telefonoHotel.replace(/\D/g, '');
+
+    window.open(`https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
   return (
