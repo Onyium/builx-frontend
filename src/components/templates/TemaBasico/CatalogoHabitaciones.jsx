@@ -49,7 +49,7 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                           className="px-6 py-2.5 text-white text-sm font-medium transition-transform active:scale-95 shadow-sm hover:shadow-md"
                           style={{ backgroundColor: theme.accentOrange }}
                         >
-                          Verfügbarkeit
+                          Reservar
                         </button>
                       </div>
                     </div>
