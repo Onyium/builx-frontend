@@ -64,23 +64,27 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       alert("Por favor selecciona las fechas de tu estadía.");
       return;
     }
-    let mensaje = `👋 Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
-    mensaje += `🏨 *Habitación:* ${item.nombre}\n`;
-    mensaje += `📅 *Check-in:* ${checkIn}\n`;
-    mensaje += `📅 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
+    
+    // Usamos códigos Unicode (\u...) para evitar que el archivo rompa los emojis
+    let mensaje = `\uD83D\uDC4B Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
+    mensaje += `\uD83C\uDFE8 *Habitación:* ${item.nombre}\n`;
+    mensaje += `\uD83D\uDCC5 *Check-in:* ${checkIn}\n`;
+    mensaje += `\uD83D\uDCC5 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
     
     if (extras.desayuno || extras.transporte) {
-      mensaje += `✨ *Extras solicitados:*\n`;
+      mensaje += `\u2728 *Extras solicitados:*\n`;
       if (extras.desayuno) mensaje += `- ${nombreDesayuno}\n`;
       if (extras.transporte) mensaje += `- ${nombreTransfer}\n`;
       mensaje += `\n`;
     }
-    mensaje += `💰 *Total estimado:* $${total}\n\n`;
+    
+    mensaje += `\uD83D\uDCB0 *Total estimado:* $${total}\n\n`;
     mensaje += `¿Tienen disponibilidad para estas fechas?`;
 
-    // 🚀 MAGIA AQUÍ: Limpiamos el teléfono quitando el '+', espacios y cualquier letra
+    // Limpiamos el teléfono (quitamos '+' y espacios)
     const numeroLimpio = telefonoHotel.replace(/\D/g, '');
 
+    // Generamos el link de WhatsApp
     window.open(`https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
