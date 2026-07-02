@@ -7,24 +7,34 @@ import BarraFlotante from './BarraFlotante';
 // --- SECCIONES (SCROLL PAGES) ---
 import Hero from './Hero';
 import Intro from './Intro';
-import GaleriaInteractiva from './GaleriaInteractiva'; // <-- Importamos la galería
+import GaleriaInteractiva from './GaleriaInteractiva';
 import InfoBooking from './InfoBooking'; 
 import CatalogoHabitaciones from './CatalogoHabitaciones';
-import Contacto from './contacto'; // <-- Importamos la nueva sección de Contacto
+import Contacto from './contacto'; 
 import Footer from './Footer';
 
 // --- MICRO-COMPONENTES (MODALES Y LÓGICA) ---
 import SidebarReserva from './components/SidebarReserva';
 
 export default function TemplateJagerhof({ config, items, empresa, paginaActual }) {
+  // =========================================
+  // 🚀 ESTADO DEL IDIOMA (El Interruptor Maestro)
+  // =========================================
+  const [idioma, setIdioma] = useState('es'); // Por defecto en español
+
+  // Extraemos SOLO la parte del JSON que corresponde al idioma seleccionado.
+  // El "|| config" al final es un escudo por si alguna vez le pasas un JSON viejo que no tenga "es" ni "en".
+  const datosIdioma = config[idioma] || config.es || config;
+
   // Estado para controlar qué habitación se está reservando
   const [itemSeleccionado, setItemSeleccionado] = useState(null);
   
-  // Extraemos variables globales del tema desde el JSON
-  const { accentOrange, bgBeige } = config.theme;
+  // Extraemos variables globales del tema desde los datos del idioma actual
+  // Le ponemos valores por defecto porsiacaso para blindar la app de errores
+  const { accentOrange = "#7e3547", bgBeige = "#f2efe9" } = datosIdioma.theme || {};
   
   // Extraemos el teléfono dinámicamente del JSON para el botón de WhatsApp
-  const telefonoHotel = config.contacto?.telefono || "+51 84 000 000"; 
+  const telefonoHotel = datosIdioma.contacto?.telefono || "+51 84 000 000"; 
 
   // FUNCIÓN CRÍTICA DE ENRUTAMIENTO (Regla estricta de BuilX)
   const getUrl = (ruta) => {
@@ -42,10 +52,19 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
           1. ELEMENTOS FIJOS (Superpuestos)
       ========================================= */}
       
-      {/* SOLUCIÓN AL ERROR: Pasamos config, empresa y getUrl */}
-      <Header config={config} empresa={empresa} getUrl={getUrl} />
+      {/* 
+        Le pasamos "datosIdioma" en vez de config entero para que el Header cambie su texto.
+        También le pasamos el estado "idioma" y "setIdioma" para que el botón de la barra de navegación pueda cambiar el idioma general.
+      */}
+      <Header 
+        config={datosIdioma} 
+        empresa={empresa} 
+        getUrl={getUrl} 
+        idiomaActual={idioma} 
+        cambiarIdioma={setIdioma} 
+      />
       
-      <BarraFlotante barraConfig={config.barra_flotante} color={accentOrange} />
+      <BarraFlotante barraConfig={datosIdioma.barra_flotante} color={accentOrange} />
       
       {/* Modal / Sidebar de Reserva Condicional */}
       {itemSeleccionado && (
@@ -63,46 +82,49 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
       
       {/* SECCIÓN 1: Hero (id="hero") */}
       <section id="hero" className="snap-start snap-always w-full h-screen relative">
-        <Hero heroConfig={config.hero} />
+        <Hero heroConfig={datosIdioma.hero} />
       </section>
 
       {/* SECCIÓN 2: Intro (id="intro") */}
       <section id="intro" className="snap-start snap-always w-full min-h-screen flex items-center justify-center relative">
-        <Intro introConfig={config.seccion_intro} theme={config.theme} />
+        <Intro introConfig={datosIdioma.seccion_intro} theme={datosIdioma.theme} />
       </section>
 
       {/* SECCIÓN 3: Galería Interactiva (id="galeria") */}
       <section id="galeria" className="snap-start w-full min-h-screen flex items-center relative bg-white">
-        {/* Usamos config.galeria_interactiva que definiste en tu JSON */}
-        <GaleriaInteractiva galeriaConfig={config.galeria_interactiva} theme={config.theme} />
+        <GaleriaInteractiva galeriaConfig={datosIdioma.galeria_interactiva} theme={datosIdioma.theme} />
       </section>
 
       {/* SECCIÓN 4: Info Tipo Booking (id="info_booking") */}
       <section id="info_booking" className="snap-start snap-always w-full min-h-screen flex items-center justify-center relative py-24">
-        <InfoBooking infoConfig={config.info_booking} theme={config.theme} />
+        <InfoBooking infoConfig={datosIdioma.info_booking} theme={datosIdioma.theme} />
       </section>
 
       {/* SECCIÓN 5: Catálogo de Habitaciones (id="catalogo") */}
-      <section id="catalogo" className="snap-start w-full min-h-screen py-24 flex items-center relative">
+      {/* 
+        ¡Aquí está la solución definitiva al error del color! 
+        Ya le estamos pasando datosIdioma.theme de forma correcta. 
+      */}
+      <section id="catalogo" className="snap-start w-full min-h-screen flex items-center relative">
         <CatalogoHabitaciones 
           items={items} 
-          theme={config.theme}
-          configCatalogo={config.catalogo} 
+          theme={datosIdioma.theme}
+          configCatalogo={datosIdioma.catalogo} 
           onSelect={setItemSeleccionado} 
         />
       </section>
 
       {/* SECCIÓN 6: Contacto Visual (id="contacto") */}
       <section id="contacto" className="snap-start w-full min-h-screen relative">
-        <Contacto contactoConfig={config.contacto} theme={config.theme} />
+        <Contacto contactoConfig={datosIdioma.contacto} theme={datosIdioma.theme} />
       </section>
 
       {/* SECCIÓN 7: Footer Simplificado (id="footer") */}
       <section id="footer" className="snap-start snap-always w-full flex flex-col justify-end relative">
         <Footer 
-          footerConfig={config.footer} 
-          theme={config.theme} 
-          faq={config.faq} 
+          footerConfig={datosIdioma.footer} 
+          theme={datosIdioma.theme} 
+          faq={datosIdioma.faq} 
           getUrl={getUrl} 
         />
       </section>
