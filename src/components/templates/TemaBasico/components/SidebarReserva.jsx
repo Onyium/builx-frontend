@@ -6,7 +6,7 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   
-  // 🚀 NUEVOS ESTADOS PARA LOS HUÉSPEDES
+  // 🚀 ESTADOS PARA LOS HUÉSPEDES
   const [adultos, setAdultos] = useState(2);
   const [ninos, setNinos] = useState(0);
   
@@ -54,6 +54,10 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
   const maxAdultos = parseInt(detalles.Max_Adultos) || parseInt(detalles.Capacidad_Maxima) || 4;
   const maxNinos = parseInt(detalles.Max_Ninos) || 4;
 
+  // 🚀 VARIABLES DE OCUPACIÓN
+  const ocupacionBase = parseInt(detalles.Ocupacion_Base_Incluida) || 1;
+  const cobroPorPersonaExtra = parseFloat(detalles.Cobro_Persona_Extra) || 0;
+
   const calcularNoches = () => {
     if (!checkIn || !checkOut) return 0;
     const dias = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
@@ -62,15 +66,27 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
 
   const noches = calcularNoches();
   
-  // 🚀 CALCULADORA INTELIGENTE (Multiplica si es por persona)
-  const multiplicadorPersonas = tipoCobro === 'persona' ? (adultos + ninos) : 1;
-  const costoHabitacion = item.precio * noches * multiplicadorPersonas;
+  // ==========================================
+  // 🚀 CALCULADORA BASADA EN OCUPACIÓN
+  // ==========================================
+  const totalHuespedes = adultos + ninos;
+  
+  // Calculamos si hay personas "extra" que superen la ocupación base
+  const huespedesExtra = Math.max(0, totalHuespedes - ocupacionBase);
+  
+  // Calculamos el precio real por noche
+  const precioBaseHabitacion = parseFloat(item.precio) || 0;
+  const precioFinalPorNoche = precioBaseHabitacion + (huespedesExtra * cobroPorPersonaExtra);
+
+  // Multiplicamos por la cantidad de noches
+  const costoHabitacion = precioFinalPorNoche * noches;
   
   // El desayuno extra normalmente se cobra por persona por día
-  const costoDesayuno = extras.desayuno ? (precioDesayuno * noches * (adultos + ninos)) : 0;
+  const costoDesayuno = extras.desayuno ? (precioDesayuno * noches * totalHuespedes) : 0;
   const costoTransporte = extras.transporte ? precioTransfer : 0;
   
   const total = costoHabitacion + costoDesayuno + costoTransporte;
+  // ==========================================
 
   const enviarPorWhatsApp = () => {
     if (!checkIn || !checkOut) {
@@ -136,16 +152,27 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
                 )}
               </div>
             )}
+            
             <h4 className="font-serif text-3xl mb-2 text-[#2b4535]">{item.nombre}</h4>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg font-bold text-[#2b4535]">${item.precio}</span>
-              <span className="text-xs text-gray-500 uppercase">/ {tipoCobro}</span>
+            
+            {/* 🚀 DESGLOSE DE PRECIO Y PERSONAS EXTRA */}
+            <div className="flex flex-col gap-1 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-[#2b4535]">${precioFinalPorNoche.toFixed(2)}</span>
+                <span className="text-xs text-gray-500 uppercase">/ {tipoCobro}</span>
+              </div>
+              
+              {huespedesExtra > 0 && (
+                <span className="text-[11px] font-bold text-[#d16b47]">
+                  (Incluye ${cobroPorPersonaExtra} por {huespedesExtra} huésped(es) extra)
+                </span>
+              )}
             </div>
           </div>
           
           <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Estadía y Huéspedes</h5>
           
-          {/* 🚀 NUEVOS SELECTORES DE HUÉSPEDES */}
+          {/* SELECTORES DE HUÉSPEDES */}
           <div className="flex gap-4 mb-4">
             <div className="flex-1">
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Adultos</label>
