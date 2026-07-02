@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Animacion from './components/Animacion';
 import GaleriaPublica from './components/GaleriaPublica';
-import SidebarReserva from './SidebarReserva'; // 🚀 1. IMPORTAMOS EL SIDEBAR
+import SidebarReserva from './components/SidebarReserva'; // 🚀 1. IMPORTAMOS EL SIDEBAR
 import { formatearUrlPublica } from './components/UtilidadesCatalogo';
 
 export default function CatalogoHabitaciones({ items, theme, configCatalogo, onSelect }) {
