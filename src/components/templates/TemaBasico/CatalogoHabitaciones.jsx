@@ -1,21 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import Animacion from './components/Animacion';
 import GaleriaPublica from './components/GaleriaPublica';
+import SidebarReserva from './SidebarReserva'; // 🚀 1. IMPORTAMOS EL SIDEBAR
 import { formatearUrlPublica } from './components/UtilidadesCatalogo';
 
 export default function CatalogoHabitaciones({ items, theme, configCatalogo, onSelect }) {
   // ==========================================
-  // 1. ESTADOS DE LOS FILTROS
+  // 1. ESTADOS DE LOS FILTROS Y UI
   // ==========================================
   const [filtros, setFiltros] = useState({
     fechaLlegada: '',
     fechaSalida: '',
     adultos: 1,
     ninos: 0,
-    precioMax: 500, // Subí un poco el límite por defecto para estadías largas
+    precioMax: 500, 
     desayuno: false,
     cancelacion: false
   });
+
+  // 🚀 2. ESTADO PARA CONTROLAR QUÉ HABITACIÓN SE ESTÁ RESERVANDO
+  const [habitacionSeleccionada, setHabitacionSeleccionada] = useState(null);
 
   const manejarFiltro = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,8 +32,6 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
   // ==========================================
   // 2. LÓGICA MATEMÁTICA Y FILTRADO AVANZADO
   // ==========================================
-  
-  // Helper para calcular noches entre dos fechas
   const calcularNoches = (llegada, salida) => {
     if (!llegada || !salida) return 1; 
     const fecha1 = new Date(llegada);
@@ -44,11 +46,9 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
     const adultosSeleccionados = parseInt(filtros.adultos) || 1;
     const ninosSeleccionados = parseInt(filtros.ninos) || 0;
 
-    // Usamos reduce en lugar de filter para inyectar el precio calculado en el objeto
     return items.reduce((acc, item) => {
       if (!item.esta_disponible) return acc;
 
-      // 🚀 EXTRACCIÓN INTELIGENTE DEL JSON
       let detalles = {};
       try {
         detalles = typeof item.detalles_extra === 'string' 
@@ -56,23 +56,16 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
           : (item.detalles_extra || {});
       } catch (e) {}
 
-      // Variables físicas
       const capAdultos = parseInt(detalles.Max_Adultos) || parseInt(detalles.Capacidad_Maxima) || 2;
       const capNinos = parseInt(detalles.Max_Ninos) || 0;
-      
-      // Variables booleanas
       const tieneDesayuno = detalles.Desayuno_Incluido === true;
       const tieneCancelacion = detalles.Cancelacion_Gratis === true;
 
-      // REGLAS DEL EMBUDO FÍSICO
       if (capAdultos < adultosSeleccionados) return acc;
       if (capNinos < ninosSeleccionados) return acc;
       if (filtros.desayuno && !tieneDesayuno) return acc;
       if (filtros.cancelacion && !tieneCancelacion) return acc;
 
-      // ==========================================
-      // MATEMÁTICA DEL PRECIO (Estilo Booking)
-      // ==========================================
       const precioBaseNoche = parseFloat(item.precio) || 0;
       const ocupacionBase = parseInt(detalles.Ocupacion_Base_Incluida) || capAdultos; 
       const cobroExtra = parseFloat(detalles.Cobro_Persona_Extra) || 0;
@@ -82,14 +75,11 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
         personasExtra = adultosSeleccionados - ocupacionBase;
       }
 
-      // Cálculo final
       const precioTotalNoche = precioBaseNoche + (personasExtra * cobroExtra);
       const precioTotalEstadia = precioTotalNoche * noches;
 
-      // Filtro por presupuesto del cliente
       if (precioTotalEstadia > parseFloat(filtros.precioMax)) return acc;
 
-      // Inyectamos los cálculos dinámicos al objeto para que el render los use
       acc.push({
         ...item,
         precioMostrar: precioTotalEstadia.toFixed(2),
@@ -256,8 +246,12 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                               </div>
                             </div>
                             
+                            {/* 🚀 3. AL DAR CLIC, GUARDAMOS LA HABITACIÓN EN EL ESTADO LOCAL */}
                             <button 
-                              onClick={() => onSelect(item)}
+                              onClick={() => {
+                                setHabitacionSeleccionada(item);
+                                if (onSelect) onSelect(item); // Mantenemos la prop por si el layout padre la ocupa
+                              }}
                               className="px-6 py-3 text-white text-sm font-bold transition-all active:scale-95 shadow-md hover:shadow-lg rounded-xl"
                               style={{ backgroundColor: theme.accentOrange }}
                             >
@@ -276,6 +270,17 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
         </div>
 
       </div>
+
+      {/* 🚀 4. RENDERIZADO CONDICIONAL DEL SIDEBAR AL FINAL DEL COMPONENTE */}
+      {habitacionSeleccionada && (
+        <SidebarReserva 
+          item={habitacionSeleccionada} 
+          telefonoHotel={configCatalogo?.telefono || "+51974206744"} 
+          primaryColor={theme.accentOrange} 
+          huespedes={parseInt(filtros.adultos) || 1} // Pasamos la cantidad exacta de adultos del buscador
+          onCancel={() => setHabitacionSeleccionada(null)} // Función para cerrar el sidebar
+        />
+      )}
     </section>
   );
 }
