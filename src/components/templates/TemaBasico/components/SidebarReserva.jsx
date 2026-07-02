@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import CalendarioPremium from './CalendarioPremium';
 import { formatearUrlPublica } from './UtilidadesCatalogo';
 
-// 🚀 AÑADIMOS 'huespedes' (adultos) A LOS PROPS PARA HACER LA MATEMÁTICA
-export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCancel, huespedes = 1 }) {
+export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCancel }) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
+  
+  // 🚀 NUEVOS ESTADOS PARA LOS HUÉSPEDES
+  const [adultos, setAdultos] = useState(2);
+  const [ninos, setNinos] = useState(0);
+  
   const [extras, setExtras] = useState({ desayuno: false, transporte: false });
   const [indiceActual, setIndiceActual] = useState(0);
 
@@ -26,14 +30,13 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
     e.stopPropagation(); 
     setIndiceActual((prev) => (prev + 1 >= imagenes.length ? 0 : prev + 1));
   };
-
   const anteriorImagen = (e) => {
     e.stopPropagation();
     setIndiceActual((prev) => (prev === 0 ? Math.max(0, imagenes.length - 1) : prev - 1));
   };
   const indiceSeguro = indiceActual >= imagenes.length ? 0 : indiceActual;
 
-  // 🚀 EXTRACCIÓN DINÁMICA DESDE EL JSON (detalles_extra)
+  // === EXTRACCIÓN DINÁMICA DEL JSON ===
   let detalles = {};
   try {
     detalles = typeof item.detalles_extra === 'string' 
@@ -41,39 +44,32 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       : (item.detalles_extra || {});
   } catch (e) {}
 
-  // Variables de Extras
   const precioDesayuno = parseFloat(detalles.Precio_Desayuno_Extra) || 0;
   const precioTransfer = parseFloat(detalles.Precio_Transfer_Extra) || 0;
   const nombreDesayuno = detalles.Nombre_Desayuno_Extra || "Desayuno Extra";
   const nombreTransfer = detalles.Nombre_Transfer_Extra || "Transfer Aeropuerto";
+  
+  // Extraemos las limitantes de la habitación
+  const tipoCobro = (detalles.Cobro_Por || "noche").toLowerCase();
+  const maxAdultos = parseInt(detalles.Max_Adultos) || parseInt(detalles.Capacidad_Maxima) || 4;
+  const maxNinos = parseInt(detalles.Max_Ninos) || 4;
 
-  // ==========================================
-  // MATEMÁTICA ESTILO BOOKING PARA EL CARRITO
-  // ==========================================
   const calcularNoches = () => {
     if (!checkIn || !checkOut) return 0;
     const dias = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     return dias > 0 ? dias : 0;
   };
-  
-  const noches = calcularNoches();
-  const precioBaseNoche = parseFloat(item.precio) || 0;
-  const ocupacionBase = parseInt(detalles.Ocupacion_Base_Incluida) || 2; 
-  const cobroExtra = parseFloat(detalles.Cobro_Persona_Extra) || 0;
 
-  // Calculamos el recargo por personas extra
-  let personasExtra = 0;
-  if (huespedes > ocupacionBase) {
-    personasExtra = huespedes - ocupacionBase;
-  }
+  const noches = calcularNoches();
   
-  // Precio total por noche (Base + Personas Extra)
-  const precioNocheFinal = precioBaseNoche + (personasExtra * cobroExtra);
+  // 🚀 CALCULADORA INTELIGENTE (Multiplica si es por persona)
+  const multiplicadorPersonas = tipoCobro === 'persona' ? (adultos + ninos) : 1;
+  const costoHabitacion = item.precio * noches * multiplicadorPersonas;
   
-  // 🚀 CALCULADORA FINAL
-  const costoHabitacion = precioNocheFinal * noches;
-  const costoDesayuno = extras.desayuno ? (precioDesayuno * noches) : 0;
+  // El desayuno extra normalmente se cobra por persona por día
+  const costoDesayuno = extras.desayuno ? (precioDesayuno * noches * (adultos + ninos)) : 0;
   const costoTransporte = extras.transporte ? precioTransfer : 0;
+  
   const total = costoHabitacion + costoDesayuno + costoTransporte;
 
   const enviarPorWhatsApp = () => {
@@ -81,11 +77,14 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       alert("Por favor selecciona las fechas de tu estadía.");
       return;
     }
-    
-    // Formateo del mensaje para WhatsApp
+
+    // Armamos el texto perfecto para los huéspedes
+    let huespedesTexto = `${adultos} Adulto(s)`;
+    if (ninos > 0) huespedesTexto += `, ${ninos} Niño(s)`;
+
     let mensaje = `\uD83D\uDC4B Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
     mensaje += `\uD83C\uDFE8 *Habitación:* ${item.nombre}\n`;
-    mensaje += `\uD83D\uDC64 *Huéspedes:* ${huespedes} Adultos\n`; // Nuevo dato clave
+    mensaje += `\uD83D\uDC65 *Huéspedes:* ${huespedesTexto}\n`;
     mensaje += `\uD83D\uDCC5 *Check-in:* ${checkIn}\n`;
     mensaje += `\uD83D\uDCC5 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
     
@@ -95,7 +94,6 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       if (extras.transporte) mensaje += `- ${nombreTransfer}\n`;
       mensaje += `\n`;
     }
-    
     mensaje += `\uD83D\uDCB0 *Total estimado:* $${total.toFixed(2)}\n\n`;
     mensaje += `¿Tienen disponibilidad para estas fechas?`;
 
@@ -117,8 +115,7 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
         
         {/* BODY CON SCROLL */}
         <div className="flex-1 overflow-y-auto p-6 font-sans text-gray-800">
-          <div className="mb-8">
-            {/* GALERÍA CON FLECHAS */}
+          <div className="mb-6">
             {imagenes.length > 0 && (
               <div className="w-full h-48 mb-4 rounded-md overflow-hidden relative group">
                 <img src={imagenes[indiceSeguro]} alt={`${item.nombre}-${indiceSeguro}`} className="w-full h-full object-cover transition-all duration-500" />
@@ -140,34 +137,57 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
               </div>
             )}
             <h4 className="font-serif text-3xl mb-2 text-[#2b4535]">{item.nombre}</h4>
-            <p className="text-gray-600 text-sm leading-relaxed">{item.descripcion}</p>
-            
-            {/* Resumen de ocupación (Visual para el usuario) */}
-            <div className="mt-4 p-3 bg-white rounded border border-gray-200 text-sm text-gray-700">
-               <span className="font-bold">Para:</span> {huespedes} Adultos <br/>
-               <span className="text-xs text-gray-500">(Precio base incluye {ocupacionBase} personas. {personasExtra > 0 ? `+ $${cobroExtra} por persona extra` : ''})</span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg font-bold text-[#2b4535]">${item.precio}</span>
+              <span className="text-xs text-gray-500 uppercase">/ {tipoCobro}</span>
             </div>
           </div>
           
-          <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Fechas de Estadía</h5>
+          <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Estadía y Huéspedes</h5>
+          
+          {/* 🚀 NUEVOS SELECTORES DE HUÉSPEDES */}
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Adultos</label>
+              <select 
+                value={adultos} 
+                onChange={(e) => setAdultos(Number(e.target.value))}
+                className="w-full p-3 border border-gray-300 rounded-md bg-white focus:border-[#2b4535] outline-none"
+              >
+                {[...Array(maxAdultos)].map((_, i) => (
+                  <option key={i+1} value={i+1}>{i+1}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Niños</label>
+              <select 
+                value={ninos} 
+                onChange={(e) => setNinos(Number(e.target.value))}
+                className="w-full p-3 border border-gray-300 rounded-md bg-white focus:border-[#2b4535] outline-none"
+              >
+                {[...Array(maxNinos + 1)].map((_, i) => (
+                  <option key={i} value={i}>{i}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="mb-8">
             <CalendarioPremium checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut} primaryColor={primaryColor} />
           </div>
           
-          {/* RENDERIZADO CONDICIONAL DE EXTRAS */}
           {(precioDesayuno > 0 || precioTransfer > 0) && (
             <>
               <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Extras</h5>
               <div className="space-y-3 mb-8">
-                
                 {precioDesayuno > 0 && (
                   <label className="flex items-center gap-3 p-4 bg-white border border-gray-200 cursor-pointer hover:border-gray-400 transition-colors rounded-md">
                     <input type="checkbox" checked={extras.desayuno} onChange={(e) => setExtras({...extras, desayuno: e.target.checked})} className="w-4 h-4 accent-[#d16b47]" style={{ accentColor: primaryColor }} />
                     <div className="flex-1 text-sm font-medium">{nombreDesayuno}</div>
-                    <div className="text-sm text-gray-500">+${precioDesayuno}/día</div>
+                    <div className="text-sm text-gray-500">+${precioDesayuno} <span className="text-[10px]">x persona</span></div>
                   </label>
                 )}
-
                 {precioTransfer > 0 && (
                   <label className="flex items-center gap-3 p-4 bg-white border border-gray-200 cursor-pointer hover:border-gray-400 transition-colors rounded-md">
                     <input type="checkbox" checked={extras.transporte} onChange={(e) => setExtras({...extras, transporte: e.target.checked})} className="w-4 h-4 accent-[#d16b47]" style={{ accentColor: primaryColor }} />
@@ -175,7 +195,6 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
                     <div className="text-sm text-gray-500">+${precioTransfer}</div>
                   </label>
                 )}
-
               </div>
             </>
           )}
