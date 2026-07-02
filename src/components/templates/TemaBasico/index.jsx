@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // --- COMPONENTES FIJOS ---
 import Header from './Header';
@@ -23,14 +23,12 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
   const [idioma, setIdioma] = useState('es'); // Por defecto en español
 
   // Extraemos SOLO la parte del JSON que corresponde al idioma seleccionado.
-  // El "|| config" al final es un escudo por si alguna vez le pasas un JSON viejo que no tenga "es" ni "en".
   const datosIdioma = config[idioma] || config.es || config;
 
   // Estado para controlar qué habitación se está reservando
   const [itemSeleccionado, setItemSeleccionado] = useState(null);
   
   // Extraemos variables globales del tema desde los datos del idioma actual
-  // Le ponemos valores por defecto porsiacaso para blindar la app de errores
   const { accentOrange = "#7e3547", bgBeige = "#f2efe9" } = datosIdioma.theme || {};
   
   // Extraemos el teléfono dinámicamente del JSON para el botón de WhatsApp
@@ -43,6 +41,29 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
     return `/v/${empresa.slug}/${ruta}${isPreview ? '?preview=true' : ''}`;
   };
 
+  // =========================================
+  // 🚀 MAGIA: CAMBIAR FAVICON Y TÍTULO DINÁMICAMENTE
+  // =========================================
+  useEffect(() => {
+    // 1. Cambiamos el título de la pestaña dinámicamente
+    document.title = datosIdioma.nav?.logo_text || empresa.nombre || "Catálogo";
+
+    // 2. Buscamos la etiqueta <link rel="icon"> en el HTML
+    let link = document.querySelector("link[rel~='icon']");
+    
+    // Si por alguna razón no existe, la creamos al vuelo
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+
+    // 3. Le inyectamos el logo del cliente. 
+    // Busca en la raíz del config primero, y si no, en el idioma, con fallback a favicon.svg
+    link.href = config.logo_url || datosIdioma.logo_url || '/favicon.svg';
+    
+  }, [datosIdioma, empresa, config]);
+
   return (
     <div 
       className="relative w-full h-screen overflow-y-auto snap-y snap-mandatory font-sans antialiased scroll-smooth"
@@ -52,10 +73,6 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
           1. ELEMENTOS FIJOS (Superpuestos)
       ========================================= */}
       
-      {/* 
-        Le pasamos "datosIdioma" en vez de config entero para que el Header cambie su texto.
-        También le pasamos el estado "idioma" y "setIdioma" para que el botón de la barra de navegación pueda cambiar el idioma general.
-      */}
       <Header 
         config={datosIdioma} 
         empresa={empresa} 
@@ -101,10 +118,6 @@ export default function TemplateJagerhof({ config, items, empresa, paginaActual 
       </section>
 
       {/* SECCIÓN 5: Catálogo de Habitaciones (id="catalogo") */}
-      {/* 
-        ¡Aquí está la solución definitiva al error del color! 
-        Ya le estamos pasando datosIdioma.theme de forma correcta. 
-      */}
       <section id="catalogo" className="snap-start w-full min-h-screen flex items-center relative">
         <CatalogoHabitaciones 
           items={items} 
