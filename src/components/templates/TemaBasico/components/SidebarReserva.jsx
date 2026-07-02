@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import CalendarioPremium from './CalendarioPremium';
 import { formatearUrlPublica } from './UtilidadesCatalogo';
 
-export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCancel }) {
+// 🚀 AÑADIMOS 'huespedes' (adultos) A LOS PROPS PARA HACER LA MATEMÁTICA
+export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCancel, huespedes = 1 }) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [extras, setExtras] = useState({ desayuno: false, transporte: false });
@@ -32,7 +33,7 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
   };
   const indiceSeguro = indiceActual >= imagenes.length ? 0 : indiceActual;
 
-  // 🚀 EXTRACCIÓN DINÁMICA DE EXTRAS DESDE EL JSON (detalles_extra)
+  // 🚀 EXTRACCIÓN DINÁMICA DESDE EL JSON (detalles_extra)
   let detalles = {};
   try {
     detalles = typeof item.detalles_extra === 'string' 
@@ -40,24 +41,40 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       : (item.detalles_extra || {});
   } catch (e) {}
 
-  // Si existen en el JSON, los guardamos. Si no, valen 0 o texto por defecto.
+  // Variables de Extras
   const precioDesayuno = parseFloat(detalles.Precio_Desayuno_Extra) || 0;
   const precioTransfer = parseFloat(detalles.Precio_Transfer_Extra) || 0;
   const nombreDesayuno = detalles.Nombre_Desayuno_Extra || "Desayuno Extra";
   const nombreTransfer = detalles.Nombre_Transfer_Extra || "Transfer Aeropuerto";
 
+  // ==========================================
+  // MATEMÁTICA ESTILO BOOKING PARA EL CARRITO
+  // ==========================================
   const calcularNoches = () => {
     if (!checkIn || !checkOut) return 0;
     const dias = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     return dias > 0 ? dias : 0;
   };
-
-  const noches = calcularNoches();
   
-  // 🚀 CALCULADORA ACTUALIZADA CON PRECIOS DINÁMICOS
+  const noches = calcularNoches();
+  const precioBaseNoche = parseFloat(item.precio) || 0;
+  const ocupacionBase = parseInt(detalles.Ocupacion_Base_Incluida) || 2; 
+  const cobroExtra = parseFloat(detalles.Cobro_Persona_Extra) || 0;
+
+  // Calculamos el recargo por personas extra
+  let personasExtra = 0;
+  if (huespedes > ocupacionBase) {
+    personasExtra = huespedes - ocupacionBase;
+  }
+  
+  // Precio total por noche (Base + Personas Extra)
+  const precioNocheFinal = precioBaseNoche + (personasExtra * cobroExtra);
+  
+  // 🚀 CALCULADORA FINAL
+  const costoHabitacion = precioNocheFinal * noches;
   const costoDesayuno = extras.desayuno ? (precioDesayuno * noches) : 0;
   const costoTransporte = extras.transporte ? precioTransfer : 0;
-  const total = (item.precio * noches) + costoDesayuno + costoTransporte;
+  const total = costoHabitacion + costoDesayuno + costoTransporte;
 
   const enviarPorWhatsApp = () => {
     if (!checkIn || !checkOut) {
@@ -65,9 +82,10 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       return;
     }
     
-    // Usamos códigos Unicode (\u...) para evitar que el archivo rompa los emojis
+    // Formateo del mensaje para WhatsApp
     let mensaje = `\uD83D\uDC4B Hola, vengo de la página web y quiero solicitar una reserva:\n\n`;
     mensaje += `\uD83C\uDFE8 *Habitación:* ${item.nombre}\n`;
+    mensaje += `\uD83D\uDC64 *Huéspedes:* ${huespedes} Adultos\n`; // Nuevo dato clave
     mensaje += `\uD83D\uDCC5 *Check-in:* ${checkIn}\n`;
     mensaje += `\uD83D\uDCC5 *Check-out:* ${checkOut} (${noches} noches)\n\n`;
     
@@ -78,13 +96,10 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
       mensaje += `\n`;
     }
     
-    mensaje += `\uD83D\uDCB0 *Total estimado:* $${total}\n\n`;
+    mensaje += `\uD83D\uDCB0 *Total estimado:* $${total.toFixed(2)}\n\n`;
     mensaje += `¿Tienen disponibilidad para estas fechas?`;
 
-    // Limpiamos el teléfono (quitamos '+' y espacios)
     const numeroLimpio = telefonoHotel.replace(/\D/g, '');
-
-    // Generamos el link de WhatsApp
     window.open(`https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
@@ -126,6 +141,12 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
             )}
             <h4 className="font-serif text-3xl mb-2 text-[#2b4535]">{item.nombre}</h4>
             <p className="text-gray-600 text-sm leading-relaxed">{item.descripcion}</p>
+            
+            {/* Resumen de ocupación (Visual para el usuario) */}
+            <div className="mt-4 p-3 bg-white rounded border border-gray-200 text-sm text-gray-700">
+               <span className="font-bold">Para:</span> {huespedes} Adultos <br/>
+               <span className="text-xs text-gray-500">(Precio base incluye {ocupacionBase} personas. {personasExtra > 0 ? `+ $${cobroExtra} por persona extra` : ''})</span>
+            </div>
           </div>
           
           <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Fechas de Estadía</h5>
@@ -133,7 +154,7 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
             <CalendarioPremium checkIn={checkIn} checkOut={checkOut} setCheckIn={setCheckIn} setCheckOut={setCheckOut} primaryColor={primaryColor} />
           </div>
           
-          {/* 🚀 RENDERIZADO CONDICIONAL DE EXTRAS: Solo aparecen si el precio > 0 */}
+          {/* RENDERIZADO CONDICIONAL DE EXTRAS */}
           {(precioDesayuno > 0 || precioTransfer > 0) && (
             <>
               <h5 className="font-serif text-xl mb-4 text-[#2b4535]">Extras</h5>
@@ -165,7 +186,7 @@ export default function SidebarReserva({ item, telefonoHotel, primaryColor, onCa
         <div className="shrink-0 p-6 bg-white border-t border-gray-200 z-20">
           <div className="flex justify-between items-end mb-4">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Estimado</span>
-            <span className="font-serif text-3xl text-[#2b4535]">${total}</span>
+            <span className="font-serif text-3xl text-[#2b4535]">${total.toFixed(2)}</span>
           </div>
           <button onClick={enviarPorWhatsApp} className="w-full py-4 font-bold text-white transition-transform active:scale-95 shadow-md flex justify-center items-center gap-2 rounded-xl" style={{ backgroundColor: primaryColor }}>
             Confirmar por WhatsApp
