@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 
 export default function LandingMarketing() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const comparativas = [
     {
@@ -34,6 +36,22 @@ export default function LandingMarketing() {
   ];
 
   const [index, setIndex] = useState(0);
+
+  // 🚨 RASTREO DE LEADS DESDE CORREO (Paso 1 del Embudo)
+  useEffect(() => {
+    const emailLead = searchParams.get('email_lead');
+
+    if (emailLead) {
+      // 1. Guardamos el correo en el navegador para autocompletar el RegisterWizard después
+      localStorage.setItem('lead_origen_email', emailLead);
+
+      // 2. Reportamos silenciosamente al servidor que este lead abrió la página
+      axios.post('https://builx-api.onrender.com/api/admin/registrar-visita', {
+        email: emailLead,
+        accion: 'abrio_landing'
+      }).catch(err => console.error("Error reportando visita:", err));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -212,7 +230,6 @@ export default function LandingMarketing() {
 
             <div className="lg:w-1/2 flex justify-center w-full">
               <div className="relative mx-auto border-gray-800 bg-gray-900 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_0_80px_rgba(168,85,247,0.3)] transform transition-transform duration-700 hover:scale-105 hover:-rotate-2 group">
-                {/* ... (Mockup del teléfono sin cambios) ... */}
                 <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-20"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
