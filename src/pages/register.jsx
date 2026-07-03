@@ -15,7 +15,7 @@ export default function RegisterWizard() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [mostrarLinkExtra, setMostrarLinkExtra] = useState(false);
   
-  // TODOS LOS DATOS DEL LEAD
+  // TODOS LOS DATOS DEL LEAD (Mantenemos las variables intactas para la BD)
   const [formData, setFormData] = useState({
     empresaNombre: '',
     redSocialUrl: '',
@@ -132,9 +132,9 @@ export default function RegisterWizard() {
           {/* PASO 1: Nombre */}
           {step === 1 && (
             <div className="animate-fade-in-right w-full">
-              <div className="text-4xl mb-4">👋</div>
+              <div className="text-4xl mb-4">🏨</div>
               <h2 className="text-3xl md:text-4xl font-black mb-2">¡Genial! Empecemos.</h2>
-              <p className="text-slate-400 mb-8 text-lg">¿Cómo se llama tu negocio?</p>
+              <p className="text-slate-400 mb-8 text-lg">¿Cómo se llama tu hotel u hospedaje?</p>
               
               <input 
                 type="text" 
@@ -142,7 +142,7 @@ export default function RegisterWizard() {
                 value={formData.empresaNombre}
                 onChange={handleInputChange}
                 autoFocus
-                placeholder="Ej. Tienda La Bendición" 
+                placeholder="Ej. Hostal La Bendición" 
                 className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-5 text-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all placeholder:text-slate-600 mb-8"
               />
               
@@ -162,7 +162,7 @@ export default function RegisterWizard() {
               <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
               <div className="text-4xl mb-4">✨</div>
               <h2 className="text-3xl md:text-4xl font-black mb-2">La fuente de la magia.</h2>
-              <p className="text-slate-400 mb-6 text-lg">Pega tu Instagram o página principal para que la IA extraiga tus productos.</p>
+              <p className="text-slate-400 mb-6 text-lg">Pega tu Instagram o perfil de Booking para que la IA extraiga las fotos de tus habitaciones.</p>
               
               <input 
                 type="url" 
@@ -170,7 +170,7 @@ export default function RegisterWizard() {
                 value={formData.redSocialUrl}
                 onChange={handleInputChange}
                 autoFocus
-                placeholder="https://instagram.com/tu_negocio" 
+                placeholder="https://instagram.com/tu_hostal" 
                 className="w-full bg-black/30 border border-white/10 rounded-xl px-6 py-4 text-lg text-white focus:outline-none focus:border-cyan-400 mb-4"
               />
 
@@ -182,7 +182,7 @@ export default function RegisterWizard() {
                     name="linkExtra"
                     value={formData.linkExtra}
                     onChange={handleInputChange}
-                    placeholder="TikTok, Facebook, Web actual..." 
+                    placeholder="Facebook, Sitio actual, TikTok..." 
                     className="w-full bg-black/20 border border-white/5 rounded-xl px-6 py-4 text-lg text-white focus:outline-none focus:border-cyan-400 mb-6"
                   />
                 </div>
@@ -205,15 +205,15 @@ export default function RegisterWizard() {
             </div>
           )}
 
-          {/* PASO 3: Nicho de Mercado */}
+          {/* PASO 3: Nicho de Mercado (AHORA ES TIPO DE HOSPEDAJE) */}
           {step === 3 && (
             <div className="animate-fade-in-right w-full">
               <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
-              <h2 className="text-3xl font-black mb-2">¿Qué vendes? 🎯</h2>
-              <p className="text-slate-400 mb-6">Esto ayuda a nuestra IA a estructurar tus categorías correctamente.</p>
+              <h2 className="text-3xl font-black mb-2">¿Qué tipo de hospedaje tienes? 🎯</h2>
+              <p className="text-slate-400 mb-6">Esto ayuda a nuestra IA a estructurar tus categorías de habitaciones.</p>
               
               <div className="grid grid-cols-2 gap-3 mb-6">
-                {['🍔 Comida y Bebida', '👕 Ropa y Moda', '💅 Salud y Belleza', '🛠️ Servicios', '📦 Electrónica', 'Otro'].map((opcion) => (
+                {['🏨 Hotel Boutique', '🛏️ Hostal / Backpackers', '🏕️ Cabañas / Glamping', '🏢 Apartamentos', '🏠 Casa de Huéspedes', 'Otro'].map((opcion) => (
                   <button
                     key={opcion}
                     onClick={() => setFormData(prev => ({ ...prev, nicho: opcion }))}
@@ -234,7 +234,7 @@ export default function RegisterWizard() {
                   name="nichoPersonalizado"
                   value={formData.nichoPersonalizado}
                   onChange={handleInputChange}
-                  placeholder="Escribe tu rubro (Ej. Venta de repuestos)" 
+                  placeholder="Escribe tu formato (Ej. Resort, Posada)" 
                   className="w-full animate-fade-in-down bg-black/30 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-cyan-400 mb-6"
                 />
               )}
@@ -253,8 +253,8 @@ export default function RegisterWizard() {
           {step === 4 && (
             <div className="animate-fade-in-right w-full">
               <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
-              <h2 className="text-3xl font-black mb-2">Elige la vibra de tu tienda 🎨</h2>
-              <p className="text-slate-400 mb-6">Selecciona un estilo visual inicial. (Podrás cambiarlo después).</p>
+              <h2 className="text-3xl font-black mb-2">Elige la vibra de tu página 🎨</h2>
+              <p className="text-slate-400 mb-6">Selecciona el diseño inicial de tu motor de reservas. (Podrás cambiarlo después).</p>
               
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {/* Opcion Minimalista */}
@@ -265,7 +265,7 @@ export default function RegisterWizard() {
                   <div className="h-16 bg-white rounded-lg mb-3 flex items-center justify-center">
                     <div className="w-8 h-1 bg-slate-200 rounded"></div>
                   </div>
-                  <p className="font-bold text-center text-sm">Minimalista</p>
+                  <p className="font-bold text-center text-sm">Minimalista Moderno</p>
                 </div>
 
                 {/* Opcion Elegante */}
@@ -274,7 +274,7 @@ export default function RegisterWizard() {
                   className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Elegante' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
                 >
                   <div className="h-16 bg-gradient-to-br from-[#d4af37] to-[#8a7322] rounded-lg mb-3"></div>
-                  <p className="font-bold text-center text-sm">Elegante Boutique</p>
+                  <p className="font-bold text-center text-sm">Elegante / Boutique</p>
                 </div>
 
                 {/* Opcion Oscuro */}
@@ -283,18 +283,18 @@ export default function RegisterWizard() {
                   className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Oscuro' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
                 >
                   <div className="h-16 bg-slate-900 border border-slate-700 rounded-lg mb-3 flex items-center justify-center">
-                    <div className="w-8 h-1 bg-purple-500 rounded shadow-[0_0_8px_#a855f7]"></div>
+                    <div className="w-8 h-1 bg-cyan-500 rounded shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
                   </div>
-                  <p className="font-bold text-center text-sm">Modo Oscuro</p>
+                  <p className="font-bold text-center text-sm">Premium Oscuro</p>
                 </div>
 
-                {/* Opcion Vibrante */}
+                {/* Opcion Eco / Natural */}
                 <div 
-                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Vibrante' }))}
-                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Vibrante' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                  onClick={() => setFormData(prev => ({ ...prev, estiloVisual: 'Eco' }))}
+                  className={`cursor-pointer rounded-2xl p-4 border-2 transition-all ${formData.estiloVisual === 'Eco' ? 'border-cyan-400 bg-white/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
                 >
-                  <div className="h-16 bg-gradient-to-br from-orange-400 to-pink-500 rounded-lg mb-3"></div>
-                  <p className="font-bold text-center text-sm">Vibrante</p>
+                  <div className="h-16 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-lg mb-3"></div>
+                  <p className="font-bold text-center text-sm">Eco / Naturaleza</p>
                 </div>
               </div>
               
@@ -313,8 +313,8 @@ export default function RegisterWizard() {
             <div className="animate-fade-in-right w-full">
               <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
               <div className="text-4xl mb-4">📱</div>
-              <h2 className="text-3xl md:text-4xl font-black mb-2">¿Dónde cerramos ventas?</h2>
-              <p className="text-slate-400 mb-8 text-lg">Ingresa el número de WhatsApp al que llegarán los pedidos.</p>
+              <h2 className="text-3xl md:text-4xl font-black mb-2">¿Dónde recibirás las reservas?</h2>
+              <p className="text-slate-400 mb-8 text-lg">Ingresa el número de WhatsApp de la recepción al que llegarán las solicitudes.</p>
               
               <div className="flex gap-4 mb-8">
                 <input 
@@ -350,7 +350,7 @@ export default function RegisterWizard() {
               <button onClick={prevStep} className="text-slate-500 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold">← Volver</button>
               <div className="text-4xl mb-4">🚀</div>
               <h2 className="text-3xl font-black mb-2">Guarda tu progreso.</h2>
-              <p className="text-slate-400 mb-6 text-sm">Crea tu cuenta y en breve nuestra IA armará tu catálogo.</p>
+              <p className="text-slate-400 mb-6 text-sm">Crea tu cuenta de administrador y nuestra IA estructurará tu motor de reservas.</p>
               
               {error && (
                 <div className="bg-red-500/10 text-red-400 p-3 rounded-xl text-sm font-bold mb-4 border border-red-500/20">
@@ -365,7 +365,7 @@ export default function RegisterWizard() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Tu correo electrónico" 
+                  placeholder="Tu correo de administrador" 
                   className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 text-white focus:outline-none focus:border-cyan-400"
                 />
                 
@@ -376,7 +376,7 @@ export default function RegisterWizard() {
                     required
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder="Contraseña" 
+                    placeholder="Contraseña segura" 
                     className="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3 pr-12 text-white focus:outline-none focus:border-cyan-400"
                   />
                   <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400" onClick={() => setShowPassword(!showPassword)}>
@@ -404,7 +404,7 @@ export default function RegisterWizard() {
                   disabled={!formData.email.includes('@') || formData.password.length < 6 || isGenerating}
                   className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-white font-black py-4 rounded-xl text-lg transition-all active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.3)] flex justify-center items-center gap-3"
                 >
-                  {isGenerating ? 'Construyendo con IA...' : 'Construir mi Tienda Gratis'}
+                  {isGenerating ? 'Configurando Plataforma...' : 'Construir Motor de Reservas'}
                 </button>
               </form>
             </div>
