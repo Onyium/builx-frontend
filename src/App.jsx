@@ -11,6 +11,9 @@ import SuccessGeneration from './pages/SuccessGeneration';
 import SuperAdminBuilx from './pages/SuperAdminBuilx'; 
 import VisorPublico from './pages/VisorPublico';
 
+// 👇 1. IMPORTAMOS TU NUEVO PANEL DE LEADS AQUÍ
+import AdminLeadsPanel from './pages/AdminLeads.jsx'; // Asegúrate de que el nombre del archivo coincida
+
 const terminosTexto = `
   <h3>1. Aceptación de los Términos</h3>
   <p>Al acceder y utilizar la plataforma BuilX, usted acepta estar sujeto a estos Términos de Servicio. Nuestra plataforma proporciona herramientas de software como servicio (SaaS) para la creación de catálogos digitales.</p>
@@ -61,8 +64,11 @@ function App() {
         <Route path="/privacidad" element={<PaginaLegal titulo="Política de Privacidad" contenido={privacidadTexto} />} />
         <Route path="/reembolsos" element={<PaginaLegal titulo="Política de Reembolsos" contenido={reembolsosTexto} />} />
         
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* 👇 2. TUS RUTAS SECRETAS DE ADMINISTRACIÓN 👇 */}
         <Route path="/mando-secreto-jonathan" element={<SuperAdminBuilx />} />
+        <Route path="/control-leads-vip" element={<AdminLeadsPanel />} />
+        
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
