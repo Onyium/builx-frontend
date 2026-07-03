@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
+import axios from 'axios'; // 🚨 IMPORTANTE: Añadimos axios para hablar con la BD
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -20,13 +21,29 @@ export default function CheckoutPage() {
     initializePaddle({
       environment: 'sandbox', 
       token: 'test_b0fa9ccd76fbb9c03ace32cc54d', // Tu token real de pruebas
-      eventCallback: function(event) {
+      eventCallback: async function(event) { // 🚨 Lo hacemos ASYNC
         console.log("📡 Señal de Paddle detectada:", event.name); 
 
         if (event.name === 'checkout.completed') {
           console.log('🎉 ¡Pago exitoso detectado por el frontend!');
           
-          // 🚀 CAMBIO CLAVE AQUÍ: Forzamos la redirección nativa del navegador
+          try {
+            // 🚨 LA MAGIA: Rescatamos el plan que eligió y el ID de transacción de Paddle
+            const planComprado = event.data?.custom_data?.plan_elegido || 'starter';
+            const transaccionId = event.data?.transaction_id || 'sub_paddle';
+
+            // Le avisamos a tu backend que actualice el Lead a PAGADO
+            await axios.post('https://builx-api.onrender.com/api/pagos/confirmar-paddle-rapido', {
+              empresa_id: empresaId,
+              suscripcion_id: transaccionId,
+              plan_elegido: planComprado
+            });
+            console.log("✅ Base de datos actualizada a PAGADO");
+          } catch (error) {
+            console.error("❌ Error actualizando la BD desde el frontend:", error);
+          }
+          
+          // 🚀 Redirección nativa del navegador al panel después del confeti
           setTimeout(() => {
             window.location.href = '/dashboard'; 
           }, 2500);
@@ -38,7 +55,7 @@ export default function CheckoutPage() {
       }
     });
 
-  }, [navigate, userEmail]);
+  }, [navigate, userEmail, empresaId]);
 
   // 🚀 El lanzador dinámico de Paddle
   const openPaddleCheckout = (plan) => {
@@ -52,7 +69,7 @@ export default function CheckoutPage() {
       ? 'pri_01ktqx3tcwqx4wky96b370tpvj' // ID del Plan Pro ($39)
       : 'pri_01ktdbye65tcsedx2w6r3xk96a'; // ID del Plan Starter ($15)
 
-    // Opcional: Construimos el objeto customer solo si tenemos el email
+    // Construimos el objeto customer solo si tenemos el email
     const customerConfig = userEmail ? { email: userEmail } : undefined;
 
     paddle.Checkout.open({
@@ -60,7 +77,7 @@ export default function CheckoutPage() {
       customer: customerConfig,
       customData: {
         empresa_id: empresaId,
-        plan_elegido: plan // 👈 Aquí viaja 'starter' o 'pro' hacia tu webhook
+        plan_elegido: plan // 👈 Aquí viaja 'starter' o 'pro' hacia el eventCallback
       }
     });
   };
