@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function LandingMarketing() {
   const navigate = useNavigate();
-  // NUEVO ESTADO: Controla si el menú móvil está abierto o cerrado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const comparativas = [
@@ -82,7 +81,7 @@ export default function LandingMarketing() {
                 onClick={() => navigate('/register')}
                 className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black py-4 px-10 rounded-xl text-xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] w-full md:w-auto"
               >
-                Generar mi Catálogo con IA 🚀
+                Crear Sistema de Reservas 🚀
               </button>
 
               {/* BOTÓN HAMBURGUESA PARA MÓVILES */}
@@ -118,7 +117,7 @@ export default function LandingMarketing() {
               <button 
                 onClick={() => { navigate('/register'); setIsMobileMenuOpen(false); }}
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                Generar Catálogo con IA 🚀
+                Crear Motor de Reservas 🚀
               </button>
             </div>
           )}
@@ -129,9 +128,9 @@ export default function LandingMarketing() {
           <div className="grid md:grid-cols-2 gap-12 items-center w-full">
             <div className="text-left pt-8">
               <h2 className="text-5xl md:text-7xl font-black leading-tight tracking-tight mb-4">
-                <span className="block text-white">Tu negocio en</span>
-                <span className="block text-white mb-2">internet por menos</span>
-                <span className="block text-3xl md:text-5xl text-slate-300 font-bold mt-4">de lo que cuesta...</span>
+                <span className="block text-white">Tu hotel recibiendo</span>
+                <span className="block text-white mb-2">reservas directas por</span>
+                <span className="block text-white mb-2">menos de lo que cuesta...</span>
               </h2>
               <div className="min-h-[80px] md:min-h-[100px] flex items-center mb-6">
                 <span 
@@ -142,19 +141,18 @@ export default function LandingMarketing() {
                 </span>
               </div>
               <p className="text-xl md:text-2xl text-slate-300 leading-relaxed md:leading-loose mb-10 max-w-lg">
-                No necesitas miles de dólares para tener una tienda profesional. Nuestra IA la construye por ti
+                No necesitas pagar comisiones abusivas a terceros. Toma el control total de tu hospedaje.
               </p>
               
-              {/* NUEVO BOTÓN HERO */}
               <button 
                 onClick={() => navigate('/register')}
                 className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black py-4 px-10 rounded-xl text-xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(34,211,238,0.4)] hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] w-full md:w-auto"
               >
-                Generar mi Catálogo con IA 🚀
+                Empezar a recibir reservas 🚀
               </button>
               <p className="text-sm text-slate-400 mt-4 font-medium flex items-center justify-center md:justify-start gap-2">
                 <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                Generación 100% gratis. Paga solo si decides publicar.
+                Configuración gratis. Paga solo si decides publicarlo.
               </p>
             </div>
 
@@ -178,9 +176,9 @@ export default function LandingMarketing() {
               <div className="h-1.5 w-24 bg-gradient-to-r from-cyan-400 to-blue-500 mb-6 mx-auto md:mx-0 rounded-full"></div>
             </div>
             <div className="md:w-2/3">
-              <h3 className="text-3xl font-bold mb-4 text-white leading-tight">De las decisiones de compra hoy en día comienzan con una búsqueda en internet.</h3>
+              <h3 className="text-3xl font-bold mb-4 text-white leading-tight">De los turistas buscan la web oficial del hotel antes de reservar.</h3>
               <p className="text-lg text-slate-300 leading-relaxed">
-                Si tu negocio no tiene un catálogo web, literalmente le estás regalando 7 de cada 10 clientes a tu competencia. No dejes tu crecimiento al azar, asegura tu presencia en el mercado digital más grande del mundo.
+                Si tu negocio solo depende de Booking o Airbnb, estás perdiendo reservas directas todos los días. Asegura tu presencia digital profesional y quédate con el 100% de la ganancia por habitación.
               </p>
             </div>
           </div>
@@ -194,26 +192,27 @@ export default function LandingMarketing() {
                 Resultados Reales
               </div>
               <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
-                Así de profesional se verá <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">tu próximo catálogo.</span>
+                Así de premium se verá <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">tu sistema de reservas.</span>
               </h2>
               <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                Tus clientes podrán navegar por tus productos, ver detalles, agregar al carrito y enviarte el pedido estructurado directamente a tu WhatsApp. <strong>Cero fricción para ellos, más ventas para ti.</strong>
+                Tus huéspedes podrán ver las habitaciones, verificar precios y enviarte la solicitud de reserva estructurada directamente a la recepción de tu WhatsApp. <strong>Cero fricción para ellos, más rentabilidad para ti.</strong>
               </p>
               <ul className="space-y-4 text-slate-200 text-lg">
                 <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Diseño optimizado para móviles.
+                  <span className="text-cyan-400 text-2xl">✓</span> Diseño optimizado para turistas en móviles.
                 </li>
                 <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Filtros y categorías automáticas.
+                  <span className="text-cyan-400 text-2xl">✓</span> Galerías de fotos dinámicas.
                 </li>
                 <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <span className="text-cyan-400 text-2xl">✓</span> Cierre de ventas en WhatsApp.
+                  <span className="text-cyan-400 text-2xl">✓</span> Cierre directo y seguro en WhatsApp.
                 </li>
               </ul>
             </div>
 
             <div className="lg:w-1/2 flex justify-center w-full">
               <div className="relative mx-auto border-gray-800 bg-gray-900 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_0_80px_rgba(168,85,247,0.3)] transform transition-transform duration-700 hover:scale-105 hover:-rotate-2 group">
+                {/* ... (Mockup del teléfono sin cambios) ... */}
                 <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute z-20"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
@@ -229,47 +228,41 @@ export default function LandingMarketing() {
 
         {/* III. CERO FRICCIÓN */}
         <section className="py-24 px-6 max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Sin tutoriales. Sin tocar código.<br/><span className="text-cyan-400">Nuestra IA hace el trabajo pesado.</span></h2>
+          <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Sin tutoriales aburridos. Sin tocar código.<br/><span className="text-cyan-400">Diseñado para administradores.</span></h2>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-16">
-            Diseñamos una plataforma tan inteligente que parece magia. Tú solo nos das tu Instagram, y nosotros estructuramos tu tienda. Tú te encargas de vender.
+            Construimos una plataforma tan fácil de usar que parece magia. Tú configuras tus precios en un panel súper sencillo, y nosotros mantenemos tu motor de reservas operando 24/7.
           </p>
           <div className="grid md:grid-cols-3 gap-8 text-left">
             <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
-              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🚀</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Catálogo en minutos</h4>
-              <p className="text-slate-300 text-sm">Tu inventario en línea generado automáticamente, más rápido que preparar una taza de café.</p>
+              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🏨</div>
+              <h4 className="text-xl font-bold mb-3 text-white">Tu web en minutos</h4>
+              <p className="text-slate-300 text-sm">Tu inventario de habitaciones en línea, estructurado de forma profesional sin contratar agencias costosas.</p>
             </div>
             <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
               <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">💬</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Pedidos a WhatsApp</h4>
-              <p className="text-slate-300 text-sm">Recibe facturas detalladas directamente en tu chat, listos para cobrar sin intermediarios.</p>
+              <h4 className="text-xl font-bold mb-3 text-white">Reservas a WhatsApp</h4>
+              <p className="text-slate-300 text-sm">Recibe fechas y detalles del huésped directamente en el chat de tu recepción, listos para concretar el pago.</p>
             </div>
             <div className="bg-white/[0.03] p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 hover:bg-white/[0.05] transition-all duration-300 group backdrop-blur-md">
-              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">🤖</div>
-              <h4 className="text-xl font-bold mb-3 text-white">Automatización IA</h4>
-              <p className="text-slate-300 text-sm">Herramientas inteligentes que extraen tus fotos y textos para estructurar tu tienda sin esfuerzo manual.</p>
+              <div className="text-5xl mb-6 transform group-hover:-translate-y-2 transition-transform">⚙️</div>
+              <h4 className="text-xl font-bold mb-3 text-white">Control Total</h4>
+              <p className="text-slate-300 text-sm">Cambia precios por temporada o actualiza fotos en tiempo real desde tu panel de administrador. Fácil y rápido.</p>
             </div>
           </div>
         </section>
 
-        {/* IV. SECCIÓN DE PRECIOS Y PLANES (Actualizada para el flujo de Borrador) */}
+        {/* IV. SECCIÓN DE PRECIOS Y PLANES */}
         <section className="py-24 border-y border-white/10 bg-white/[0.02] backdrop-blur-md relative" id="precios">
           <div className="max-w-6xl mx-auto px-6">
             
             {/* Header de la sección */}
             <div className="text-center mb-16 max-w-3xl mx-auto">
               <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                Deja de regalarle el <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500">15%</span> de tus ganancias.
+                Deja de regalarle el <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500">15%</span> a los intermediarios.
               </h2>
               <p className="text-xl text-slate-300 mb-6">
-                Paga una tarifa plana por tu tecnología y recibe el <strong className="text-white">100%</strong> del dinero directo en tu cuenta o WhatsApp. Sin comisiones ocultas por venta.
+                Paga una tarifa mensual plana por tu tecnología y recibe el <strong className="text-white">100%</strong> del dinero de cada noche. Sin comisiones ocultas por reserva.
               </p>
-              <div className="inline-block px-6 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
-                <p className="text-emerald-400 font-bold text-lg flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                  Prueba la magia gratis. Paga solo cuando estés listo para publicar.
-                </p>
-              </div>
             </div>
 
             {/* Tarjetas de Precios */}
@@ -278,20 +271,19 @@ export default function LandingMarketing() {
               {/* Tarjeta 1: PLAN STARTER */}
               <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col backdrop-blur-sm transition-transform hover:-translate-y-1">
                 <h3 className="text-2xl font-black text-white mb-2">PLAN STARTER</h3>
-                <p className="text-slate-400 text-sm mb-6 min-h-[40px]">(Ideal para emprendedores y negocios locales emergentes)</p>
+                <p className="text-slate-400 text-sm mb-6 min-h-[40px]">(Ideal para hostales y posadas que quieren digitalizarse)</p>
                 <div className="mb-8">
                   <span className="text-5xl font-black text-white">$15</span>
                   <span className="text-slate-400 font-medium"> / mes</span>
                 </div>
-                <p className="text-slate-300 mb-8 font-medium">Empieza a recibir pedidos o consultas hoy mismo sin complicaciones técnicas.</p>
+                <p className="text-slate-300 mb-8 font-medium">Empieza a recibir reservas directas hoy mismo sin complicaciones técnicas.</p>
                 
                 <ul className="space-y-5 mb-10 flex-1 text-slate-300">
-                  <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Diseño Automatizado con IA:</strong> Extracción de tu catálogo.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Motor de Reservas:</strong> Página web completa.</span></li>
                   <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Integración a WhatsApp:</strong> Botón directo para cerrar ventas.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Panel de Control:</strong> Actualiza fotos y precios tú mismo.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Panel de Control:</strong> Actualiza habitaciones tú mismo.</span></li>
                   <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span>Alojamiento en la nube (Hosting gratuito).</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-yellow-500 text-xl mt-0.5">⚠️</span> <span><strong>Dominio compartido:</strong> Usará <em>tunegocio.builx.com</em>.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-yellow-500 text-xl mt-0.5">⚠️</span> <span><strong>Patrocinado:</strong> Incluye una discreta marca de agua.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-yellow-500 text-xl mt-0.5">⚠️</span> <span><strong>Dominio compartido:</strong> Usará <em>tuhostal.builx.com</em>.</span></li>
                 </ul>
                 
                 <button 
@@ -300,30 +292,29 @@ export default function LandingMarketing() {
                     navigate('/register'); 
                   }}
                   className="w-full py-4 rounded-xl font-bold border border-white/20 hover:bg-white/10 transition-colors text-white text-lg">
-                  Generar Borrador Starter
+                  Elegir Plan Starter
                 </button>
               </div>
 
               {/* Tarjeta 2: PLAN PRO */}
               <div className="bg-gradient-to-b from-blue-900/40 to-[#050B14] border-2 border-cyan-400/50 rounded-3xl p-8 md:p-10 flex flex-col relative shadow-[0_0_50px_rgba(34,211,238,0.15)] transform md:-translate-y-4">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black px-6 py-1.5 rounded-full text-sm shadow-[0_0_20px_rgba(34,211,238,0.4)] tracking-wide">
-                  LA OPCIÓN DESTACADA 🔥
+                  LA OPCIÓN ESTÁNDAR 🔥
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">PLAN PRO</h3>
-                <p className="text-cyan-200/70 text-sm mb-6 min-h-[40px]">(El estándar B2B para hoteles, cabañas y negocios establecidos)</p>
+                <p className="text-cyan-200/70 text-sm mb-6 min-h-[40px]">(Para hoteles y resorts que cuidan su presencia corporativa)</p>
                 <div className="mb-8">
                   <span className="text-6xl font-black text-white">$39</span>
                   <span className="text-slate-400 font-medium"> / mes</span>
                 </div>
-                <p className="text-white mb-8 font-medium">Proyecta autoridad total y elimina a los intermediarios. Tu negocio, tu marca.</p>
+                <p className="text-white mb-8 font-medium">Proyecta autoridad total. Tu hotel, tu marca, tus reglas.</p>
                 
                 <ul className="space-y-5 mb-10 flex-1 text-slate-200">
                   <li className="flex gap-3 items-start"><span className="text-cyan-400 text-xl mt-0.5">✅</span> <span><strong>Todo lo del Plan Starter, más:</strong></span></li>
-                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🚀</span> <span><strong>Cero Comisiones por Venta:</strong> El 100% de la ganancia es tuya.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🌐</span> <span><strong>Dominio Propio Incluido:</strong> Tu página será <em>www.tunegocio.com</em>.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🎨</span> <span><strong>100% Marca Blanca:</strong> Tu marca es la única protagonista.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">⚡</span> <span><strong>Galería de Alta Velocidad:</strong> Optimización extrema.</span></li>
-                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🛠️</span> <span><strong>Soporte Técnico Directo:</strong> Prioridad en atención y mantenimiento.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🚀</span> <span><strong>Cero Comisiones por Reserva:</strong> El 100% de la noche es tuya.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🌐</span> <span><strong>Dominio Propio Incluido:</strong> Tu página será <em>www.tuhotel.com</em>.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🎨</span> <span><strong>100% Marca Blanca:</strong> Diseño corporativo sin menciones externas.</span></li>
+                  <li className="flex gap-3 items-start"><span className="text-blue-400 text-xl mt-0.5">🛠️</span> <span><strong>Soporte Técnico Directo:</strong> Prioridad en atención al sistema.</span></li>
                 </ul>
                 
                 <button 
@@ -332,7 +323,7 @@ export default function LandingMarketing() {
                     navigate('/register'); 
                   }}
                   className="w-full py-4 rounded-xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all active:scale-95 text-lg">
-                  Generar Borrador Pro
+                  Elegir Plan Pro
                 </button>
               </div>
             </div>
@@ -343,10 +334,10 @@ export default function LandingMarketing() {
               
               <div className="relative z-10">
                 <div className="text-6xl mb-6 animate-bounce">🤝</div>
-                <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">Nuestra Garantía de <br className="md:hidden"/> Riesgo Cero</h3>
-                <p className="text-xl md:text-2xl text-cyan-100 mb-6 font-semibold">¿Aún no estás seguro? No nos pagues un centavo todavía.</p>
+                <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">Garantía de Configuración <br className="md:hidden"/> Riesgo Cero</h3>
+                <p className="text-xl md:text-2xl text-cyan-100 mb-6 font-semibold">¿Aún no estás seguro? No saques tu tarjeta todavía.</p>
                 <p className="text-slate-300 text-lg leading-relaxed max-w-2xl mx-auto mb-10">
-                  Escríbenos, envíanos el Instagram de tu negocio y nuestra IA construirá un Demo Interactivo <strong className="text-white">100% Gratis en minutos</strong>. Si te gusta cómo se ve y lo fácil que es recibir pedidos, eliges tu plan y lo publicas. Si no te gusta, no pasa nada.
+                  Escríbenos a WhatsApp, cuéntanos sobre tu hotel y estructuraremos un demo de tu Motor de Reservas <strong className="text-white">completamente gratis</strong>. Si te gusta lo que ves y lo fácil que es operarlo, eliges tu plan y lo activamos.
                 </p>
                 
                 <a 
@@ -358,7 +349,7 @@ export default function LandingMarketing() {
                   <svg className="w-8 h-8 md:w-10 md:h-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
                   </svg>
-                  Atención Personalizada por WhatsApp
+                  Contactar por WhatsApp
                 </a>
               </div>
             </div>
@@ -370,40 +361,40 @@ export default function LandingMarketing() {
         <section className="py-24 px-6 max-w-4xl mx-auto" id="faq">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-4">Preguntas Frecuentes</h2>
-            <p className="text-xl text-slate-300">Todo lo que necesitas saber antes de empezar.</p>
+            <p className="text-xl text-slate-300">Respuestas rápidas para dueños de negocios.</p>
           </div>
           <div className="space-y-4">
             <details className="group bg-white/[0.03] border border-white/10 rounded-2xl cursor-pointer transition-all duration-300 hover:border-cyan-400/40 backdrop-blur-sm">
               <summary className="flex items-center justify-between p-6 md:p-8 font-bold text-lg md:text-xl text-white list-none">
-                ¿Me cobran comisiones por cada venta que haga?
+                ¿Me cobran comisiones por cada reservación que reciba?
                 <span className="transition-transform duration-300 group-open:rotate-180 text-cyan-400">
                   <svg fill="none" height="24" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                 </span>
               </summary>
               <div className="px-6 pb-6 md:px-8 md:pb-8 text-slate-300 text-lg leading-relaxed mt-4">
-                <strong>Absolutamente no.</strong> A diferencia de otras plataformas que te quitan entre el 2% y el 5% de tus ganancias, en BuilX solo pagas tu suscripción plana una vez decidas publicar tu tienda. Todo el dinero de tus ventas va directo a tu bolsillo.
+                <strong>Absolutamente no.</strong> A diferencia de plataformas como Booking o Airbnb que te quitan entre el 15% y el 20% de tus ingresos, en BuilX solo pagas tu suscripción mensual plana. Todo el dinero de la tarifa de tu habitación va 100% íntegro a tu bolsillo.
               </div>
             </details>
             <details className="group bg-white/[0.03] border border-white/10 rounded-2xl cursor-pointer transition-all duration-300 hover:border-cyan-400/40 backdrop-blur-sm">
               <summary className="flex items-center justify-between p-6 md:p-8 font-bold text-lg md:text-xl text-white list-none">
-                ¿Cómo recibo el pago de mis clientes?
+                ¿Cómo recibo el pago de mis huéspedes?
                 <span className="transition-transform duration-300 group-open:rotate-180 text-cyan-400">
                   <svg fill="none" height="24" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                 </span>
               </summary>
               <div className="px-6 pb-6 md:px-8 md:pb-8 text-slate-300 text-lg leading-relaxed mt-4">
-                El pedido estructurado te llega directamente a tu WhatsApp. Desde ahí, tú acuerdas con el cliente el método de pago que prefieras (transferencia, efectivo, link de pago), dándote control total de tus ingresos sin retenciones.
+                La solicitud de reserva con las fechas y datos te llega directamente al WhatsApp de tu recepción. Desde ahí, tú acuerdas con el cliente el método de pago para el anticipo o la totalidad (transferencia bancaria, efectivo, enlace de pago de tu banco), dándote control total de tus ingresos sin que nosotros retengamos nada.
               </div>
             </details>
             <details className="group bg-white/[0.03] border border-white/10 rounded-2xl cursor-pointer transition-all duration-300 hover:border-cyan-400/40 backdrop-blur-sm">
               <summary className="flex items-center justify-between p-6 md:p-8 font-bold text-lg md:text-xl text-white list-none">
-                ¿Necesito saber programar para usar BuilX?
+                ¿Necesito contratar a un programador para actualizar las fotos?
                 <span className="transition-transform duration-300 group-open:rotate-180 text-cyan-400">
                   <svg fill="none" height="24" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                 </span>
               </summary>
               <div className="px-6 pb-6 md:px-8 md:pb-8 text-slate-300 text-lg leading-relaxed mt-4">
-                Para nada. Nuestra Inteligencia Artificial se encarga de analizar tus redes sociales y armar el catálogo por ti. Nosotros nos encargamos de todo el código y mantenimiento de los servidores.
+                Para nada. Te entregamos un panel de control sumamente fácil de usar. Puedes subir nuevas fotos, cambiar el precio de una habitación por temporada alta, o marcarla como no disponible, todo con un par de clics desde tu celular o computadora.
               </div>
             </details>
           </div>
@@ -412,12 +403,12 @@ export default function LandingMarketing() {
         {/* VI. CALL TO ACTION FINAL */}
         <section className="py-32 px-6 text-center border-t border-white/10 bg-white/[0.02] backdrop-blur-xl">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-5xl md:text-6xl font-black mb-6">¿Listo para automatizar tus ventas?</h2>
-            <p className="text-xl text-slate-300 mb-12">No pierdas más clientes por no tener un catálogo profesional. Genera tu primera versión gratis hoy.</p>
+            <h2 className="text-5xl md:text-6xl font-black mb-6">¿Listo para llenar tus habitaciones?</h2>
+            <p className="text-xl text-slate-300 mb-12">No dejes que los intermediarios se queden con tus ganancias. Empieza a recibir reservas directas hoy mismo.</p>
             <button 
                 onClick={() => navigate('/register')}
                 className="bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white font-black py-5 px-16 rounded-2xl text-2xl transition-all active:scale-95 mx-auto block shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-                Generar mi Tienda Gratis
+                Crear mi Motor de Reservas
             </button>
           </div>
         </section>
@@ -438,7 +429,7 @@ export default function LandingMarketing() {
               </div>
             </div>
             <div className="text-center text-slate-500 text-sm">
-              © {new Date().getFullYear()} BuilX. Todos los derechos reservados. Impulsando el comercio digital.
+              © {new Date().getFullYear()} BuilX. Todos los derechos reservados. Impulsando la independencia hotelera.
             </div>
           </div>
         </footer>
