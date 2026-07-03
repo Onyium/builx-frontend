@@ -10,22 +10,40 @@ export default function AdminLeadsPanel() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Simulación de datos que vienen de tu API de Render (Base de datos MySQL)
-  // Reemplaza esto con tu llamada useEffect real: axios.get('https://builx-api.onrender.com/api/admin/leads')
+  // 🚀 CONEXIÓN REAL AL BACKEND
   useEffect(() => {
-    // Datos de prueba estructurados exactamente con tu arquitectura MySQL
-    const mockLeads = [
-      { id: 1, nombre: "Hostal Casa Verde", email_administrador: "contacto@casaverde.com", whatsapp_pedidos: "71234567", rubro: "🛏️ Hostal / Backpackers", tema_visual: "Eco", fecha_registro: "2026-07-01", estado_pago: "pagado", plan: "pro" },
-      { id: 2, nombre: "Hotel Boutique Sol", email_administrador: "gerencia@hotelsol.com", whatsapp_pedidos: "72345678", rubro: "🏨 Hotel Boutique", tema_visual: "Elegante", fecha_registro: "2026-07-02", estado_pago: "pendiente", plan: "pro" },
-      { id: 3, nombre: "EcoGlamping El Tunco", email_administrador: "info@ecoglamping.com", whatsapp_pedidos: "73456789", rubro: "🏕️ Cabañas / Glamping", tema_visual: "Eco", fecha_registro: "2026-06-28", estado_pago: "abandonado", plan: "starter" },
-      { id: 4, nombre: "Apartamentos Suites Escalón", email_administrador: "suites@escalon.com", whatsapp_pedidos: "74567890", rubro: "🏢 Apartamentos", tema_visual: "Minimalista Moderno", fecha_registro: "2026-07-03", estado_pago: "pagado", plan: "starter" },
-    ];
-    
-    setLeads(mockLeads);
-    setLoading(false);
+    const fetchLeads = async () => {
+      try {
+        // Asegúrate de tener esta ruta creada en tu backend (Node.js) que haga un SELECT * FROM empresas (o la tabla donde guardes los leads)
+        const response = await axios.get('https://builx-api.onrender.com/api/admin/leads');
+        
+        // Mapeamos los datos de la BD para asegurar que la tabla del frontend no se rompa si hay nulos
+        const leadsReales = response.data.map(lead => ({
+          id: lead.id,
+          nombre: lead.nombre || 'Sin Nombre',
+          email_administrador: lead.email_administrador || 'Sin correo',
+          whatsapp_pedidos: lead.whatsapp_pedidos || 'No registrado',
+          rubro: lead.rubro || 'General',
+          tema_visual: lead.tema_visual || 'Sin tema',
+          // Formateamos la fecha (ej. "2026-07-03T14:30:00Z" -> "2026-07-03")
+          fecha_registro: lead.fecha_registro ? lead.fecha_registro.split('T')[0] : 'Sin fecha',
+          // Valores por defecto en caso de que aún no manejes pagos/planes en la BD
+          estado_pago: lead.estado_pago || 'pendiente', 
+          plan: lead.plan || 'starter'
+        }));
+
+        setLeads(leadsReales);
+      } catch (error) {
+        console.error("Error al cargar los leads desde MySQL:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeads();
   }, []);
 
-  // 🚨 LÓGICA DE FILTRADO QUIRÚRGICO
+  // 🚨 LÓGICA DE FILTRADO QUIRÚRGICO (Se mantiene intacta)
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = 
       lead.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,7 +133,7 @@ export default function AdminLeadsPanel() {
       {/* TABLA DE LEADS */}
       <div className="max-w-7xl mx-auto bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md z-10 relative">
         {loading ? (
-          <div className="p-12 text-center text-cyan-400 font-bold animate-pulse">Cargando base de datos de leads...</div>
+          <div className="p-12 text-center text-cyan-400 font-bold animate-pulse">Sincronizando base de datos de leads...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -167,7 +185,7 @@ export default function AdminLeadsPanel() {
                 ))}
                 {filteredLeads.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="p-10 text-center text-slate-500 font-medium">No se encontraron leads con los filtros seleccionados.</td>
+                    <td colSpan="7" className="p-10 text-center text-slate-500 font-medium">No se encontraron leads registrados aún.</td>
                   </tr>
                 )}
               </tbody>
