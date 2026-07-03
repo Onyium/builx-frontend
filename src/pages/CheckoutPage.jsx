@@ -6,68 +6,76 @@ export default function CheckoutPage() {
   const userEmail = localStorage.getItem('user_email') || ''; 
   const empresaNombre = localStorage.getItem('empresa_nombre') || 'Tu Hotel';
   
-  // ESTADO PARA SABER QUÉ PLAN ELIGIÓ
+  // ESTADOS
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [paypalLoaded, setPaypalLoaded] = useState(false); // 🚨 NUEVO: Verifica si el script ya bajó
 
   // 🚨 TUS IDs DE SUSCRIPCIÓN DE PAYPAL
   const paypalClientId = "BAAleYJrH9Zu1Y1qicYxGu5o95PikA7RZj7VNqKomKvZDV7wWTIKrE3mTr_WaQscrg1NsZR8VmPM3T7w5I";
   const planStarterId = "P-67U06159VB849570KNJDJ27Q"; // Ej: P-XXXXXXXXXXX
   const planProId = "P-67U06159VB849570KNJDJ27Q"; // Tu ID actual
 
+  // 1. CARGAR SCRIPT AL INICIO
   useEffect(() => {
-    // Si no hay sesión, lo mandamos a registrarse
     if (!userEmail) {
       navigate('/register');
       return;
     }
 
-    // CARGAMOS EL SCRIPT DE PAYPAL DINÁMICAMENTE
-    const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription`;
-    script.setAttribute("data-sdk-integration-source", "button-factory");
-    script.async = true;
-    
-    script.onload = () => {
-      console.log("PayPal Script Cargado");
-    };
+    // Evitamos cargar el script múltiples veces si el componente se re-renderiza
+    if (!document.getElementById("paypal-script")) {
+      const script = document.createElement("script");
+      script.id = "paypal-script";
+      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription`;
+      script.setAttribute("data-sdk-integration-source", "button-factory");
+      script.async = true;
+      
+      script.onload = () => {
+        console.log("PayPal Script Cargado Exitosamente");
+        setPaypalLoaded(true); // 🚨 Le avisamos a React que PayPal está listo
+      };
 
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script); // Limpiamos al salir de la página
-    };
+      document.body.appendChild(script);
+    } else {
+      setPaypalLoaded(true);
+    }
   }, [navigate, userEmail]);
 
-  // FUNCIÓN PARA RENDERIZAR EL BOTÓN CUANDO SELECCIONAN UN PLAN
-  const handleSelectPlan = (planType) => {
-    setSelectedPlan(planType);
-    
-    const planId = planType === 'pro' ? planProId : planStarterId;
-    
-    // Limpiamos el contenedor anterior si cambiaron de opinión
-    document.getElementById('paypal-button-container').innerHTML = '';
+  // 2. 🚨 LA MAGIA: RENDERIZAR BOTÓN SOLO CUANDO EL DOM EXISTA
+  useEffect(() => {
+    // Si ya eligió plan, el script ya cargó, y el objeto paypal existe en el navegador...
+    if (selectedPlan && paypalLoaded && window.paypal) {
+      const planId = selectedPlan === 'pro' ? planProId : planStarterId;
+      const container = document.getElementById('paypal-button-container');
+      
+      if (container) {
+        container.innerHTML = ''; // Limpiamos si había un botón viejo
 
-    // Renderizamos el botón de PayPal
-    window.paypal.Buttons({
-      style: {
-          shape: 'rect',
-          color: 'blue', // Color azul para que combine con BuilX
-          layout: 'vertical',
-          label: 'subscribe'
-      },
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({
-          'plan_id': planId
-        });
-      },
-      onApprove: function(data, actions) {
-        // 🎉 AQUÍ OCURRE LA MAGIA CUANDO PAGAN
-        console.log("Pago completado:", data.subscriptionID);
-        
-        // Lo mandamos al dashboard directamente
-        navigate('/dashboard'); 
+        // Dibujamos el botón
+        window.paypal.Buttons({
+          style: {
+              shape: 'rect',
+              color: 'blue',
+              layout: 'vertical',
+              label: 'subscribe'
+          },
+          createSubscription: function(data, actions) {
+            return actions.subscription.create({
+              'plan_id': planId
+            });
+          },
+          onApprove: function(data, actions) {
+            console.log("Pago completado:", data.subscriptionID);
+            navigate('/dashboard'); 
+          }
+        }).render('#paypal-button-container');
       }
-    }).render('#paypal-button-container');
+    }
+  }, [selectedPlan, paypalLoaded, navigate]); // 🚨 Este efecto se dispara cada vez que el usuario cambia de plan
+
+  // 3. FUNCIÓN SIMPLIFICADA
+  const handleSelectPlan = (planType) => {
+    setSelectedPlan(planType); // Ya no mandamos a llamar a PayPal aquí, solo cambiamos la vista
   };
 
   return (
@@ -166,7 +174,9 @@ export default function CheckoutPage() {
             <p className="text-slate-400 mb-8">Plan seleccionado: <strong className="text-white uppercase">{selectedPlan}</strong></p>
             
             {/* 🚨 AQUÍ SE RENDERIZA EL BOTÓN DE PAYPAL 🚨 */}
-            <div id="paypal-button-container" className="min-h-[150px] flex items-center justify-center bg-white/5 rounded-xl p-4"></div>
+            <div id="paypal-button-container" className="min-h-[150px] flex items-center justify-center bg-white/5 rounded-xl p-4">
+              {!paypalLoaded && <p className="text-cyan-400 font-bold animate-pulse">Cargando pasarela de pago segura...</p>}
+            </div>
             
             <p className="text-xs text-slate-500 mt-6 flex items-center justify-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
