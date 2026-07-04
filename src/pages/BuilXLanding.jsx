@@ -37,11 +37,18 @@ export default function LandingMarketing() {
 
   const [index, setIndex] = useState(0);
 
-  // 🚨 RASTREO DE LEADS DESDE CORREO (Paso 1 del Embudo)
+  // 🚨 RASTREO DE LEADS DESDE CORREO (CON RASTREADOR VISUAL)
   useEffect(() => {
-    const emailLead = searchParams.get('email_lead');
+    // 👈 CAMBIO AQUÍ: Ahora busca exactamente la palabra "correo" en tu link
+    const emailLead = searchParams.get('correo'); 
+    
+    // Esto aparecerá en tu pestaña "Console" (F12)
+    console.log("🔍 Analizando URL en busca de correo...");
+    console.log("📧 Correo detectado:", emailLead);
 
     if (emailLead) {
+      console.log("✅ ¡Correo atrapado! Disparando POST a MySQL...");
+      
       // 1. Guardamos el correo en el navegador para autocompletar el RegisterWizard después
       localStorage.setItem('lead_origen_email', emailLead);
 
@@ -49,7 +56,15 @@ export default function LandingMarketing() {
       axios.post('https://builx-api.onrender.com/api/admin/registrar-visita', {
         email: emailLead,
         accion: 'abrio_landing'
-      }).catch(err => console.error("Error reportando visita:", err));
+      })
+      .then(respuesta => {
+         console.log("🚀 Servidor dice:", respuesta.data.message);
+      })
+      .catch(err => {
+         console.error("❌ Error reportando visita:", err);
+      });
+    } else {
+      console.log("⚠️ No se encontró '?correo=' en la URL. Todo normal.");
     }
   }, [searchParams]);
 
