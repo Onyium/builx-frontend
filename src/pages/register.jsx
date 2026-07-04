@@ -60,10 +60,9 @@ export default function RegisterWizard() {
     setIsGenerating(true);
 
     try {
-      // Determinamos el rubro final
       const rubroFinal = formData.nicho === 'Otro' ? formData.nichoPersonalizado : formData.nicho;
 
-      // 🚨 PASO MÁGICO: Enviamos los datos con los nombres EXACTOS de tu tabla MySQL
+      // Hacemos match perfecto con tus columnas de MySQL
       const res = await axios.post('https://builx-api.onrender.com/api/auth/register', { 
         email_administrador: formData.email, 
         password_mensual: formData.password,
@@ -80,12 +79,43 @@ export default function RegisterWizard() {
         localStorage.setItem('user_email', formData.email);
         localStorage.setItem('empresa_nombre', formData.empresaNombre);
 
-        // Los mandamos a la pantalla de éxito
-        navigate('/dashboard');
+        // ✅ AQUÍ ESTÁ LA CORRECCIÓN: Los mandamos a pagar, NO al dashboard
+        navigate('/checkout');
       }
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
+      
+      // 🚨 AQUÍ ESTÁ LA NUEVA LÓGICA: Si el backend nos dice que el usuario ya existe, 
+      // le pedimos que actualice los datos del "Lead Fantasma"
+      if (err.response && err.response.data && err.response.data.message === "Este correo ya está registrado en la plataforma. Por favor, inicia sesión.") {
+        try {
+          const updateRes = await axios.put('https://builx-api.onrender.com/api/auth/actualizar-lead-fantasma', {
+            email_administrador: formData.email,
+            password_mensual: formData.password,
+            nombre: formData.empresaNombre,
+            rubro: rubroFinal,
+            whatsapp_pedidos: formData.whatsapp,
+            tema_visual: formData.estiloVisual,
+            link_instagram: formData.redSocialUrl,
+            link_facebook: formData.linkExtra
+          });
+
+          if (updateRes.data && updateRes.data.empresa_id) {
+            localStorage.setItem('empresa_id', updateRes.data.empresa_id);
+            localStorage.setItem('user_email', formData.email);
+            localStorage.setItem('empresa_nombre', formData.empresaNombre);
+
+            navigate('/checkout');
+          }
+        } catch (updateErr) {
+          console.error("Error al actualizar el Lead Fantasma:", updateErr);
+          setError('Hubo un problema al actualizar tu registro. Por favor, intenta de nuevo.');
+        }
+      } else {
+        // Si es otro tipo de error, lo mostramos
+        setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
+      }
+      
       setIsGenerating(false); 
     }
   };
