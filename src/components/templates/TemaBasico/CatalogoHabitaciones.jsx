@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Animacion from './components/Animacion';
 import GaleriaPublica from './components/GaleriaPublica';
-import SidebarReserva from './components/SidebarReserva'; // 🚀 1. IMPORTAMOS EL SIDEBAR
+import SidebarReserva from './components/SidebarReserva';
 import { formatearUrlPublica } from './components/UtilidadesCatalogo';
 
 export default function CatalogoHabitaciones({ items, theme, configCatalogo, onSelect }) {
@@ -145,8 +145,10 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* 🚀 EL FIX ESTÁ AQUÍ: lg:sticky lg:top-24 lg:z-10 */}
           {/* NIVEL 2: SIDEBAR DE FILTROS SECUNDARIOS */}
-          <aside className="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm sticky top-24">
+          <aside className="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm lg:sticky lg:top-24 lg:z-10">
             <h3 className="font-serif text-xl text-[#2b4535] mb-6 border-b border-gray-100 pb-4 flex items-center justify-between">
               <span>Filtros</span>
               <span className="text-xs font-sans font-normal text-gray-400">({itemsProcesados.length} disp.)</span>
@@ -246,11 +248,11 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                               </div>
                             </div>
                             
-                            {/* 🚀 3. AL DAR CLIC, GUARDAMOS LA HABITACIÓN EN EL ESTADO LOCAL */}
+                            {/* AL DAR CLIC, GUARDAMOS LA HABITACIÓN EN EL ESTADO LOCAL */}
                             <button 
                               onClick={() => {
                                 setHabitacionSeleccionada(item);
-                                if (onSelect) onSelect(item); // Mantenemos la prop por si el layout padre la ocupa
+                                if (onSelect) onSelect(item);
                               }}
                               className="px-6 py-3 text-white text-sm font-bold transition-all active:scale-95 shadow-md hover:shadow-lg rounded-xl"
                               style={{ backgroundColor: theme.accentOrange }}
@@ -271,14 +273,14 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
 
       </div>
 
-      {/* 🚀 4. RENDERIZADO CONDICIONAL DEL SIDEBAR AL FINAL DEL COMPONENTE */}
+      {/* RENDERIZADO CONDICIONAL DEL SIDEBAR */}
       {habitacionSeleccionada && (
         <SidebarReserva 
           item={habitacionSeleccionada} 
           telefonoHotel={configCatalogo?.telefono || "+51974206744"} 
           primaryColor={theme.accentOrange} 
-          huespedes={parseInt(filtros.adultos) || 1} // Pasamos la cantidad exacta de adultos del buscador
-          onCancel={() => setHabitacionSeleccionada(null)} // Función para cerrar el sidebar
+          huespedes={parseInt(filtros.adultos) || 1} 
+          onCancel={() => setHabitacionSeleccionada(null)} 
         />
       )}
     </section>
