@@ -6,11 +6,9 @@ import { formatearUrlPublica } from './components/UtilidadesCatalogo';
 
 export default function CatalogoHabitaciones({ items, theme, configCatalogo, onSelect }) {
   // ==========================================
-  // 1. ESTADOS DE LOS FILTROS Y UI
+  // 1. ESTADOS DE LOS FILTROS Y UI (Sin fechas)
   // ==========================================
   const [filtros, setFiltros] = useState({
-    fechaLlegada: '',
-    fechaSalida: '',
     adultos: 1,
     ninos: 0,
     precioMax: 500, 
@@ -18,7 +16,6 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
     cancelacion: false
   });
 
-  // 🚀 2. ESTADO PARA CONTROLAR QUÉ HABITACIÓN SE ESTÁ RESERVANDO
   const [habitacionSeleccionada, setHabitacionSeleccionada] = useState(null);
 
   const manejarFiltro = (e) => {
@@ -32,17 +29,7 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
   // ==========================================
   // 2. LÓGICA MATEMÁTICA Y FILTRADO AVANZADO
   // ==========================================
-  const calcularNoches = (llegada, salida) => {
-    if (!llegada || !salida) return 1; 
-    const fecha1 = new Date(llegada);
-    const fecha2 = new Date(salida);
-    const diffTime = Math.abs(fecha2 - fecha1);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 1;
-  };
-
   const itemsProcesados = useMemo(() => {
-    const noches = calcularNoches(filtros.fechaLlegada, filtros.fechaSalida);
     const adultosSeleccionados = parseInt(filtros.adultos) || 1;
     const ninosSeleccionados = parseInt(filtros.ninos) || 0;
 
@@ -61,11 +48,13 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
       const tieneDesayuno = detalles.Desayuno_Incluido === true;
       const tieneCancelacion = detalles.Cancelacion_Gratis === true;
 
+      // Filtros duros
       if (capAdultos < adultosSeleccionados) return acc;
       if (capNinos < ninosSeleccionados) return acc;
       if (filtros.desayuno && !tieneDesayuno) return acc;
       if (filtros.cancelacion && !tieneCancelacion) return acc;
 
+      // Cálculos de ocupación para 1 sola noche (base)
       const precioBaseNoche = parseFloat(item.precio) || 0;
       const ocupacionBase = parseInt(detalles.Ocupacion_Base_Incluida) || capAdultos; 
       const cobroExtra = parseFloat(detalles.Cobro_Persona_Extra) || 0;
@@ -76,15 +65,13 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
       }
 
       const precioTotalNoche = precioBaseNoche + (personasExtra * cobroExtra);
-      const precioTotalEstadia = precioTotalNoche * noches;
 
-      if (precioTotalEstadia > parseFloat(filtros.precioMax)) return acc;
+      // Filtro de precio
+      if (precioTotalNoche > parseFloat(filtros.precioMax)) return acc;
 
       acc.push({
         ...item,
-        precioMostrar: precioTotalEstadia.toFixed(2),
-        nochesMostrar: noches,
-        esPrecioPorNoche: noches === 1
+        precioMostrar: precioTotalNoche.toFixed(2)
       });
 
       return acc;
@@ -105,50 +92,33 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
           </Animacion>
         </div>
 
-        {/* NIVEL 1: BARRA DE BÚSQUEDA PRINCIPAL */}
-        <div className="bg-white p-4 md:p-6 rounded-2xl shadow-xl border border-gray-200 mb-10 flex flex-wrap lg:flex-nowrap gap-4 items-end z-10 relative">
-          <div className="w-full sm:w-1/2 lg:w-1/4">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Llegada</label>
-            <input 
-              type="date" name="fechaLlegada" 
-              value={filtros.fechaLlegada} onChange={manejarFiltro} 
-              className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-medium" 
-            />
+        {/* NIVEL 1: BARRA DE BÚSQUEDA (Solo Huéspedes) - Limpio sin traspasos */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-8 flex flex-wrap gap-4 items-end">
+          <div className="w-full mb-2 sm:mb-0 sm:w-auto">
+            <span className="font-serif text-xl text-[#2b4535]">¿Quiénes viajan?</span>
           </div>
-          
-          <div className="w-full sm:w-1/2 lg:w-1/4">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Salida</label>
-            <input 
-              type="date" name="fechaSalida" 
-              value={filtros.fechaSalida} onChange={manejarFiltro} 
-              className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-medium" 
-            />
-          </div>
-          
-          <div className="w-1/2 sm:w-1/4 lg:w-1/6">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Adultos</label>
+          <div className="w-[45%] sm:w-32 lg:w-40 ml-auto sm:ml-4">
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Adultos</label>
             <input 
               type="number" name="adultos" min="1" max="10" 
               value={filtros.adultos} onChange={manejarFiltro} 
-              className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-bold" 
+              className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-bold" 
             />
           </div>
-          
-          <div className="w-1/2 sm:w-1/4 lg:w-1/6">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Niños</label>
+          <div className="w-[45%] sm:w-32 lg:w-40">
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Niños</label>
             <input 
               type="number" name="ninos" min="0" max="10" 
               value={filtros.ninos} onChange={manejarFiltro} 
-              className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-bold" 
+              className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-800 focus:border-[#2b4535] focus:bg-white outline-none transition-all font-bold" 
             />
           </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* 🚀 EL FIX ESTÁ AQUÍ: lg:sticky lg:top-24 lg:z-10 */}
-          {/* NIVEL 2: SIDEBAR DE FILTROS SECUNDARIOS */}
-          <aside className="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm lg:sticky lg:top-24 lg:z-10">
+          {/* NIVEL 2: SIDEBAR DE FILTROS SECUNDARIOS - Estático en celular, Sticky en Escritorio */}
+          <aside className="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm lg:sticky lg:top-24 mb-2 lg:mb-0">
             <h3 className="font-serif text-xl text-[#2b4535] mb-6 border-b border-gray-100 pb-4 flex items-center justify-between">
               <span>Filtros</span>
               <span className="text-xs font-sans font-normal text-gray-400">({itemsProcesados.length} disp.)</span>
@@ -161,10 +131,11 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                 <span className="font-serif font-bold text-lg text-[#2b4535]">${filtros.precioMax}</span>
               </div>
               <input 
-                type="range" name="precioMax" min="50" max="1500" step="50"
+                type="range" name="precioMax" min="10" max="1500" step="10"
                 value={filtros.precioMax} onChange={manejarFiltro}
                 className="w-full accent-[#7e3547] cursor-pointer" 
               />
+              <span className="text-[10px] text-gray-400">Precio por noche</span>
             </div>
 
             {/* Filtros de Beneficios */}
@@ -191,9 +162,9 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
             </div>
 
             {/* Botón Resetear */}
-            {(filtros.desayuno || filtros.cancelacion || filtros.adultos > 1) && (
+            {(filtros.desayuno || filtros.cancelacion || filtros.adultos > 1 || filtros.precioMax < 500) && (
               <button 
-                onClick={() => setFiltros({ fechaLlegada: '', fechaSalida: '', adultos: 1, ninos: 0, precioMax: 500, desayuno: false, cancelacion: false })}
+                onClick={() => setFiltros({ adultos: 1, ninos: 0, precioMax: 500, desayuno: false, cancelacion: false })}
                 className="w-full mt-8 py-2 text-xs font-bold text-gray-400 hover:text-red-600 border border-dashed border-gray-300 rounded-lg hover:border-red-300 transition-all"
               >
                 Limpiar filtros
@@ -219,8 +190,8 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                     : [formatearUrlPublica(item.imagen_url)];
 
                   return (
-                    <div key={item.id} className="h-full animate-[fadeIn_0.4s_ease-out]">
-                      <article className="group flex flex-col h-full bg-white border border-gray-200 transition-all duration-300 hover:shadow-2xl rounded-2xl overflow-hidden">
+                    <div key={item.id} className="h-full">
+                      <article className="group flex flex-col h-full bg-white border border-gray-200 transition-all duration-300 hover:shadow-xl rounded-2xl overflow-hidden">
                         
                         {/* Galería */}
                         <div className="h-64 w-full overflow-hidden relative bg-gray-100">
@@ -239,16 +210,14 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
                           {/* Pie de la tarjeta DINÁMICO */}
                           <div className="mt-auto flex justify-between items-end pt-5 border-t border-gray-100">
                             <div className="flex flex-col">
-                              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
-                                {item.esPrecioPorNoche ? 'Desde' : `Total por ${item.nochesMostrar} noches`}
-                              </span>
+                              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Desde</span>
                               <div className="flex items-baseline gap-1">
                                 <span className="font-serif text-3xl text-[#2b4535] font-black">${item.precioMostrar}</span>
-                                {item.esPrecioPorNoche && <span className="text-xs text-gray-400">/noche</span>}
+                                <span className="text-xs text-gray-400">/noche</span>
                               </div>
                             </div>
                             
-                            {/* AL DAR CLIC, GUARDAMOS LA HABITACIÓN EN EL ESTADO LOCAL */}
+                            {/* AL DAR CLIC, ABRIMOS EL SIDEBAR */}
                             <button 
                               onClick={() => {
                                 setHabitacionSeleccionada(item);
@@ -279,7 +248,11 @@ export default function CatalogoHabitaciones({ items, theme, configCatalogo, onS
           item={habitacionSeleccionada} 
           telefonoHotel={configCatalogo?.telefono || "+51974206744"} 
           primaryColor={theme.accentOrange} 
-          huespedes={parseInt(filtros.adultos) || 1} 
+          // Pasamos los huéspedes actuales al Sidebar para que no tenga que volver a ponerlos
+          huespedesIniciales={{
+            adultos: parseInt(filtros.adultos) || 1,
+            ninos: parseInt(filtros.ninos) || 0
+          }}
           onCancel={() => setHabitacionSeleccionada(null)} 
         />
       )}
