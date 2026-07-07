@@ -288,10 +288,24 @@ export default function LandingMarketing() {
           </div>
         </section>
 
-        {/* FOOTER BÁSICO */}
-        <footer className="border-t border-white/10 bg-[#050B14] pt-8 pb-8 mt-24">
-          <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
-            © {new Date().getFullYear()} BuilX. Impulsando la independencia hotelera.
+        {/* VII. FOOTER COMPLETO Y RESTAURADO */}
+        <footer className="border-t border-white/10 bg-[#050B14] pt-16 pb-8">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+              <div className="flex items-center gap-2 cursor-pointer">
+                <span className="text-3xl font-black tracking-tighter text-white">
+                  Buil<span className="text-blue-500">X</span>
+                </span>
+              </div>
+              <div className="flex gap-8 text-slate-400 text-sm font-medium">
+                <a href="/terminos" className="hover:text-white transition-colors">Términos de Servicio</a>
+                <a href="/privacidad" className="hover:text-white transition-colors">Privacidad</a>
+                <a href="/reembolsos" className="hover:text-white transition-colors">Reembolsos</a>
+              </div>
+            </div>
+            <div className="text-center text-slate-500 text-sm">
+              © {new Date().getFullYear()} BuilX. Todos los derechos reservados. Impulsando la independencia hotelera.
+            </div>
           </div>
         </footer>
 
