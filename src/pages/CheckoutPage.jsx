@@ -18,9 +18,8 @@ export default function CheckoutPage() {
     }
 
     // 🚀 Inicialización directa y limpia de Paddle
-    initializePaddle({
-      environment: 'sandbox', 
-      token: 'test_b0fa9ccd76fbb9c03ace32cc54d', // Tu token real de pruebas
+    initializePaddle({ 
+      token: 'live_b21a2a43266ffbf7e65f3d7ddbd', // Tu token real de pruebas
       eventCallback: async function(event) { // 🚨 Lo hacemos ASYNC
         console.log("📡 Señal de Paddle detectada:", event.name); 
 
@@ -66,8 +65,8 @@ export default function CheckoutPage() {
 
     // Asignamos el ID correcto según el botón que presionó
     const priceId = plan === 'pro' 
-      ? 'pri_01ktqx3tcwqx4wky96b370tpvj' // ID del Plan Pro ($39)
-      : 'pri_01ktdbye65tcsedx2w6r3xk96a'; // ID del Plan Starter ($15)
+      ? 'pri_01kx1df5azcw72rgnc52peb9kt' // ID del Plan Pro ($39)
+      : 'pri_01kx1d4rwcxw5zw2hbhp4z9v2v'; // ID del Plan Starter ($15)
 
     // Construimos el objeto customer solo si tenemos el email
     const customerConfig = userEmail ? { email: userEmail } : undefined;
