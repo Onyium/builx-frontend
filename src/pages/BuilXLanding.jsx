@@ -159,11 +159,12 @@ export default function LandingMarketing() {
               {/* Contenedor del Video */}
               <div className="relative w-full aspect-video bg-[#0A1120] border border-white/10 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(34,211,238,0.15)] group">
                 
-                {/* 🚨 AQUÍ VA TU VIDEO UGH.MP4 🚨 */}
+                {/* 🚨 AQUÍ VA TU VIDEO DESDE CLOUDINARY CDN 🚨 */}
                 <video 
-                  src="/ugh.mp4" 
+                  src="https://res.cloudinary.com/doorwuhjk/video/upload/builxlandingpagesfuerte_online-video-cutter.com_online-video-cutter.com_gey00c.mp4" 
                   controls 
                   controlsList="nodownload"
+                  preload="metadata"
                   className="w-full h-full object-cover"
                 >
                   Tu navegador no soporta la reproducción de videos.
