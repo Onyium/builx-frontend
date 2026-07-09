@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
-import axios from 'axios'; // 🚨 IMPORTANTE: Añadimos axios para hablar con la BD
+import axios from 'axios'; 
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -19,8 +19,8 @@ export default function CheckoutPage() {
 
     // 🚀 Inicialización directa y limpia de Paddle
     initializePaddle({ 
-      token: 'live_b21a2a43266ffbf7e65f3d7ddbd', // Tu token real de pruebas
-      eventCallback: async function(event) { // 🚨 Lo hacemos ASYNC
+      token: 'live_b21a2a43266ffbf7e65f3d7ddbd', // Tu token real de Producción
+      eventCallback: async function(event) { 
         console.log("📡 Señal de Paddle detectada:", event.name); 
 
         if (event.name === 'checkout.completed') {
@@ -42,8 +42,13 @@ export default function CheckoutPage() {
             console.error("❌ Error actualizando la BD desde el frontend:", error);
           }
           
-          // 🚀 Redirección nativa del navegador al panel después del confeti
+          // 🚀 EL PARCHE VISUAL: Forzamos el cierre del modal antes de redirigir
           setTimeout(() => {
+            // Usamos window.Paddle para evitar problemas de "closures" en React
+            if (window.Paddle && window.Paddle.Checkout) {
+              window.Paddle.Checkout.close(); 
+            }
+            // Redirección nativa al panel de control
             window.location.href = '/dashboard'; 
           }, 2500);
         }
@@ -63,7 +68,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Asignamos el ID correcto según el botón que presionó
+    // Asignamos el ID correcto según el botón que presionó (TUS IDs REALES)
     const priceId = plan === 'pro' 
       ? 'pri_01kx1df5azcw72rgnc52peb9kt' // ID del Plan Pro ($39)
       : 'pri_01kx1d4rwcxw5zw2hbhp4z9v2v'; // ID del Plan Starter ($15)
