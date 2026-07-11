@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 // --- COMPONENTES DE LUJO (Nuevos para esta plantilla) ---
-import HeaderInmobiliaria from './HeaderInmobiliaria'; 
-import HeroVideo from './HeroVideo'; // El hero grande del principio
+//import HeaderInmobiliaria from './HeaderInmobiliaria'; 
+//import HeroVideo from './HeroVideo'; // El hero grande del principio
 import BuscadorHorizontal from './BuscadorHorizontal'; // El filtro que sale en el video
 import GridPropiedades from './GridPropiedades'; // El catálogo en cuadrícula
-import FooterMinimalista from './FooterMinimalista';
+//import FooterMinimalista from './FooterMinimalista';
 
 // --- MODALES ---
 // En vez de "Reservar", en bienes raíces se "Agenda una cita" o se "Pide información"
-import SidebarContactoPropiedad from './components/SidebarContactoPropiedad'; 
+//import SidebarContactoPropiedad from './components/SidebarContactoPropiedad'; 
 
 export default function TemplatePremiumRealEstate({ config, items, empresa }) {
   // =========================================
