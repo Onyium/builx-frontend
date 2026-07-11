@@ -4,8 +4,7 @@ import axios from 'axios';
 
 // 🚀 IMPORTACIONES DE TUS PLANTILLAS
 import TemaAwwwards from '../components/templates/TemaAwwwards';
-
-// ✅ Importamos la carpeta (asegúrate de que la ruta coincida con donde la guardaste)
+import TemplatePremiumRealEstate from '../components/templates/RealStateLujo'
 import TemplateJagerhof from '../components/templates/TemaBasico/index'; 
 // (Si la dejaste en components/templates/TemaBasico, usa: import TemaBasico from '../components/templates/TemaBasico';)
 
@@ -110,6 +109,8 @@ export default function VisorPublico() {
                 return <TemaAwwwards {...propsComunes} />;
             case 'tema-basico':
                 return <TemplateJagerhof {...propsComunes} />;
+            case 'tema-real':
+                return <TemplatePremiumRealEstate {...propsComunes} />;
             default:
                 // Si no hay plantilla seleccionada, cargamos una genérica
                 return <TemplateJagerhof {...propsComunes} />; 
