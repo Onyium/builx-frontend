@@ -6,6 +6,7 @@ import HeroVideo from './HeroVideo';
 import BuscadorHorizontal from './BuscadorHorizontal'; 
 import GridPropiedades from './GridPropiedades'; 
 import FooterMinimalista from './FooterMinimalista';
+import VistaContact from './VistaContact';
 
 // --- NUEVAS VISTAS Y MODALES ---
 import VistaPropiedad from './VistaPropiedad'; 
@@ -98,6 +99,10 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
       {/* 🚀 NUEVA RUTA: ABOUT US */}
       {vistaActual === 'about' && (
         <VistaAboutUs config={datosIdioma} />
+      )}
+
+      {vistaActual === 'contact' && (
+        <VistaContact config={datosIdioma} />
       )}
 
       {/* 4. FOOTER MINIMALISTA */}
