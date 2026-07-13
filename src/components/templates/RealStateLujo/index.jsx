@@ -2,37 +2,30 @@ import React, { useState, useEffect } from 'react';
 
 // --- COMPONENTES DE LUJO ---
 import HeaderInmobiliaria from './HeaderInmobiliaria'; 
-import HeroVideo from './HeroVideo'; // El hero grande del principio
-import BuscadorHorizontal from './BuscadorHorizontal'; // El filtro que sale en el video
-import GridPropiedades from './GridPropiedades'; // El catálogo en cuadrícula
+import HeroVideo from './HeroVideo'; 
+import BuscadorHorizontal from './BuscadorHorizontal'; 
+import GridPropiedades from './GridPropiedades'; 
 import FooterMinimalista from './FooterMinimalista';
 
 // --- NUEVAS VISTAS Y MODALES ---
 import VistaPropiedad from './VistaPropiedad'; 
+import VistaAboutUs from './VistaAboutUs'; // 🚀 Importamos la nueva vista
 import ModalContactoFull from './components/ModalContactoFull'; 
 
 export default function TemplatePremiumRealEstate({ config, items, empresa }) {
   // =========================================
-  // 🚀 EL CEREBRO DE BUILX (Actualizado con Enrutador)
+  // 🚀 EL CEREBRO DE BUILX 
   // =========================================
   const [idioma, setIdioma] = useState('es'); 
   const datosIdioma = config[idioma] || config.es || config;
   
-  // 🚀 ESTADOS DEL "ENRUTADOR" INTERNO
-  const [vistaActual, setVistaActual] = useState('home'); // Puede ser 'home' o 'detalle'
+  // 🚀 ESTADOS DEL ENRUTADOR INTERNO
+  const [vistaActual, setVistaActual] = useState('home'); // 'home', 'detalle', o 'about'
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
-  const [mostrarContacto, setMostrarContacto] = useState(false); // Controla el modal gigante
+  const [mostrarContacto, setMostrarContacto] = useState(false); 
   
-  // Colores de lujo por defecto (Blanco puro, texto oscuro, acentos en oro/gris)
   const { bgWhite = "#ffffff", textDark = "#1a1a1a", accentGold = "#b89b5e" } = datosIdioma.theme || {};
 
-  const getUrl = (ruta) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isPreview = urlParams.get('preview') === 'true';
-    return `/v/${empresa.slug}/${ruta}${isPreview ? '?preview=true' : ''}`;
-  };
-
-  // Magia del Favicon y Título (Marca Blanca)
   useEffect(() => {
     document.title = datosIdioma.nav?.logo_text || empresa.nombre || "Luxury Properties";
     let link = document.querySelector("link[rel~='icon']");
@@ -44,9 +37,6 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
     link.href = config.logo_url || datosIdioma.logo_url || '/favicon.svg';
   }, [datosIdioma, empresa, config]);
 
-  // =========================================
-  // 🚀 FUNCIONES DE NAVEGACIÓN
-  // =========================================
   const verDetalleCasa = (casa) => {
     setPropiedadSeleccionada(casa);
     setVistaActual('detalle');
@@ -62,28 +52,24 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
       className="relative w-full min-h-screen font-sans antialiased selection:bg-[#b89b5e] selection:text-white"
       style={{ backgroundColor: bgWhite, color: textDark }}
     >
-      {/* 1. HEADER FLOTANTE (Le pasamos la función para abrir el modal de contacto) */}
+      {/* 1. HEADER FLOTANTE */}
       <HeaderInmobiliaria 
         config={datosIdioma} 
         empresa={empresa} 
         idiomaActual={idioma} 
         cambiarIdioma={setIdioma} 
         onContactClick={() => setMostrarContacto(true)} 
+        onNavigate={(vista) => setVistaActual(vista)} // 🚀 Le pasamos el control de rutas al Header
       />
 
       {/* ========================================= */}
       {/* 🚀 RUTAS CONDICIONALES */}
       {/* ========================================= */}
       
-      {vistaActual === 'home' ? (
-        // SI ESTAMOS EN EL INICIO (Catálogo)
+      {vistaActual === 'home' && (
         <>
-          {/* 2. HERO PRINCIPAL */}
           <HeroVideo heroConfig={datosIdioma.hero} />
-
-          {/* 3. CONTENEDOR CENTRAL: Filtros y Catálogo */}
           <main className="w-full max-w-[1600px] mx-auto px-6 py-20 md:py-32">
-            
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-5xl font-serif tracking-wide text-gray-900 mb-4 uppercase">
                 {datosIdioma.catalogo?.titulo || "Explore Our Properties"}
@@ -92,9 +78,7 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
                 {datosIdioma.catalogo?.subtitulo || "Please click Reset Filters before new search"}
               </p>
             </div>
-
             <BuscadorHorizontal theme={datosIdioma.theme} />
-
             <GridPropiedades 
               items={items} 
               theme={datosIdioma.theme}
@@ -102,27 +86,42 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
             />
           </main>
         </>
-      ) : (
-        // SI ESTAMOS VIENDO UNA PROPIEDAD
+      )}
+
+      {vistaActual === 'detalle' && (
         <VistaPropiedad 
           propiedad={propiedadSeleccionada} 
           onBack={regresarAlInicio} 
         />
       )}
 
-      {/* 4. FOOTER MINIMALISTA (Siempre visible al fondo) */}
+      {/* 🚀 NUEVA RUTA: ABOUT US */}
+      {vistaActual === 'about' && (
+        <VistaAboutUs config={datosIdioma} />
+      )}
+
+      {/* 4. FOOTER MINIMALISTA */}
       <FooterMinimalista 
         footerConfig={datosIdioma.footer} 
         contacto={datosIdioma.contacto} 
       />
 
-      {/* 5. MODAL DE CONTACTO FULL SCREEN (Flota por encima de todo) */}
+      {/* 5. MODAL DE CONTACTO GIGANTE */}
       {mostrarContacto && (
         <ModalContactoFull 
           datosContacto={datosIdioma.contacto}
           onClose={() => setMostrarContacto(false)} 
         />
       )}
+
+      {/* 🚀 6. BOTÓN FLOTANTE PERMANENTE */}
+      <button 
+        onClick={() => setMostrarContacto(true)}
+        className="fixed bottom-8 right-8 z-[90] bg-[#1a2530] hover:bg-black text-white px-8 py-4 shadow-2xl transition-all transform hover:scale-105 flex items-center gap-3 rounded-sm"
+      >
+        <span className="text-xs font-bold tracking-[0.2em] uppercase">Contact Us</span>
+      </button>
+
     </div>
   );
 }

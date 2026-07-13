@@ -1,30 +1,54 @@
 import React from 'react';
 
-export default function HeaderInmobiliaria({ config, empresa, idiomaActual, cambiarIdioma }) {
+export default function HeaderInmobiliaria({ config, empresa, idiomaActual, cambiarIdioma, onContactClick, onNavigate }) {
   const navConfig = config.nav || {};
   
+  // 🚀 Función inteligente para decidir a dónde ir según el texto del menú
+  const manejarNavegacion = (label) => {
+    const texto = label.toLowerCase();
+    if (texto.includes('about') || texto.includes('nosotros')) {
+      onNavigate('about');
+    } else if (texto.includes('contact')) {
+      onContactClick();
+    } else {
+      onNavigate('home');
+      window.scrollTo(0, 0); // Sube el scroll al inicio por si estaban abajo
+    }
+  };
+
   return (
     <header className="absolute top-0 w-full z-50 px-6 md:px-12 py-8 flex justify-between items-center text-white drop-shadow-md">
       {/* LOGO */}
-      <div className="text-2xl md:text-3xl font-serif tracking-[0.15em] uppercase cursor-pointer hover:opacity-80 transition-opacity">
+      <div 
+        onClick={() => onNavigate('home')}
+        className="text-2xl md:text-3xl font-serif tracking-[0.15em] uppercase cursor-pointer hover:opacity-80 transition-opacity"
+      >
         {navConfig.logo_text || empresa?.nombre || "Luxury Real Estate"}
       </div>
 
       {/* NAVEGACIÓN DESKTOP (Centro) */}
       <nav className="hidden lg:flex gap-10 font-sans text-xs font-bold tracking-[0.2em] uppercase">
         {navConfig.links_mitte?.map((link, index) => (
-          <a key={index} href={`#${link.target}`} className="hover:text-gray-300 transition-colors">
+          <button 
+            key={index} 
+            onClick={() => manejarNavegacion(link.label)} 
+            className="hover:text-gray-300 transition-colors tracking-[0.2em]"
+          >
             {link.label}
-          </a>
+          </button>
         ))}
       </nav>
 
       {/* NAVEGACIÓN DERECHA Y SELECTOR DE IDIOMA */}
       <div className="hidden lg:flex items-center gap-8 font-sans text-xs font-bold tracking-[0.2em] uppercase">
         {navConfig.links_rechts?.map((link, index) => (
-          <a key={index} href={`#${link.target}`} className="hover:text-gray-300 transition-colors">
+          <button 
+            key={index} 
+            onClick={() => manejarNavegacion(link.label)} 
+            className="hover:text-gray-300 transition-colors tracking-[0.2em]"
+          >
             {link.label}
-          </a>
+          </button>
         ))}
         
         {/* Separador */}
