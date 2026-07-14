@@ -1,18 +1,22 @@
 import React from 'react';
 
-export default function HeaderInmobiliaria({ config, empresa, idiomaActual, cambiarIdioma, onContactClick, onNavigate }) {
+export default function HeaderInmobiliaria({ config, empresa, idiomaActual, cambiarIdioma, onNavigate }) {
   const navConfig = config.nav || {};
   
   // 🚀 Función inteligente para decidir a dónde ir según el texto del menú
   const manejarNavegacion = (label) => {
     const texto = label.toLowerCase();
+    
     if (texto.includes('about') || texto.includes('nosotros')) {
       onNavigate('about');
-    } else if (texto.includes('contact')) {
-      onContactClick();
+      window.scrollTo(0, 0);
+    } else if (texto.includes('contact') || texto.includes('contacto')) {
+      // 🚀 Ahora manda a la página completa en lugar del modal
+      onNavigate('contact');
+      window.scrollTo(0, 0); 
     } else {
       onNavigate('home');
-      window.scrollTo(0, 0); // Sube el scroll al inicio por si estaban abajo
+      window.scrollTo(0, 0); // Sube el scroll al inicio
     }
   };
 
@@ -20,7 +24,7 @@ export default function HeaderInmobiliaria({ config, empresa, idiomaActual, camb
     <header className="absolute top-0 w-full z-50 px-6 md:px-12 py-8 flex justify-between items-center text-white drop-shadow-md">
       {/* LOGO */}
       <div 
-        onClick={() => onNavigate('home')}
+        onClick={() => manejarNavegacion('home')}
         className="text-2xl md:text-3xl font-serif tracking-[0.15em] uppercase cursor-pointer hover:opacity-80 transition-opacity"
       >
         {navConfig.logo_text || empresa?.nombre || "Luxury Real Estate"}
