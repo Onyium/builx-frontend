@@ -57,3 +57,7 @@
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
+
+html {
+  scroll-behavior: smooth;
+}
