@@ -7,7 +7,13 @@ export default function AgencyLanding() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchParams] = useSearchParams();
 
-  // 🚨 RASTREO DE LEADS DESDE CORREO EN FRÍO (INTACTO)
+  // 🪄 TRUCO PARA EL DESLIZAMIENTO SUAVE (Sin tocar CSS ni HTML)
+  useEffect(() => {
+    document.documentElement.classList.add('scroll-smooth');
+    return () => document.documentElement.classList.remove('scroll-smooth');
+  }, []);
+
+  // 🚨 RASTREO DE LEADS DESDE CORREO EN FRÍO
   useEffect(() => {
     const emailLead = searchParams.get('correo'); 
     
@@ -25,7 +31,7 @@ export default function AgencyLanding() {
     }
   }, [searchParams]);
 
-  // 📲 Enlace directo a tu WhatsApp con tu número formateado
+  // 📲 Enlace directo a tu WhatsApp
   const contactarWhatsApp = () => {
     window.open('https://wa.me/50364526988?text=Hola%20Jonathan,%20vi%20el%20demo%20de%20BuilX%20Studio%20y%20me%20interesa%20la%20arquitectura%20para%20mi%20inmobiliaria.', '_blank');
   };
@@ -33,7 +39,7 @@ export default function AgencyLanding() {
   return (
     <div className="bg-[#050B14] text-white font-sans selection:bg-blue-500 selection:text-white min-h-screen relative overflow-hidden">
       
-      {/* FONDO AURORA MESH (Toque de lujo tecnológico) */}
+      {/* FONDO AURORA MESH */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-purple-600/10 rounded-full blur-[150px] animate-blob"></div>
         <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-slate-500/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
@@ -65,6 +71,7 @@ export default function AgencyLanding() {
                 Agendar Consultoría
               </button>
 
+              {/* BOTÓN HAMBURGUESA PARA MÓVILES */}
               <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden text-slate-300 hover:text-white p-2"
@@ -79,6 +86,43 @@ export default function AgencyLanding() {
               </button>
             </div>
           </div>
+
+          {/* 🍔 MENÚ MÓVIL REPARADO Y CONECTADO */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden absolute top-20 left-0 w-full bg-[#050B14]/95 backdrop-blur-xl border-b border-white/10 px-6 py-8 flex flex-col gap-6 shadow-2xl transition-all">
+              <a 
+                href="#arquitectura" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="text-lg font-semibold text-slate-300 hover:text-white transition-colors border-b border-white/5 pb-4"
+              >
+                La Arquitectura
+              </a>
+              <a 
+                href="#portafolio" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="text-lg font-semibold text-slate-300 hover:text-white transition-colors border-b border-white/5 pb-4"
+              >
+                Portafolio
+              </a>
+              <a 
+                href="#inversion" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="text-lg font-semibold text-slate-300 hover:text-white transition-colors border-b border-white/5 pb-4"
+              >
+                Inversión
+              </a>
+              
+              <button 
+                onClick={() => {
+                  contactarWhatsApp();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full bg-white text-black font-bold py-4 rounded-xl text-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] mt-2"
+              >
+                Agendar Consultoría
+              </button>
+            </div>
+          )}
         </nav>
 
         {/* I. EL GANCHO CORPORATIVO B2B */}
@@ -107,7 +151,7 @@ export default function AgencyLanding() {
               </button>
             </div>
 
-            {/* FOTO HERO PREMIUM (Reemplazo del reproductor de video) */}
+            {/* FOTO HERO PREMIUM */}
             <div className="relative flex justify-center items-center w-full mt-8 lg:mt-0">
               <div className="absolute inset-0 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none"></div>
               <div className="relative w-full aspect-video bg-[#0A1120] border border-white/10 rounded-2xl overflow-hidden shadow-2xl group">
@@ -147,7 +191,7 @@ export default function AgencyLanding() {
           </div>
         </section>
 
-        {/* III. PORTAFOLIO DE PROYECTOS (Tu Vitrina Digital) */}
+        {/* III. PORTAFOLIO DE PROYECTOS */}
         <section className="py-24 relative overflow-hidden bg-[#0A1120] border-y border-white/5" id="portafolio">
           <div className="max-w-7xl mx-auto px-6">
             
@@ -158,7 +202,7 @@ export default function AgencyLanding() {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               
-              {/* PROYECTO 1: Tu enlace real de Christian */}
+              {/* PROYECTO 1 */}
               <div className="group relative bg-[#050B14] border border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
                 <div className="aspect-video bg-slate-800 relative overflow-hidden border-b border-white/10">
                    <img 
@@ -192,7 +236,7 @@ export default function AgencyLanding() {
                 </div>
               </div>
 
-              {/* PROYECTO 2: Placeholder */}
+              {/* PROYECTO 2 */}
               <div className="group relative bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden opacity-70 hover:opacity-100 transition-all duration-300">
                 <div className="aspect-video bg-slate-900 relative overflow-hidden border-b border-white/5 flex items-center justify-center">
                    <span className="text-slate-600 font-medium">Próximo Proyecto</span>
@@ -209,7 +253,7 @@ export default function AgencyLanding() {
                 </div>
               </div>
 
-              {/* PROYECTO 3: Placeholder */}
+              {/* PROYECTO 3 */}
               <div className="group relative bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden opacity-70 hover:opacity-100 transition-all duration-300 hidden lg:block">
                 <div className="aspect-video bg-slate-900 relative overflow-hidden border-b border-white/5 flex items-center justify-center">
                    <span className="text-slate-600 font-medium">Próximo Proyecto</span>
@@ -230,7 +274,7 @@ export default function AgencyLanding() {
           </div>
         </section>
 
-        {/* IV. SECCIÓN DE INVERSIÓN (El modelo de $200 + $30) */}
+        {/* IV. SECCIÓN DE INVERSIÓN */}
         <section className="py-24 relative" id="inversion">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -240,7 +284,7 @@ export default function AgencyLanding() {
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               
-              {/* PAGO INICIAL ($200) */}
+              {/* PAGO INICIAL */}
               <div className="bg-[#0A1120] border border-white/10 rounded-3xl p-10 flex flex-col hover:border-cyan-500/50 transition-all">
                 <div className="text-cyan-400 text-sm font-bold tracking-widest uppercase mb-2">Fase 1: Desarrollo</div>
                 <h3 className="text-3xl font-black text-white mb-6">Arquitectura Base</h3>
@@ -256,7 +300,7 @@ export default function AgencyLanding() {
                 </ul>
               </div>
 
-              {/* SERVICIO MENSUAL ($30) */}
+              {/* SERVICIO MENSUAL */}
               <div className="bg-gradient-to-b from-[#0A1120] to-[#050B14] border border-blue-500/30 rounded-3xl p-10 flex flex-col relative shadow-[0_0_30px_rgba(59,130,246,0.1)]">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white font-bold px-4 py-1 rounded-full text-xs tracking-wider">
                   EL MOTOR DEL NEGOCIO
