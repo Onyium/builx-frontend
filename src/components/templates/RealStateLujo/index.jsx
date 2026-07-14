@@ -106,9 +106,11 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
       )}
 
       {/* 4. FOOTER MINIMALISTA */}
+      {/* 4. FOOTER MINIMALISTA */}
       <FooterMinimalista 
         footerConfig={datosIdioma.footer} 
         contacto={datosIdioma.contacto} 
+        onNavigate={(vista) => setVistaActual(vista)} // 🚀 ESTO ES LO NUEVO
       />
 
       {/* 5. MODAL DE CONTACTO GIGANTE */}
