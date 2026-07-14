@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'react-router-dom';
 
 export default function AgencyLanding() {
   const navigate = useNavigate();
@@ -25,15 +25,15 @@ export default function AgencyLanding() {
     }
   }, [searchParams]);
 
-  // Número de WhatsApp para cerrar clientes (Cámbialo por el tuyo)
+  // 📲 Enlace directo a tu WhatsApp con tu número formateado
   const contactarWhatsApp = () => {
-    window.open('https://wa.me/503XXXXXXXX?text=Hola%20Jonathan,%20vi%20el%20demo%20de%20BuilX%20Studio%20y%20me%20interesa%20la%20arquitectura%20para%20mi%20inmobiliaria.', '_blank');
+    window.open('https://wa.me/50364526988?text=Hola%20Jonathan,%20vi%20el%20demo%20de%20BuilX%20Studio%20y%20me%20interesa%20la%20arquitectura%20para%20mi%20inmobiliaria.', '_blank');
   };
 
   return (
     <div className="bg-[#050B14] text-white font-sans selection:bg-blue-500 selection:text-white min-h-screen relative overflow-hidden">
       
-      {/* FONDO AURORA MESH (Mantiene el toque de lujo tecnológico) */}
+      {/* FONDO AURORA MESH (Toque de lujo tecnológico) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-purple-600/10 rounded-full blur-[150px] animate-blob"></div>
         <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-slate-500/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
@@ -53,7 +53,7 @@ export default function AgencyLanding() {
             
             <div className="hidden md:flex items-center gap-8">
               <a href="#arquitectura" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">La Arquitectura</a>
-              <a href="#demo" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Demo Premium</a>
+              <a href="#portafolio" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Portafolio</a>
               <a href="#inversion" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Inversión</a>
             </div>
             
@@ -107,38 +107,60 @@ export default function AgencyLanding() {
               </button>
             </div>
 
-            {/* AQUÍ VA EL VIDEO DE TU DISEÑO ÉPICO (dise;oepicoxd.mp4) */}
-            <div className="relative flex justify-center items-center w-full mt-8 lg:mt-0" id="demo">
+            {/* FOTO HERO PREMIUM (Reemplazo del reproductor de video) */}
+            <div className="relative flex justify-center items-center w-full mt-8 lg:mt-0">
               <div className="absolute inset-0 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none"></div>
               <div className="relative w-full aspect-video bg-[#0A1120] border border-white/10 rounded-2xl overflow-hidden shadow-2xl group">
-                <video 
-                  src="TU_LINK_DE_CLOUDINARY_AQUI" 
-                  autoPlay loop muted playsInline
-                  className="w-full h-full object-cover"
+                <img 
+                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                  alt="Diseño de Lujo" 
+                  className="w-full h-full object-cover opacity-80"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050B14] via-[#050B14]/20 to-transparent"></div>
               </div>
             </div>
 
           </div>
         </section>
 
+        {/* II. PROPUESTA DE VALOR */}
+        <section className="py-24 relative overflow-hidden bg-white/[0.02] border-y border-white/5">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <h2 className="text-4xl font-black mb-16">Arquitectura que cierra tratos.</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
+                <div className="text-cyan-400 text-4xl mb-4">⚡</div>
+                <h3 className="text-xl font-bold mb-3">Carga Instantánea</h3>
+                <p className="text-slate-400">Tecnología en React que muestra tus propiedades en milisegundos. Sin bases de datos lentas.</p>
+              </div>
+              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
+                <div className="text-cyan-400 text-4xl mb-4">💎</div>
+                <h3 className="text-xl font-bold mb-3">Diseño High-End</h3>
+                <p className="text-slate-400">Tipografías elegantes, proporciones matemáticas y un entorno visual digno de propiedades de lujo.</p>
+              </div>
+              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
+                <div className="text-cyan-400 text-4xl mb-4">📲</div>
+                <h3 className="text-xl font-bold mb-3">Cero Fricción</h3>
+                <p className="text-slate-400">Usted no toca código. Mándenos las fotos por WhatsApp y su catálogo estará actualizado globalmente.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* III. PORTAFOLIO DE PROYECTOS (Tu Vitrina Digital) */}
         <section className="py-24 relative overflow-hidden bg-[#0A1120] border-y border-white/5" id="portafolio">
           <div className="max-w-7xl mx-auto px-6">
             
-            {/* Encabezado de la sección */}
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-black mb-6">Nuestra Arquitectura en Acción</h2>
               <p className="text-xl text-slate-400">Explora proyectos reales construidos con nuestra tecnología de carga instantánea.</p>
             </div>
             
-            {/* Grid de Proyectos */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               
-              {/* PROYECTO 1: Tu enlace real */}
+              {/* PROYECTO 1: Tu enlace real de Christian */}
               <div className="group relative bg-[#050B14] border border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
-                {/* Imagen de Preview */}
                 <div className="aspect-video bg-slate-800 relative overflow-hidden border-b border-white/10">
-                   {/* OJO: Cambia este link de imagen por una captura de pantalla real de tu sitio */}
                    <img 
                      src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                      alt="Demo Inmobiliaria Christian" 
@@ -147,7 +169,6 @@ export default function AgencyLanding() {
                    <div className="absolute inset-0 bg-gradient-to-t from-[#050B14] via-transparent to-transparent"></div>
                 </div>
                 
-                {/* Contenido de la Tarjeta */}
                 <div className="p-6 relative z-10">
                   <div className="bg-blue-600/20 border border-blue-500/50 text-blue-400 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
                     Catálogo Inmobiliario
@@ -157,7 +178,6 @@ export default function AgencyLanding() {
                     Catálogo dinámico de propiedades con filtrado instantáneo y visualización premium. Sin tiempos de carga, listo para cerrar ventas.
                   </p>
                   
-                  {/* Botón que redirige a tu link */}
                   <a 
                     href="https://www.builxapp.com/v/chrisstian-1779951638465#catalogo" 
                     target="_blank" 
@@ -172,7 +192,7 @@ export default function AgencyLanding() {
                 </div>
               </div>
 
-              {/* PROYECTO 2: Placeholder para tu futuro proyecto */}
+              {/* PROYECTO 2: Placeholder */}
               <div className="group relative bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden opacity-70 hover:opacity-100 transition-all duration-300">
                 <div className="aspect-video bg-slate-900 relative overflow-hidden border-b border-white/5 flex items-center justify-center">
                    <span className="text-slate-600 font-medium">Próximo Proyecto</span>
@@ -210,31 +230,7 @@ export default function AgencyLanding() {
           </div>
         </section>
 
-        {/* II. PROPUESTA DE VALOR (¿Por qué elegirte?) */}
-        <section className="py-24 relative overflow-hidden bg-white/[0.02] border-y border-white/5">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <h2 className="text-4xl font-black mb-16">Arquitectura que cierra tratos.</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
-                <div className="text-cyan-400 text-4xl mb-4">⚡</div>
-                <h3 className="text-xl font-bold mb-3">Carga Instantánea</h3>
-                <p className="text-slate-400">Tecnología en React que muestra tus propiedades en milisegundos. Sin bases de datos lentas.</p>
-              </div>
-              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
-                <div className="text-cyan-400 text-4xl mb-4">💎</div>
-                <h3 className="text-xl font-bold mb-3">Diseño High-End</h3>
-                <p className="text-slate-400">Tipografías elegantes, proporciones matemáticas y un entorno visual digno de propiedades de lujo.</p>
-              </div>
-              <div className="p-8 border border-white/5 rounded-2xl bg-[#0A1120]">
-                <div className="text-cyan-400 text-4xl mb-4">📲</div>
-                <h3 className="text-xl font-bold mb-3">Cero Fricción</h3>
-                <p className="text-slate-400">Usted no toca código. Mándenos las fotos por WhatsApp y su catálogo estará actualizado globalmente.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* III. EL CIERRE: LA INVERSIÓN (El modelo de $200 + $30) */}
+        {/* IV. SECCIÓN DE INVERSIÓN (El modelo de $200 + $30) */}
         <section className="py-24 relative" id="inversion">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -291,6 +287,26 @@ export default function AgencyLanding() {
             </div>
           </div>
         </section>
+
+        {/* VII. FOOTER COMPLETO */}
+        <footer className="border-t border-white/10 bg-[#050B14] pt-16 pb-8">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+              <div className="flex items-center gap-2 cursor-pointer">
+                <span className="text-3xl font-black tracking-tighter text-white">
+                  Buil<span className="text-blue-500">X</span>
+                </span>
+              </div>
+              <div className="flex gap-8 text-slate-400 text-sm font-medium">
+                <a href="/terminos" className="hover:text-white transition-colors">Términos de Servicio</a>
+                <a href="/privacidad" className="hover:text-white transition-colors">Privacidad</a>
+              </div>
+            </div>
+            <div className="text-center text-slate-500 text-sm">
+              © {new Date().getFullYear()} BuilX Studio. Todos los derechos reservados. Impulsando la excelencia inmobiliaria.
+            </div>
+          </div>
+        </footer>
 
       </div>
     </div>
