@@ -122,6 +122,94 @@ export default function AgencyLanding() {
           </div>
         </section>
 
+        <section className="py-24 relative overflow-hidden bg-[#0A1120] border-y border-white/5" id="portafolio">
+          <div className="max-w-7xl mx-auto px-6">
+            
+            {/* Encabezado de la sección */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-black mb-6">Nuestra Arquitectura en Acción</h2>
+              <p className="text-xl text-slate-400">Explora proyectos reales construidos con nuestra tecnología de carga instantánea.</p>
+            </div>
+            
+            {/* Grid de Proyectos */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              
+              {/* PROYECTO 1: Tu enlace real */}
+              <div className="group relative bg-[#050B14] border border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
+                {/* Imagen de Preview */}
+                <div className="aspect-video bg-slate-800 relative overflow-hidden border-b border-white/10">
+                   {/* OJO: Cambia este link de imagen por una captura de pantalla real de tu sitio */}
+                   <img 
+                     src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                     alt="Demo Inmobiliaria Christian" 
+                     className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-[#050B14] via-transparent to-transparent"></div>
+                </div>
+                
+                {/* Contenido de la Tarjeta */}
+                <div className="p-6 relative z-10">
+                  <div className="bg-blue-600/20 border border-blue-500/50 text-blue-400 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                    Catálogo Inmobiliario
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Desarrollo "Christian"</h3>
+                  <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                    Catálogo dinámico de propiedades con filtrado instantáneo y visualización premium. Sin tiempos de carga, listo para cerrar ventas.
+                  </p>
+                  
+                  {/* Botón que redirige a tu link */}
+                  <a 
+                    href="https://www.builxapp.com/v/chrisstian-1779951638465#catalogo" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-2 text-cyan-400 font-bold hover:text-cyan-300 transition-colors"
+                  >
+                    Ver Proyecto en Vivo
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* PROYECTO 2: Placeholder para tu futuro proyecto */}
+              <div className="group relative bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden opacity-70 hover:opacity-100 transition-all duration-300">
+                <div className="aspect-video bg-slate-900 relative overflow-hidden border-b border-white/5 flex items-center justify-center">
+                   <span className="text-slate-600 font-medium">Próximo Proyecto</span>
+                </div>
+                <div className="p-6">
+                  <div className="bg-slate-800 text-slate-400 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                    En Desarrollo
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-300 mb-2">Mansiones Conceptuales</h3>
+                  <p className="text-slate-500 text-sm mb-6">
+                    Sitio web de ultra-lujo con overlay oscuro y animaciones fluidas. Estará disponible pronto.
+                  </p>
+                  <span className="text-slate-600 font-bold cursor-not-allowed">Próximamente...</span>
+                </div>
+              </div>
+
+              {/* PROYECTO 3: Placeholder */}
+              <div className="group relative bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden opacity-70 hover:opacity-100 transition-all duration-300 hidden lg:block">
+                <div className="aspect-video bg-slate-900 relative overflow-hidden border-b border-white/5 flex items-center justify-center">
+                   <span className="text-slate-600 font-medium">Próximo Proyecto</span>
+                </div>
+                <div className="p-6">
+                  <div className="bg-slate-800 text-slate-400 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                    En Desarrollo
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-300 mb-2">Boutique Hotel Real</h3>
+                  <p className="text-slate-500 text-sm mb-6">
+                    Motor de reservas sin comisiones optimizado para conversiones móviles.
+                  </p>
+                  <span className="text-slate-600 font-bold cursor-not-allowed">Próximamente...</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
         {/* II. PROPUESTA DE VALOR (¿Por qué elegirte?) */}
         <section className="py-24 relative overflow-hidden bg-white/[0.02] border-y border-white/5">
           <div className="max-w-7xl mx-auto px-6 text-center">
