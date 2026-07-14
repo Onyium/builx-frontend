@@ -122,12 +122,7 @@ export default function TemplatePremiumRealEstate({ config, items, empresa }) {
       )}
 
       {/* 🚀 6. BOTÓN FLOTANTE PERMANENTE */}
-      <button 
-        onClick={() => setMostrarContacto(true)}
-        className="fixed bottom-8 right-8 z-[90] bg-[#1a2530] hover:bg-black text-white px-8 py-4 shadow-2xl transition-all transform hover:scale-105 flex items-center gap-3 rounded-sm"
-      >
-        <span className="text-xs font-bold tracking-[0.2em] uppercase">Contact Us</span>
-      </button>
+      
 
     </div>
   );
