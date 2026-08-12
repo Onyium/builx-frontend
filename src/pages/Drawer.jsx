@@ -4,7 +4,7 @@ const handleSubmit = async (e) => {
     
     try {
       // 🔴 REEMPLAZA ESTO CON EL ENLACE QUE TE DIO FORMSPREE
-      const FORMSPREE_URL = 'https://formspree.io/f/mzeprqlz';
+      const FORMSPREE_URL = 'https://formspree.io/f/TU_CODIGO_AQUI';
 
       // Armamos el paquete con los datos bonitos para que los leas fácil en tu correo
       const payload = {
