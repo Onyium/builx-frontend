@@ -5,7 +5,7 @@ import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import CatalogSection from './CatalogSection';
 import Drawer from './Drawer';
-import Footer from './Footer';
+import Footer from './PieDePagina';
 
 // Importación de datos
 import { dogBreeds } from './data';
