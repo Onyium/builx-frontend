@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-export default function PetMemorialLanding() {
+export default function MiMemoriaTalladaLanding() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Para mostrar estado de carga al enviar
   
   // Estados para el formulario de validación
   const [formData, setFormData] = useState({
@@ -18,22 +19,44 @@ export default function PetMemorialLanding() {
   }, []);
 
   // Manejo del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes hacer un POST a tu backend en Node o a un Webhook
-    console.log("Lead capturado para validación:", formData);
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      // 🚀 AQUÍ CONECTARÁS TU WEBHOOK DE n8n o tu backend (ej. Formspree)
+      // const formDataToSend = new FormData();
+      // formDataToSend.append('nombre', formData.nombre);
+      // formDataToSend.append('whatsapp', formData.whatsapp);
+      // formDataToSend.append('foto', formData.foto);
+      
+      // await fetch('TU_URL_DE_N8N_O_BACKEND', {
+      //   method: 'POST',
+      //   body: formDataToSend
+      // });
+
+      // Simulamos un pequeño retraso de red
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      console.log("✅ Lead capturado para validación:", formData);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error al enviar:", error);
+      alert("Hubo un error al procesar tu solicitud. Intenta de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="bg-[#FAF7F2] text-[#2C1E16] font-sans selection:bg-amber-700 selection:text-white min-h-screen relative overflow-hidden">
       
-      {/* NAVBAR */}
+      {/* NAVBAR ACTUALIZADO CON LA NUEVA MARCA */}
       <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#2C1E16]/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer group">
             <span className="text-2xl font-black tracking-tighter text-[#2C1E16] uppercase">
-              Huellas <span className="text-amber-700 font-light">Eternas</span>
+              Mi Memoria <span className="text-amber-700 font-light">Tallada</span>
             </span>
           </div>
           
@@ -141,7 +164,7 @@ export default function PetMemorialLanding() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#2C1E16] mb-1">Foto de tu perrito</label>
+                    <label className="block text-sm font-bold text-[#2C1E16] mb-1">Foto (Referencia)</label>
                     <input 
                       type="file" 
                       accept="image/*"
@@ -153,9 +176,10 @@ export default function PetMemorialLanding() {
                   
                   <button 
                     type="submit"
-                    className="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-4 rounded-xl mt-4 transition-all"
+                    disabled={isLoading}
+                    className={`w-full text-white font-bold py-4 rounded-xl mt-4 transition-all ${isLoading ? 'bg-amber-500 cursor-wait' : 'bg-amber-700 hover:bg-amber-800'}`}
                   >
-                    Unirme a la lista de espera
+                    {isLoading ? 'Procesando...' : 'Unirme a la lista de espera'}
                   </button>
                 </form>
               </div>
@@ -166,7 +190,7 @@ export default function PetMemorialLanding() {
                 </div>
                 <h3 className="text-2xl font-black text-[#2C1E16] mb-2">¡Estás en la lista!</h3>
                 <p className="text-[#5A4334]">
-                  Hemos recibido la foto. Te contactaremos por WhatsApp en cuanto liberemos espacio en nuestro taller para comenzar tu diseño.
+                  Hemos recibido tus datos. Te contactaremos por WhatsApp en cuanto liberemos espacio en nuestro taller para comenzar tu diseño.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
