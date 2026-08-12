@@ -19,51 +19,65 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
         {breeds.map((breed) => (
           <div key={breed.id} className="w-full flex flex-col group cursor-pointer">
             
-            <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md border border-[#2C1E16]/10 relative">
-              
-              {/* 
-                LA MAGIA OCURRE AQUÍ:
-                - Móvil: overflow-x-auto (permite deslizar).
-                - Desktop (md): overflow-hidden (bloquea el deslizamiento) y -translate-x-full al hacer hover (desplaza la imagen 2).
-              */}
-              <div 
-                className="flex w-full h-full overflow-x-auto md:overflow-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-transform duration-500 ease-in-out md:group-hover:-translate-x-full"
-              >
-                {/* IMAGEN 1: Foto Real */}
+            {/* =========================================
+                📱 VERSIÓN MÓVIL (Carrusel Deslizable)
+                Visible solo en pantallas pequeñas (md:hidden)
+            ========================================= */}
+            <div className="md:hidden w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md border border-[#2C1E16]/10 relative">
+              <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {/* Foto Real */}
                 <div className="w-full h-full flex-shrink-0 snap-center relative">
-                  <img 
-                    src={breed.image} 
-                    alt={breed.name} 
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={breed.image} alt={breed.name} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full">
                     Foto Real
                   </div>
                 </div>
-                
-                {/* IMAGEN 2: Diseño en Madera */}
+                {/* En Madera */}
                 <div className="w-full h-full flex-shrink-0 snap-center relative">
-                  <img 
-                    src={breed.woodImage} 
-                    alt={`${breed.name} en madera`} 
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={breed.woodImage} alt={`${breed.name} en madera`} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3 bg-amber-700/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
                     En Madera
                   </div>
                 </div>
               </div>
 
-              {/* Indicador Móvil (Botón "Desliza") */}
-              <div className="md:hidden absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none animate-bounce flex gap-1 items-center">
+              {/* Indicador Móvil */}
+              <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none animate-bounce flex gap-1 items-center">
                 <span className="text-[10px] font-black text-[#2C1E16] pl-2 uppercase tracking-wide">Desliza</span>
                 <svg className="w-4 h-4 text-[#2C1E16]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
+            </div>
 
-              {/* Indicador Desktop (Ojo "Ver Madera" que desaparece al hacer hover) */}
-              <div className="hidden md:flex absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none flex gap-1 items-center transition-opacity duration-300 group-hover:opacity-0">
+            {/* =========================================
+                💻 VERSIÓN DESKTOP (Efecto Fade Hover)
+                Visible solo en pantallas grandes (hidden md:block)
+            ========================================= */}
+            <div className="hidden md:block w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md group-hover:shadow-xl transition-all border border-[#2C1E16]/10 relative">
+              
+              {/* Foto Real (Visible por defecto, desaparece en hover) */}
+              <img 
+                src={breed.image} 
+                alt={breed.name} 
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0"
+              />
+              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+                Foto Real
+              </div>
+
+              {/* Diseño en Madera (Oculto por defecto, aparece en hover) */}
+              <img 
+                src={breed.woodImage} 
+                alt={`${breed.name} en madera`} 
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-110"
+              />
+              <div className="absolute top-3 left-3 bg-amber-700/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                En Madera
+              </div>
+
+              {/* Ojo "Ver Madera" (Desaparece en hover) */}
+              <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none flex gap-1 items-center transition-opacity duration-300 group-hover:opacity-0">
                 <span className="text-[10px] font-black text-[#2C1E16] pl-2 uppercase tracking-wide">Ver madera</span>
                 <svg className="w-4 h-4 text-[#2C1E16]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
