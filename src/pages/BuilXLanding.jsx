@@ -1,25 +1,53 @@
 import React, { useState, useEffect } from 'react';
 
-// 🐕 ARREGLO TEMPORAL: Tu base de datos falsa para validar
+// 🐕 ARREGLO TEMPORAL: Ahora incluye la foto real y la foto del tallado
+// Nota: Usa tus propias imágenes generadas por IA para "woodImage"
 const dogBreeds = [
-  { id: 1, name: 'Golden Retriever', image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=500&q=80' },
-  { id: 2, name: 'Husky Siberiano', image: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=500&q=80' },
-  { id: 3, name: 'Pug / Carlino', image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=500&q=80' },
-  { id: 4, name: 'Pastor Alemán', image: 'https://images.unsplash.com/photo-1589952283406-b53a7d1347e8?auto=format&fit=crop&w=500&q=80' },
-  { id: 5, name: 'Chihuahua', image: 'https://images.unsplash.com/photo-1605639156481-244775d6f803?auto=format&fit=crop&w=500&q=80' },
-  { id: 6, name: 'Bulldog Francés', image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80' },
+  { 
+    id: 1, 
+    name: 'Golden Retriever', 
+    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80' // Reemplazar con tu diseño en madera
+  },
+  { 
+    id: 2, 
+    name: 'Husky Siberiano', 
+    image: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80'
+  },
+  { 
+    id: 3, 
+    name: 'Pug / Carlino', 
+    image: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80'
+  },
+  { 
+    id: 4, 
+    name: 'Pastor Alemán', 
+    image: 'https://images.unsplash.com/photo-1589952283406-b53a7d1347e8?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80'
+  },
+  { 
+    id: 5, 
+    name: 'Chihuahua', 
+    image: 'https://images.unsplash.com/photo-1605639156481-244775d6f803?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80'
+  },
+  { 
+    id: 6, 
+    name: 'Bulldog Francés', 
+    image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=500&q=80',
+    woodImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=500&q=80'
+  },
 ];
 
 export default function MiMemoriaTalladaLanding() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // Estados para el Panel Deslizante (Drawer)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedBreed, setSelectedBreed] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   
-  // Nuevo estado del formulario enfocado en la personalización de texto
   const [formData, setFormData] = useState({
     ownerName: '',
     whatsapp: '',
@@ -44,17 +72,14 @@ export default function MiMemoriaTalladaLanding() {
     setTimeout(() => {
       setSelectedBreed(null);
       setIsSubmitted(false);
-    }, 300); // Espera a que termine la animación para limpiar
+    }, 300);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
-      // Simulación de envío a n8n o Formspree
       await new Promise(resolve => setTimeout(resolve, 800));
-      
       console.log("✅ Pedido capturado:", {
         raza: selectedBreed ? selectedBreed.name : 'Personalizado',
         ...formData
@@ -68,7 +93,7 @@ export default function MiMemoriaTalladaLanding() {
   };
 
   return (
-    <div className="bg-[#FAF7F2] text-[#2C1E16] font-sans selection:bg-amber-700 selection:text-white min-h-screen relative overflow-x-hidden">
+    <div className="bg-[#FAF7F2] text-[#2C1E16] font-sans selection:bg-amber-700 selection:text-white min-h-screen relative overflow-x-hidden flex flex-col">
       
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#2C1E16]/10 transition-all duration-300">
@@ -103,86 +128,121 @@ export default function MiMemoriaTalladaLanding() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <section className="relative pt-32 pb-12 px-6 max-w-7xl mx-auto flex items-center">
-        <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
-          <div className="text-left pt-8">
-            <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-amber-700/30 bg-amber-700/10 text-amber-800 text-xs font-bold tracking-widest uppercase">
-              Hecho a medida
-            </div>
-            
-            <h1 className="text-5xl md:text-6xl font-black leading-tight tracking-tight mb-6 text-[#2C1E16]">
-              Inmortaliza su recuerdo <span className="text-amber-700">en madera.</span>
-            </h1>
-            
-            <p className="text-xl text-[#5A4334] leading-relaxed mb-8 max-w-lg">
-              Sabemos cuánto duele su partida. Selecciona su raza y nosotros tallaremos una pieza de madera maciza con su nombre, para que te acompañe siempre.
-            </p>
-            
-            <button 
-              onClick={() => document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' })}
-              className="bg-[#2C1E16] hover:bg-amber-800 text-white font-black py-4 px-10 rounded-xl text-lg transition-all active:scale-95 flex items-center justify-center shadow-xl w-full sm:w-auto mb-6"
-            >
-              Ver Catálogo de Razas
-            </button>
-          </div>
-
-          <div className="relative flex justify-center items-center w-full mt-8 lg:mt-0">
-            <div className="relative w-full aspect-square bg-[#E8DFD5] border-8 border-white rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
-              <img 
-                src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                alt="Perro recordado en madera" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECCIÓN DEL CATÁLOGO DE RAZAS (Scroll Horizontal) */}
-      <section id="catalogo" className="py-16 bg-white border-y border-[#2C1E16]/5 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-8">
-          <h2 className="text-3xl md:text-4xl font-black text-[#2C1E16]">Encuentra a tu mejor amigo</h2>
-          <p className="text-[#5A4334] mt-2">Nuestros diseños base, listos para ser personalizados con su nombre.</p>
-        </div>
-
-        {/* Carrusel Deslizable */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 px-6 gap-6 max-w-7xl mx-auto" style={{ scrollbarWidth: 'none' }}>
-          {dogBreeds.map((breed) => (
-            <div 
-              key={breed.id} 
-              onClick={() => openDrawer(breed)}
-              className="snap-start shrink-0 w-64 group cursor-pointer"
-            >
-              <div className="w-64 h-64 rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md group-hover:shadow-xl transition-all border border-[#2C1E16]/10 relative">
-                <img 
-                  src={breed.image} 
-                  alt={breed.name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+      {/* CONTENIDO PRINCIPAL */}
+      <main className="flex-grow">
+        {/* HERO SECTION */}
+        <section className="relative pt-32 pb-12 px-6 max-w-7xl mx-auto flex items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div className="text-left pt-8">
+              <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-amber-700/30 bg-amber-700/10 text-amber-800 text-xs font-bold tracking-widest uppercase">
+                Hecho a medida
               </div>
-              <h3 className="text-xl font-bold text-[#2C1E16]">{breed.name}</h3>
-              <p className="text-amber-700 font-bold text-sm mt-1 group-hover:underline">Personalizar diseño →</p>
+              
+              <h1 className="text-5xl md:text-6xl font-black leading-tight tracking-tight mb-6 text-[#2C1E16]">
+                Inmortaliza su recuerdo <span className="text-amber-700">en madera.</span>
+              </h1>
+              
+              <p className="text-xl text-[#5A4334] leading-relaxed mb-8 max-w-lg">
+                Sabemos cuánto duele su partida. Selecciona su raza y nosotros tallaremos una pieza de madera maciza con su nombre, para que te acompañe siempre.
+              </p>
+              
+              <button 
+                onClick={() => document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' })}
+                className="bg-[#2C1E16] hover:bg-amber-800 text-white font-black py-4 px-10 rounded-xl text-lg transition-all active:scale-95 flex items-center justify-center shadow-xl w-full sm:w-auto mb-6"
+              >
+                Ver Catálogo de Razas
+              </button>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* OVERLAY DEL DRAWER (Fondo oscuro al abrir el panel) */}
+            <div className="relative flex justify-center items-center w-full mt-8 lg:mt-0">
+              <div className="relative w-full aspect-square bg-[#E8DFD5] border-8 border-white rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+                <img 
+                  src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  alt="Perro recordado en madera" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECCIÓN DEL CATÁLOGO DE RAZAS (Actualizada con doble imagen) */}
+        <section id="catalogo" className="py-16 bg-white border-t border-[#2C1E16]/5 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 mb-8">
+            <h2 className="text-3xl md:text-4xl font-black text-[#2C1E16]">Encuentra a tu mejor amigo</h2>
+            <p className="text-[#5A4334] mt-2">Nuestros diseños base. Pasa el cursor para ver el tallado final.</p>
+          </div>
+
+          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 px-6 gap-6 max-w-7xl mx-auto" style={{ scrollbarWidth: 'none' }}>
+            {dogBreeds.map((breed) => (
+              <div 
+                key={breed.id} 
+                onClick={() => openDrawer(breed)}
+                className="snap-start shrink-0 w-64 group cursor-pointer"
+              >
+                <div className="w-64 h-64 rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md group-hover:shadow-xl transition-all border border-[#2C1E16]/10 relative">
+                  
+                  {/* IMAGEN 1: Foto Real (Visible por defecto, se oculta en hover) */}
+                  <img 
+                    src={breed.image} 
+                    alt={breed.name} 
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0"
+                  />
+                  
+                  {/* IMAGEN 2: Diseño en Madera (Oculta por defecto, aparece en hover) */}
+                  <img 
+                    src={breed.woodImage} 
+                    alt={`${breed.name} en madera`} 
+                    className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-110"
+                  />
+                  
+                  {/* Etiqueta flotante indicadora */}
+                  <div className="absolute top-3 right-3 bg-[#2C1E16]/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+                    Ver madera
+                  </div>
+                  
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none"></div>
+                </div>
+                <h3 className="text-xl font-bold text-[#2C1E16]">{breed.name}</h3>
+                <p className="text-amber-700 font-bold text-sm mt-1 group-hover:underline">Personalizar con su nombre →</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER - PIE DE PÁGINA */}
+      <footer className="border-t border-[#2C1E16]/10 bg-[#FAF7F2] pt-12 pb-8 mt-auto">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black tracking-tighter text-[#2C1E16] uppercase">
+                Mi Memoria <span className="text-amber-700 font-light">Tallada</span>
+              </span>
+            </div>
+            
+            <div className="flex gap-8 text-[#5A4334] font-bold text-sm">
+              <a href="#catalogo" className="hover:text-amber-700 transition-colors">Diseños</a>
+              <a href="#" className="hover:text-amber-700 transition-colors">Preguntas Frecuentes</a>
+              <a href="#" className="hover:text-amber-700 transition-colors">Contacto</a>
+            </div>
+          </div>
+          
+          <div className="border-t border-[#2C1E16]/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[#8B6E59]">
+            <p>© {new Date().getFullYear()} Mi Memoria Tallada. Todos los derechos reservados.</p>
+            <p>Artesanía con propósito emocional.</p>
+          </div>
+        </div>
+      </footer>
+
+      {/* OVERLAY DEL DRAWER */}
       {isDrawerOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity"
-          onClick={closeDrawer}
-        ></div>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity" onClick={closeDrawer}></div>
       )}
 
       {/* PANEL DESLIZANTE (DRAWER) LATERAL */}
-      <div 
-        className={`fixed top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
+      <div className={`fixed top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-6 md:p-8">
-          {/* Cabecera del Drawer */}
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-black text-[#2C1E16]">Tu Pedido</h2>
             <button onClick={closeDrawer} className="text-gray-400 hover:text-gray-800 p-2">
@@ -192,12 +252,11 @@ export default function MiMemoriaTalladaLanding() {
 
           {!isSubmitted ? (
             <>
-              {/* Resumen del producto seleccionado */}
               {selectedBreed && (
                 <div className="flex items-center gap-4 bg-[#FAF7F2] p-4 rounded-xl border border-[#2C1E16]/10 mb-8">
-                  <img src={selectedBreed.image} alt={selectedBreed.name} className="w-16 h-16 rounded-lg object-cover" />
+                  <img src={selectedBreed.woodImage} alt={selectedBreed.name} className="w-16 h-16 rounded-lg object-cover" />
                   <div>
-                    <span className="text-xs text-amber-700 font-bold uppercase tracking-wider">Diseño Base</span>
+                    <span className="text-xs text-amber-700 font-bold uppercase tracking-wider">Diseño Seleccionado</span>
                     <h3 className="text-lg font-bold text-[#2C1E16]">{selectedBreed.name}</h3>
                   </div>
                 </div>
@@ -208,7 +267,6 @@ export default function MiMemoriaTalladaLanding() {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Datos del Cliente */}
                 <div className="space-y-4">
                   <h4 className="font-bold text-[#2C1E16] border-b pb-2">Tus Datos de Contacto</h4>
                   <div>
@@ -221,7 +279,6 @@ export default function MiMemoriaTalladaLanding() {
                   </div>
                 </div>
 
-                {/* Datos de Personalización */}
                 <div className="space-y-4 pt-4">
                   <h4 className="font-bold text-[#2C1E16] border-b pb-2">Personalización en la Madera</h4>
                   <div>
@@ -259,10 +316,7 @@ export default function MiMemoriaTalladaLanding() {
               <p className="text-[#5A4334] mb-8 leading-relaxed">
                 Hemos anotado a <strong className="text-[#2C1E16]">{formData.petName}</strong> en nuestra lista. Te escribiremos pronto a tu WhatsApp ({formData.whatsapp}) para confirmar disponibilidad y procesar el pago.
               </p>
-              <button 
-                onClick={closeDrawer}
-                className="bg-[#2C1E16] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-all"
-              >
+              <button onClick={closeDrawer} className="bg-[#2C1E16] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-all">
                 Volver al catálogo
               </button>
             </div>
