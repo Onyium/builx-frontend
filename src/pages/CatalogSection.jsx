@@ -6,7 +6,6 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
       <div className="max-w-7xl mx-auto px-6 mb-10">
         <h2 className="text-3xl md:text-4xl font-black text-[#2C1E16]">Encuentra a tu mejor amigo</h2>
         
-        {/* Textos dinámicos dependiendo del dispositivo */}
         <p className="text-[#5A4334] mt-2 block md:hidden">
           Desliza la imagen de cada perrito para ver cómo queda el tallado final.
         </p>
@@ -17,22 +16,17 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto px-6 pb-8">
         {breeds.map((breed) => (
-          <div key={breed.id} className="w-full flex flex-col group cursor-pointer">
+          <div key={breed.id} className="w-full flex flex-col group cursor-pointer bg-white p-3 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
             
-            {/* =========================================
-                📱 VERSIÓN MÓVIL (Carrusel Deslizable)
-                Visible solo en pantallas pequeñas (md:hidden)
-            ========================================= */}
-            <div className="md:hidden w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md border border-[#2C1E16]/10 relative">
+            {/* 📱 VERSIÓN MÓVIL */}
+            <div className="md:hidden w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 relative">
               <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {/* Foto Real */}
                 <div className="w-full h-full flex-shrink-0 snap-center relative">
                   <img src={breed.image} alt={breed.name} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full">
                     Foto Real
                   </div>
                 </div>
-                {/* En Madera */}
                 <div className="w-full h-full flex-shrink-0 snap-center relative">
                   <img src={breed.woodImage} alt={`${breed.name} en madera`} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3 bg-amber-700/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
@@ -41,7 +35,6 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
                 </div>
               </div>
 
-              {/* Indicador Móvil */}
               <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none animate-bounce flex gap-1 items-center">
                 <span className="text-[10px] font-black text-[#2C1E16] pl-2 uppercase tracking-wide">Desliza</span>
                 <svg className="w-4 h-4 text-[#2C1E16]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,13 +43,9 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
               </div>
             </div>
 
-            {/* =========================================
-                💻 VERSIÓN DESKTOP (Efecto Fade Hover)
-                Visible solo en pantallas grandes (hidden md:block)
-            ========================================= */}
-            <div className="hidden md:block w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-md group-hover:shadow-xl transition-all border border-[#2C1E16]/10 relative">
+            {/* 💻 VERSIÓN DESKTOP */}
+            <div className="hidden md:block w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 relative">
               
-              {/* Foto Real (Visible por defecto, desaparece en hover) */}
               <img 
                 src={breed.image} 
                 alt={breed.name} 
@@ -66,7 +55,6 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
                 Foto Real
               </div>
 
-              {/* Diseño en Madera (Oculto por defecto, aparece en hover) */}
               <img 
                 src={breed.woodImage} 
                 alt={`${breed.name} en madera`} 
@@ -76,7 +64,6 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
                 En Madera
               </div>
 
-              {/* Ojo "Ver Madera" (Desaparece en hover) */}
               <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow pointer-events-none flex gap-1 items-center transition-opacity duration-300 group-hover:opacity-0">
                 <span className="text-[10px] font-black text-[#2C1E16] pl-2 uppercase tracking-wide">Ver madera</span>
                 <svg className="w-4 h-4 text-[#2C1E16]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,14 +73,20 @@ export default function CatalogSection({ breeds, onSelectBreed }) {
               </div>
             </div>
             
-            <h3 className="text-xl font-bold text-[#2C1E16]">{breed.name}</h3>
-            
-            <button 
-              onClick={() => onSelectBreed(breed)}
-              className="text-left text-amber-700 font-bold text-sm mt-1 hover:underline w-fit"
-            >
-              Personalizar con su nombre →
-            </button>
+            <div className="px-1 pb-1">
+              <h3 className="text-xl font-black text-[#2C1E16] mb-3">{breed.name}</h3>
+              
+              {/* ✨ ESTE ES EL NUEVO BOTÓN SÚPER VISIBLE ✨ */}
+              <button 
+                onClick={() => onSelectBreed(breed)}
+                className="w-full bg-[#2C1E16] hover:bg-amber-800 text-white font-bold py-3.5 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-between shadow-md"
+              >
+                <span>Encargar diseño</span>
+                <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
             
           </div>
         ))}
