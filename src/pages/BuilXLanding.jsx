@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import CatalogSection from './CatalogSection';
-import Drawer from './Drawer';
+import Drawer from './Drawers';
 import Footer from './PieDePagina';
 
 // Importación de datos
